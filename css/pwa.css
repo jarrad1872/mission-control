@@ -1,5 +1,12 @@
 /* ===== PWA Styles ===== */
 
+/* CRITICAL: Prevent horizontal scroll on mobile */
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    position: relative;
+}
+
 /* Install Button */
 .pwa-install-btn {
     display: flex;
