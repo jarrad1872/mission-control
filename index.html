@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Mission Control — Bob Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🎯 Mission Control</h1>
+                <span class="subtitle">Bob Collective Dashboard</span>
+            </div>
+            <div class="header-right">
+                <span class="status-indicator" id="dataStatus">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Loading...</span>
+                </span>
+                <button class="btn-refresh" id="refreshBtn" title="Refresh Data">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="activity">
+                <span class="tab-icon">📋</span>
+                <span class="tab-label">Activity Feed</span>
+            </button>
+            <button class="tab-btn" data-tab="calendar">
+                <span class="tab-icon">📅</span>
+                <span class="tab-label">Calendar</span>
+            </button>
+            <button class="tab-btn" data-tab="search">
+                <span class="tab-icon">🔍</span>
+                <span class="tab-label">Search</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Activity Feed Tab -->
+            <section class="tab-content active" id="activity-tab">
+                <div class="section-header">
+                    <h2>Activity Feed</h2>
+                    <div class="filters">
+                        <select id="activityType" class="filter-select">
+                            <option value="all">All Types</option>
+                            <option value="commit">Git Commits</option>
+                            <option value="task">Task Completions</option>
+                            <option value="event">Daily Events</option>
+                            <option value="arena">Arena Sessions</option>
+                        </select>
+                        <select id="dateRange" class="filter-select">
+                            <option value="7">Last 7 days</option>
+                            <option value="14">Last 14 days</option>
+                            <option value="30">Last 30 days</option>
+                            <option value="all">All time</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="activity-list" id="activityList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading activity...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Tab -->
+            <section class="tab-content" id="calendar-tab">
+                <div class="section-header">
+                    <h2>Weekly Schedule</h2>
+                    <div class="calendar-nav">
+                        <button class="nav-btn" id="prevWeek">← Prev</button>
+                        <span class="current-week" id="currentWeek">Loading...</span>
+                        <button class="nav-btn" id="nextWeek">Next →</button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading calendar...</span>
+                    </div>
+                </div>
+                <div class="event-detail-panel" id="eventDetailPanel">
+                    <div class="panel-header">
+                        <h3 id="eventDetailTitle">Select an event</h3>
+                        <button class="close-btn" id="closeEventPanel">×</button>
+                    </div>
+                    <div class="panel-content" id="eventDetailContent">
+                        <p class="placeholder-text">Click on a calendar event to view details.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search Tab -->
+            <section class="tab-content" id="search-tab">
+                <div class="search-header">
+                    <div class="search-box">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search memory, tasks, documents..." autocomplete="off">
+                        <kbd class="search-hint">⌘K</kbd>
+                    </div>
+                </div>
+                <div class="search-filters">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="memory" checked> Memory
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="tasks" checked> Tasks
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="docs" checked> Docs
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="root" checked> Root Files
+                    </label>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <div class="search-placeholder">
+                        <span class="placeholder-emoji">🔍</span>
+                        <p>Start typing to search across all files</p>
+                        <p class="placeholder-hint">Searches memory/, tasks/, docs/, and root markdown files</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>Last updated: <span id="lastUpdated">—</span></span>
+            <span class="separator">|</span>
+            <span>Data generated by <code>build.sh</code></span>
+        </footer>
+    </div>
+
+    <!-- Result Detail Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">File Content</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <pre id="modalContent"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/activity.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

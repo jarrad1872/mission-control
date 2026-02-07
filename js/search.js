@@ -1,0 +1,361 @@
+/**
+ * Search Module - Full-text search across all indexed files
+ */
+
+const SearchModule = (function() {
+    let searchIndex = [];
+    let searchTimeout = null;
+    const DEBOUNCE_MS = 200;
+
+    /**
+     * Initialize the search module
+     */
+    async function init() {
+        const data = await DataModule.loadSearchIndex();
+        if (data && data.files) {
+            searchIndex = data.files;
+        }
+        
+        setupListeners();
+    }
+
+    /**
+     * Set up event listeners
+     */
+    function setupListeners() {
+        const searchInput = document.getElementById('searchInput');
+        const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', handleSearchInput);
+            
+            // Keyboard shortcut (Cmd/Ctrl + K)
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    // Switch to search tab
+                    const searchTab = document.querySelector('[data-tab="search"]');
+                    if (searchTab) {
+                        searchTab.click();
+                    }
+                }
+            });
+        }
+
+        filterCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                if (searchInput && searchInput.value) {
+                    performSearch(searchInput.value);
+                }
+            });
+        });
+    }
+
+    /**
+     * Handle search input with debounce
+     */
+    function handleSearchInput(e) {
+        const query = e.target.value.trim();
+        
+        clearTimeout(searchTimeout);
+        
+        if (!query) {
+            showPlaceholder();
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, DEBOUNCE_MS);
+    }
+
+    /**
+     * Perform the search
+     */
+    function performSearch(query) {
+        const results = searchFiles(query);
+        renderResults(query, results);
+    }
+
+    /**
+     * Search through indexed files
+     */
+    function searchFiles(query) {
+        const queryLower = query.toLowerCase();
+        const queryTerms = queryLower.split(/\s+/).filter(t => t.length > 0);
+        const activeFilters = getActiveFilters();
+
+        const scoredResults = searchIndex
+            .filter(file => {
+                // Apply category filter
+                if (!activeFilters.includes(file.category)) {
+                    return false;
+                }
+                return true;
+            })
+            .map(file => {
+                const content = (file.content || '').toLowerCase();
+                const title = (file.title || file.path).toLowerCase();
+                
+                let score = 0;
+                let matchedTerms = 0;
+                let matchPositions = [];
+
+                queryTerms.forEach(term => {
+                    // Title match (higher weight)
+                    if (title.includes(term)) {
+                        score += 10;
+                        matchedTerms++;
+                    }
+                    
+                    // Content match
+                    let idx = content.indexOf(term);
+                    if (idx !== -1) {
+                        score += 5;
+                        matchedTerms++;
+                        matchPositions.push(idx);
+                        
+                        // Count occurrences
+                        let count = 0;
+                        let searchIdx = 0;
+                        while ((searchIdx = content.indexOf(term, searchIdx)) !== -1) {
+                            count++;
+                            searchIdx += term.length;
+                        }
+                        score += Math.min(count, 5); // Cap at 5 extra points
+                    }
+                });
+
+                // Only include if all terms matched somewhere
+                if (matchedTerms < queryTerms.length) {
+                    return null;
+                }
+
+                // Extract snippet around first match
+                const snippet = extractSnippet(file.content || '', queryTerms[0], 150);
+
+                return {
+                    ...file,
+                    score,
+                    snippet,
+                    matchPositions
+                };
+            })
+            .filter(result => result !== null)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 50); // Limit to 50 results
+
+        return scoredResults;
+    }
+
+    /**
+     * Get active filter categories
+     */
+    function getActiveFilters() {
+        const checkboxes = document.querySelectorAll('.filter-checkbox input:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    /**
+     * Extract a snippet around the search term
+     */
+    function extractSnippet(content, term, maxLength) {
+        const termLower = term.toLowerCase();
+        const contentLower = content.toLowerCase();
+        const idx = contentLower.indexOf(termLower);
+        
+        if (idx === -1) {
+            return content.slice(0, maxLength) + (content.length > maxLength ? '...' : '');
+        }
+
+        const start = Math.max(0, idx - 60);
+        const end = Math.min(content.length, idx + term.length + maxLength - 60);
+        
+        let snippet = content.slice(start, end);
+        
+        if (start > 0) snippet = '...' + snippet;
+        if (end < content.length) snippet = snippet + '...';
+        
+        return snippet;
+    }
+
+    /**
+     * Render search results
+     */
+    function renderResults(query, results) {
+        const container = document.getElementById('searchResults');
+        if (!container) return;
+
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-emoji">🔍</div>
+                    <p>No results found for "<strong>${escapeHtml(query)}</strong>"</p>
+                    <p>Try different keywords or check your filters</p>
+                </div>
+            `;
+            return;
+        }
+
+        const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+
+        let html = `
+            <div class="result-count">
+                Found <strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "<strong>${escapeHtml(query)}</strong>"
+            </div>
+        `;
+
+        results.forEach(result => {
+            const highlightedSnippet = highlightTerms(result.snippet, queryTerms);
+            
+            html += `
+                <div class="search-result" data-path="${escapeHtml(result.path)}">
+                    <div class="result-header">
+                        <span class="result-path">${escapeHtml(result.path)}</span>
+                        <span class="result-score">${getCategoryIcon(result.category)} ${result.category}</span>
+                    </div>
+                    <div class="result-snippet">${highlightedSnippet}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Add click handlers
+        container.querySelectorAll('.search-result').forEach(el => {
+            el.addEventListener('click', () => {
+                const path = el.dataset.path;
+                showFileContent(path);
+            });
+        });
+    }
+
+    /**
+     * Highlight search terms in text
+     */
+    function highlightTerms(text, terms) {
+        let result = escapeHtml(text);
+        
+        terms.forEach(term => {
+            const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
+            result = result.replace(regex, '<mark>$1</mark>');
+        });
+        
+        return result;
+    }
+
+    /**
+     * Escape regex special characters
+     */
+    function escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /**
+     * Get category icon
+     */
+    function getCategoryIcon(category) {
+        const icons = {
+            memory: '🧠',
+            tasks: '✅',
+            docs: '📚',
+            root: '📄'
+        };
+        return icons[category] || '📋';
+    }
+
+    /**
+     * Show full file content in modal
+     */
+    function showFileContent(path) {
+        const file = searchIndex.find(f => f.path === path);
+        if (!file) return;
+
+        const modal = document.getElementById('resultModal');
+        const title = document.getElementById('modalTitle');
+        const content = document.getElementById('modalContent');
+        const closeBtn = document.getElementById('closeModal');
+        const backdrop = modal.querySelector('.modal-backdrop');
+
+        if (!modal || !title || !content) return;
+
+        title.textContent = path;
+        content.textContent = file.content || 'No content available';
+        
+        modal.classList.add('open');
+
+        // Close handlers
+        const closeModal = () => modal.classList.remove('open');
+        closeBtn.addEventListener('click', closeModal, { once: true });
+        backdrop.addEventListener('click', closeModal, { once: true });
+        
+        // ESC key
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+
+    /**
+     * Show placeholder when no search query
+     */
+    function showPlaceholder() {
+        const container = document.getElementById('searchResults');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="search-placeholder">
+                <span class="placeholder-emoji">🔍</span>
+                <p>Start typing to search across all files</p>
+                <p class="placeholder-hint">Searches memory/, tasks/, docs/, and root markdown files</p>
+            </div>
+        `;
+    }
+
+    /**
+     * Escape HTML
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * Refresh search index
+     */
+    async function refresh() {
+        searchIndex = [];
+        await init();
+        // Re-run current search if any
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value) {
+            performSearch(searchInput.value);
+        }
+    }
+
+    /**
+     * Clear search
+     */
+    function clear() {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        showPlaceholder();
+    }
+
+    return {
+        init,
+        refresh,
+        clear,
+        performSearch
+    };
+})();
+
+// Export for use in main.js
+window.SearchModule = SearchModule;
