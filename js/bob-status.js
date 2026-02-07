@@ -184,7 +184,7 @@ const BobStatusModule = (function() {
     }
     
     /**
-     * Render compact Bob chips (#2)
+     * Render compact Bob chips with inline expansion (#2)
      */
     function renderChips() {
         const container = document.getElementById('bobSummaryChips');
@@ -192,21 +192,78 @@ const BobStatusModule = (function() {
         
         const bobs = statusData.bobs || [];
         
-        container.innerHTML = bobs.map(bob => `
-            <button class="bob-chip" data-bob="${bob.id}" title="${bob.name} — ${getStatusText(bob.status)}">
-                <span class="bob-chip-emoji">${bob.emoji}</span>
-                <span class="bob-chip-name">${getShortName(bob.name)}</span>
-                <span class="bob-chip-status ${bob.status}"></span>
-            </button>
-        `).join('');
+        container.innerHTML = bobs.map(bob => {
+            const contextPercent = bob.contextPercent || 0;
+            const lastMessage = bob.lastMessage || 'No recent messages';
+            const truncatedMessage = lastMessage.length > 60 
+                ? lastMessage.substring(0, 60) + '...' 
+                : lastMessage;
+            
+            return `
+                <button class="bob-chip" data-bob="${bob.id}" title="${bob.name} — ${getStatusText(bob.status)}">
+                    <div class="bob-chip-main">
+                        <span class="bob-chip-emoji">${bob.emoji}</span>
+                        <span class="bob-chip-name">${getShortName(bob.name)}</span>
+                        <span class="bob-chip-status ${bob.status}"></span>
+                    </div>
+                    <div class="bob-chip-expanded">
+                        <div class="bob-expanded-row">
+                            <span class="bob-expanded-label">Context</span>
+                            <span class="bob-expanded-value">${contextPercent}%</span>
+                        </div>
+                        <div class="bob-last-message">${escapeHtml(truncatedMessage)}</div>
+                        <button class="bob-action-btn" data-action="message" data-bob="${bob.id}" onclick="event.stopPropagation();">
+                            💬 Message
+                        </button>
+                    </div>
+                </button>
+            `;
+        }).join('');
         
-        // Add click handlers
+        // Add click handlers for chip expansion
         container.querySelectorAll('.bob-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const bobId = chip.dataset.bob;
-                openDetailModal(bobId);
+            chip.addEventListener('click', (e) => {
+                // Don't expand if clicking the message button
+                if (e.target.closest('.bob-action-btn')) {
+                    const bobId = e.target.dataset.bob;
+                    handleMessageBob(bobId);
+                    return;
+                }
+                
+                // Toggle expansion
+                const wasExpanded = chip.classList.contains('expanded');
+                
+                // Collapse all other chips
+                container.querySelectorAll('.bob-chip.expanded').forEach(c => {
+                    c.classList.remove('expanded');
+                });
+                
+                // Toggle this chip
+                if (!wasExpanded) {
+                    chip.classList.add('expanded');
+                }
             });
         });
+    }
+    
+    /**
+     * Handle message bob action
+     */
+    function handleMessageBob(bobId) {
+        const bob = statusData?.bobs?.find(b => b.id === bobId);
+        if (!bob) return;
+        
+        // Open the full detail modal with message capabilities
+        openDetailModal(bobId);
+    }
+    
+    /**
+     * Escape HTML to prevent XSS
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     /**
