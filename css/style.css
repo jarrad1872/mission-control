@@ -3599,3 +3599,65 @@ html, body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ===== MOBILE TOUCH TARGET OPTIMIZATIONS ===== */
+@media (max-width: 600px) {
+    /* Ensure minimum 44px touch targets */
+    .btn-refresh,
+    .pwa-install-btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .tab-btn {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+    
+    /* Improve filter selects for touch */
+    .filter-select {
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 16px; /* Prevents iOS zoom */
+    }
+    
+    /* Improve kanban cards for touch */
+    .kanban-card {
+        min-height: 44px;
+    }
+    
+    /* Improve entity items for touch */
+    .entity-item {
+        min-height: 44px;
+        padding: 12px;
+    }
+    
+    /* Prevent horizontal scroll on body */
+    body {
+        overflow-x: hidden;
+    }
+    
+    /* Ensure base font is readable */
+    html {
+        font-size: 16px;
+    }
+    
+    /* Improve small text readability */
+    .timestamp,
+    .meta-text,
+    .bar-label,
+    .model-percentage {
+        font-size: 12px;
+    }
+}
+
+/* Prevent text selection on interactive elements for better touch experience */
+.tab-btn,
+.quick-action-btn,
+.btn-refresh,
+.entity-item,
+.kanban-card {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
