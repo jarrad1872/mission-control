@@ -54,23 +54,48 @@
 
     /**
      * Set up tab navigation
+     * Proper show/hide tab switching with mobile scroll support
      */
     function setupTabs() {
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
+        const mainContent = document.querySelector('.main-content');
+
+        // Ensure initial state: only active tab content is visible
+        tabContents.forEach(content => {
+            if (!content.classList.contains('active')) {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        });
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const tabId = button.dataset.tab;
                 
-                // Update active states
+                // Remove active state from all tabs
                 tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
                 
+                // Hide ALL tab contents explicitly
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+                
+                // Activate clicked tab
                 button.classList.add('active');
+                
+                // Show target content
                 const targetContent = document.getElementById(`${tabId}-tab`);
                 if (targetContent) {
                     targetContent.classList.add('active');
+                    targetContent.style.display = 'block';
+                    
+                    // On mobile, scroll to the main content area for better UX
+                    if (window.innerWidth <= 768 && mainContent) {
+                        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
                 
                 // Focus search input when switching to search tab
