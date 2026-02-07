@@ -1,0 +1,348 @@
+/* ===== PWA Styles ===== */
+
+/* Install Button */
+.pwa-install-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    border: none;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.pwa-install-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
+}
+
+.pwa-install-btn:active {
+    transform: translateY(0);
+}
+
+.pwa-install-btn.hidden {
+    display: none;
+}
+
+.pwa-install-btn.visible {
+    display: flex;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.install-text {
+    display: inline;
+}
+
+@media (max-width: 480px) {
+    .install-text {
+        display: none;
+    }
+    
+    .pwa-install-btn {
+        padding: 10px;
+    }
+}
+
+/* Offline Indicator */
+body.offline::before {
+    content: '📡 You are offline';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #ff4444 0%, #e94560 100%);
+    color: white;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    z-index: 9999;
+    animation: slideDown 0.3s ease;
+}
+
+body.offline .dashboard {
+    margin-top: 36px;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* ===== Touch-Friendly UI Improvements ===== */
+
+/* Minimum 44px touch targets */
+.tab-btn {
+    min-height: 48px;
+    padding: 12px 20px;
+}
+
+.btn,
+.btn-refresh,
+.close-btn,
+.nav-btn,
+.quick-action-btn,
+.filter-select {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.quick-action-btn {
+    min-height: 80px;
+}
+
+/* Improved touch feedback */
+.tab-btn,
+.btn,
+.quick-action-btn,
+.activity-item,
+.search-result,
+.bob-card,
+.calendar-event {
+    -webkit-tap-highlight-color: rgba(233, 69, 96, 0.2);
+    touch-action: manipulation;
+}
+
+/* Active states for touch */
+.tab-btn:active,
+.btn:active,
+.nav-btn:active,
+.quick-action-btn:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+}
+
+/* Larger tap targets for checkboxes */
+.filter-checkbox {
+    padding: 8px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* Touch-friendly scrolling */
+.nav-tabs,
+.activity-list,
+.search-results,
+.calendar-grid {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Prevent text selection on interactive elements */
+.tab-btn,
+.btn,
+.quick-action-btn,
+.bob-card,
+.close-btn {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Better focus states for accessibility */
+.tab-btn:focus-visible,
+.btn:focus-visible,
+.quick-action-btn:focus-visible,
+.filter-select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Remove focus outline on touch devices (visual only, not a11y) */
+@media (hover: none) and (pointer: coarse) {
+    .tab-btn:focus,
+    .btn:focus,
+    .quick-action-btn:focus {
+        outline: none;
+    }
+}
+
+/* ===== Mobile Viewport Fixes ===== */
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .footer {
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    
+    .toast-container {
+        bottom: calc(24px + env(safe-area-inset-bottom));
+    }
+    
+    body.offline::before {
+        padding-top: calc(8px + env(safe-area-inset-top));
+    }
+}
+
+/* Prevent zoom on form inputs on iOS */
+@media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="search"],
+    input[type="number"],
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
+
+/* Improve scroll performance */
+.dashboard,
+.main-content,
+.activity-list,
+.search-results {
+    will-change: scroll-position;
+}
+
+/* ===== Standalone Mode Adjustments ===== */
+
+@media (display-mode: standalone) {
+    /* Hide browser-specific elements */
+    .voice-fallback {
+        display: none;
+    }
+    
+    /* Full height in standalone */
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .dashboard {
+        height: 100%;
+        overflow-y: auto;
+    }
+}
+
+/* iOS Standalone fixes */
+@media (display-mode: standalone) and (-webkit-device-pixel-ratio: 2) {
+    /* Fix for iPhone notch */
+    .header {
+        padding-top: max(20px, env(safe-area-inset-top));
+    }
+}
+
+/* ===== Loading States ===== */
+
+.pwa-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 0.3s ease;
+}
+
+.pwa-loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pwa-loading-icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    animation: pulse 2s infinite;
+}
+
+.pwa-loading-text {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* ===== Swipe Gestures Hint ===== */
+
+.swipe-hint {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.swipe-hint.visible {
+    opacity: 1;
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ===== Pull to Refresh Indicator ===== */
+
+.pull-to-refresh {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 48px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top 0.3s ease;
+    z-index: 100;
+}
+
+.pull-to-refresh.active {
+    top: 20px;
+}
+
+.pull-to-refresh.refreshing svg {
+    animation: spin 1s linear infinite;
+}

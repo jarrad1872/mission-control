@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="720" fill="#0f0f1a"/>
+  
+  <!-- Header bar -->
+  <rect y="0" width="1280" height="72" fill="#1a1a2e"/>
+  
+  <!-- Title -->
+  <text x="64" y="46.800000000000004" font-family="system-ui, sans-serif" font-size="25.200000000000003" font-weight="bold" fill="#ffffff">🎯 Mission Control Dashboard</text>
+  
+  <!-- Cards simulation -->
+  <rect x="38.4" y="108" width="563.2" height="180" rx="12" fill="#1f1f35" stroke="#2a2a40"/>
+  <rect x="678.4000000000001" y="108" width="563.2" height="180" rx="12" fill="#1f1f35" stroke="#2a2a40"/>
+  <rect x="38.4" y="324" width="1203.1999999999998" height="251.99999999999997" rx="12" fill="#1f1f35" stroke="#2a2a40"/>
+  
+  <!-- Accent elements -->
+  <circle cx="128" cy="194.4" r="21.599999999999998" fill="#e94560"/>
+  <circle cx="768" cy="194.4" r="21.599999999999998" fill="#00d26a"/>
+  
+  <!-- Subtitle -->
+  <text x="640" y="669.6" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14.4" fill="#6c6c7c">Bob Collective Command Center</text>
+</svg>

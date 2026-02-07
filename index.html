@@ -2,10 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>🎯 Mission Control — Bob Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Bob Collective Command Center — Monitor, manage, and control your AI assistant collective">
+    <meta name="theme-color" content="#e94560">
+    <meta name="background-color" content="#0f0f1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MissionCtrl">
+    <meta name="application-name" content="Mission Control">
+    <meta name="msapplication-TileColor" content="#e94560">
+    <meta name="msapplication-config" content="icons/browserconfig.xml">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-192.png">
+    
+    <!-- Apple Splash Screens -->
+    <link rel="apple-touch-startup-image" href="icons/icon-512.png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pwa.css">
 </head>
 <body>
     <div class="dashboard">
@@ -35,6 +66,14 @@
                 <span class="tab-icon">📋</span>
                 <span class="tab-label">Activity Feed</span>
             </button>
+            <button class="tab-btn" data-tab="tasks">
+                <span class="tab-icon">✅</span>
+                <span class="tab-label">Tasks</span>
+            </button>
+            <button class="tab-btn" data-tab="analytics">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">Analytics</span>
+            </button>
             <button class="tab-btn" data-tab="calendar">
                 <span class="tab-icon">📅</span>
                 <span class="tab-label">Calendar</span>
@@ -46,6 +85,18 @@
             <button class="tab-btn" data-tab="voice">
                 <span class="tab-icon">🎙️</span>
                 <span class="tab-label">Voice</span>
+            </button>
+            <button class="tab-btn" data-tab="sessions">
+                <span class="tab-icon">📡</span>
+                <span class="tab-label">Sessions</span>
+            </button>
+            <button class="tab-btn" data-tab="memory">
+                <span class="tab-icon">🧠</span>
+                <span class="tab-label">Memory</span>
+            </button>
+            <button class="tab-btn" data-tab="control">
+                <span class="tab-icon">🎮</span>
+                <span class="tab-label">Control</span>
             </button>
         </nav>
 
@@ -117,6 +168,49 @@
                     <div class="loading-spinner">
                         <div class="spinner"></div>
                         <span>Loading activity...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tasks Tab (Kanban Board) -->
+            <section class="tab-content" id="tasks-tab">
+                <div class="section-header">
+                    <h2>📋 Task Board</h2>
+                    <div class="kanban-meta">
+                        <span class="kanban-updated">Updated: <span id="kanbanUpdated">—</span></span>
+                    </div>
+                </div>
+                <div class="kanban-board" id="kanban-board">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading tasks...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Tab -->
+            <section class="tab-content" id="analytics-tab">
+                <div class="section-header">
+                    <h2>📊 Analytics Dashboard</h2>
+                    <div class="filters">
+                        <select id="analyticsRange" class="filter-select">
+                            <option value="7">Last 7 days</option>
+                            <option value="14">Last 14 days</option>
+                            <option value="30">Last 30 days</option>
+                        </select>
+                        <button class="btn-refresh" id="refreshAnalytics" title="Refresh Analytics">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="analytics-container" id="analyticsContainer">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading analytics...</span>
                     </div>
                 </div>
             </section>
@@ -200,6 +294,76 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Sessions Tab -->
+            <section class="tab-content" id="sessions-tab">
+                <div class="sessions-panel">
+                    <div class="sessions-header">
+                        <h2>📡 Active Sessions</h2>
+                        <span class="update-time" id="sessionsUpdateTime">—</span>
+                    </div>
+                    
+                    <div class="sessions-toolbar">
+                        <div class="session-filters">
+                            <button class="filter-btn active" data-session-filter="all">
+                                All <span class="filter-count">0</span>
+                            </button>
+                            <button class="filter-btn" data-session-filter="main">
+                                🎯 Main <span class="filter-count">0</span>
+                            </button>
+                            <button class="filter-btn" data-session-filter="subagent">
+                                🤖 Sub-Bobs <span class="filter-count">0</span>
+                            </button>
+                            <button class="filter-btn" data-session-filter="cron">
+                                ⏰ Cron <span class="filter-count">0</span>
+                            </button>
+                            <button class="filter-btn" data-session-filter="group">
+                                👥 Groups <span class="filter-count">0</span>
+                            </button>
+                        </div>
+                        <div class="session-sort">
+                            <label for="sessionSort">Sort by:</label>
+                            <select id="sessionSort" class="filter-select">
+                                <option value="recent">Most Recent</option>
+                                <option value="tokens">Token Usage</option>
+                                <option value="context">Context %</option>
+                                <option value="name">Name</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="sessions-list" id="sessionsListContainer">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <span>Loading sessions...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Memory Tab (Knowledge Graph Browser) -->
+            <section class="tab-content" id="memory-tab">
+                <div class="memory-browser">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading knowledge graph...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Control Tab (Two-Way Control Panel) -->
+            <section class="tab-content" id="control-tab">
+                <div class="section-header">
+                    <h2>🎮 Command Center</h2>
+                    <p class="section-subtitle">Send commands, create tasks, and trigger actions via the Gateway API</p>
+                </div>
+                <div id="control-panel">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading control panel...</span>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->
@@ -224,6 +388,38 @@
         </div>
     </div>
 
+    <!-- Session History Modal -->
+    <div class="modal" id="sessionHistoryModal">
+        <div class="modal-backdrop" onclick="SessionsModule.closeHistoryModal()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="historyModalTitle">Session History</h3>
+                <button class="close-btn" onclick="SessionsModule.closeHistoryModal()">×</button>
+            </div>
+            <div class="modal-body" id="historyModalContent">
+                <!-- History content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div class="modal" id="taskDetailModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="taskDetailTitle">Task Details</h3>
+                <button class="close-btn">×</button>
+            </div>
+            <div class="modal-body" id="taskDetailContent">
+                <!-- Task details loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- Core Scripts -->
     <script src="js/data.js"></script>
     <script src="js/bob-status.js"></script>
     <script src="js/costs.js"></script>
@@ -232,6 +428,14 @@
     <script src="js/search.js"></script>
     <script src="js/voice.js"></script>
     <script src="js/quick-actions.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/sessions.js"></script>
+    <script src="js/memory-browser.js"></script>
+    <script src="js/kanban.js"></script>
+    <script src="js/control.js"></script>
     <script src="js/main.js"></script>
+    
+    <!-- PWA Support -->
+    <script src="js/pwa.js"></script>
 </body>
 </html>

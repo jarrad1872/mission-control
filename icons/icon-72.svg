@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="72" height="72" fill="#0f0f1a"/>
+  
+  <!-- Outer ring -->
+  <circle cx="36" cy="36" r="32.4" fill="none" stroke="#e94560" stroke-width="2.16"/>
+  
+  <!-- Inner ring -->
+  <circle cx="36" cy="36" r="19.439999999999998" fill="none" stroke="#e94560" stroke-width="1.44" opacity="0.6"/>
+  
+  <!-- Center dot -->
+  <circle cx="36" cy="36" r="4.859999999999999" fill="#e94560"/>
+  
+  <!-- Crosshair lines -->
+  <line x1="36" y1="2.1600000000000015" x2="36" y2="14.94" stroke="#e94560" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="36" y1="69.84" x2="36" y2="57.06000000000001" stroke="#e94560" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="2.1600000000000015" y1="36" x2="14.94" y2="36" stroke="#e94560" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="69.84" y1="36" x2="57.06000000000001" y2="36" stroke="#e94560" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
