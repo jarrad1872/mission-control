@@ -3,27 +3,28 @@
  * Provides offline support and caching for PWA
  */
 
-const CACHE_NAME = 'mission-control-v4';
-const OFFLINE_URL = '/offline.html';
+const CACHE_NAME = 'mission-control-v7';
+const BASE_PATH = '/mission-control';
+const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/offline.html',
-  '/css/style.css',
-  '/js/main.js',
-  '/js/data.js',
-  '/js/bob-status.js',
-  '/js/costs.js',
-  '/js/activity.js',
-  '/js/calendar.js',
-  '/js/search.js',
-  '/js/voice.js',
-  '/js/quick-actions.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/offline.html`,
+  `${BASE_PATH}/css/style.css`,
+  `${BASE_PATH}/js/main.js`,
+  `${BASE_PATH}/js/data.js`,
+  `${BASE_PATH}/js/bob-status.js`,
+  `${BASE_PATH}/js/costs.js`,
+  `${BASE_PATH}/js/activity.js`,
+  `${BASE_PATH}/js/calendar.js`,
+  `${BASE_PATH}/js/search.js`,
+  `${BASE_PATH}/js/voice.js`,
+  `${BASE_PATH}/js/quick-actions.js`,
+  `${BASE_PATH}/manifest.json`,
+  `${BASE_PATH}/icons/icon-192.png`,
+  `${BASE_PATH}/icons/icon-512.png`
 ];
 
 // Install: cache core assets
