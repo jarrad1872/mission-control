@@ -94,14 +94,14 @@
       "name": "Activity Feed",
       "short_name": "Activity",
       "description": "View recent Bob activity",
-      "url": "/?tab=activity",
+      "url": "/mission-control/?tab=activity",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Voice Chat",
-      "short_name": "Voice",
-      "description": "Open ClawChat voice interface",
-      "url": "/?tab=voice",
+      "name": "CFO Center",
+      "short_name": "CFO",
+      "description": "Financial portfolio overview",
+      "url": "/mission-control/?tab=cfo",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
