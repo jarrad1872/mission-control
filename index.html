@@ -60,45 +60,47 @@
             </div>
         </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="activity">
-                <span class="tab-icon">📋</span>
-                <span class="tab-label">Activity Feed</span>
-            </button>
-            <button class="tab-btn" data-tab="tasks">
-                <span class="tab-icon">✅</span>
-                <span class="tab-label">Tasks</span>
-            </button>
-            <button class="tab-btn" data-tab="analytics">
-                <span class="tab-icon">📊</span>
-                <span class="tab-label">Analytics</span>
-            </button>
-            <button class="tab-btn" data-tab="calendar">
-                <span class="tab-icon">📅</span>
-                <span class="tab-label">Calendar</span>
-            </button>
-            <button class="tab-btn" data-tab="search">
-                <span class="tab-icon">🔍</span>
-                <span class="tab-label">Search</span>
-            </button>
-            <button class="tab-btn" data-tab="voice">
-                <span class="tab-icon">🎙️</span>
-                <span class="tab-label">Voice</span>
-            </button>
-            <button class="tab-btn" data-tab="sessions">
-                <span class="tab-icon">📡</span>
-                <span class="tab-label">Sessions</span>
-            </button>
-            <button class="tab-btn" data-tab="memory">
-                <span class="tab-icon">🧠</span>
-                <span class="tab-label">Memory</span>
-            </button>
-            <button class="tab-btn" data-tab="control">
-                <span class="tab-icon">🎮</span>
-                <span class="tab-label">Control</span>
-            </button>
-        </nav>
+        <!-- Navigation Tabs (wrapper for scroll indicators) -->
+        <div class="nav-tabs-wrapper" id="navTabsWrapper">
+            <nav class="nav-tabs" id="navTabs">
+                <button class="tab-btn active" data-tab="activity">
+                    <span class="tab-icon">📋</span>
+                    <span class="tab-label">Activity</span>
+                </button>
+                <button class="tab-btn" data-tab="tasks">
+                    <span class="tab-icon">✅</span>
+                    <span class="tab-label">Tasks</span>
+                </button>
+                <button class="tab-btn" data-tab="analytics">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-label">Stats</span>
+                </button>
+                <button class="tab-btn" data-tab="calendar">
+                    <span class="tab-icon">📅</span>
+                    <span class="tab-label">Calendar</span>
+                </button>
+                <button class="tab-btn" data-tab="search">
+                    <span class="tab-icon">🔍</span>
+                    <span class="tab-label">Search</span>
+                </button>
+                <button class="tab-btn" data-tab="voice">
+                    <span class="tab-icon">🎙️</span>
+                    <span class="tab-label">Voice</span>
+                </button>
+                <button class="tab-btn" data-tab="sessions">
+                    <span class="tab-icon">📡</span>
+                    <span class="tab-label">Sessions</span>
+                </button>
+                <button class="tab-btn" data-tab="memory">
+                    <span class="tab-icon">🧠</span>
+                    <span class="tab-label">Memory</span>
+                </button>
+                <button class="tab-btn" data-tab="control">
+                    <span class="tab-icon">🎮</span>
+                    <span class="tab-label">Control</span>
+                </button>
+            </nav>
+        </div>
 
         <!-- Bob Status Panel -->
         <section class="bob-status-panel">

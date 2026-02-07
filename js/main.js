@@ -53,6 +53,42 @@
     }
 
     /**
+     * Set up tab scroll indicators for mobile
+     */
+    function setupTabScrollIndicators() {
+        const wrapper = document.getElementById('navTabsWrapper');
+        const navTabs = document.getElementById('navTabs');
+        
+        if (!wrapper || !navTabs) return;
+        
+        function updateScrollIndicators() {
+            const scrollLeft = navTabs.scrollLeft;
+            const maxScroll = navTabs.scrollWidth - navTabs.clientWidth;
+            
+            // Show/hide left indicator
+            if (scrollLeft > 5) {
+                wrapper.classList.add('can-scroll-left');
+            } else {
+                wrapper.classList.remove('can-scroll-left');
+            }
+            
+            // Show/hide right indicator
+            if (scrollLeft < maxScroll - 5) {
+                wrapper.classList.add('can-scroll-right');
+            } else {
+                wrapper.classList.remove('can-scroll-right');
+            }
+        }
+        
+        // Check on scroll
+        navTabs.addEventListener('scroll', updateScrollIndicators);
+        
+        // Initial check and on resize
+        updateScrollIndicators();
+        window.addEventListener('resize', updateScrollIndicators);
+    }
+
+    /**
      * Set up tab navigation
      * Proper show/hide tab switching with mobile scroll support
      */
@@ -60,6 +96,9 @@
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         const mainContent = document.querySelector('.main-content');
+        
+        // Set up scroll indicators for mobile
+        setupTabScrollIndicators();
 
         // Ensure initial state: only active tab content is visible
         tabContents.forEach(content => {
