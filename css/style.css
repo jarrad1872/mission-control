@@ -2211,3 +2211,456 @@ html, body {
         right: -400px;
     }
 }
+
+/* ===== CFO CENTER STYLES ===== */
+.cfo-container {
+    padding: 12px;
+}
+
+.cfo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.cfo-header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cfo-header-title h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.cfo-updated {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.cfo-refresh-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cfo-refresh-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
+.cfo-refresh-btn.spinning svg {
+    animation: spin 1s linear infinite;
+}
+
+/* Portfolio Overview Card */
+.cfo-portfolio-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.portfolio-health {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.health-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.health-indicator {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.portfolio-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.portfolio-stat {
+    text-align: center;
+}
+
+.portfolio-stat .stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.portfolio-stat .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.portfolio-debt {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+}
+
+.debt-label {
+    color: var(--text-muted);
+}
+
+.debt-value {
+    color: var(--warning);
+    font-weight: 600;
+}
+
+/* Section Styling */
+.cfo-section {
+    margin-bottom: 20px;
+}
+
+.cfo-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+/* Company Cards Grid */
+.cfo-companies-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Company Card */
+.cfo-company-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--company-color, var(--accent));
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.cfo-company-card:hover {
+    border-color: var(--company-color, var(--accent));
+    background: var(--bg-hover);
+}
+
+.cfo-company-card.expanded {
+    border-color: var(--company-color, var(--accent));
+}
+
+.company-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.company-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.company-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.company-name-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.company-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.company-status {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.company-revenue {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.company-card-metrics {
+    display: flex;
+    gap: 16px;
+    padding: 0 12px 10px 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+}
+
+.company-card-metrics .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.company-card-metrics .metric-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.company-card-metrics .metric-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.company-card-metrics .metric-value.negative {
+    color: var(--accent);
+}
+
+.company-card-expand {
+    text-align: center;
+    padding: 4px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-secondary);
+}
+
+/* Expanded Card Content */
+.company-card-expanded {
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+}
+
+.expanded-section {
+    margin-bottom: 12px;
+}
+
+.expanded-section:last-child {
+    margin-bottom: 0;
+}
+
+.expanded-section h4 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.expanded-section p {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.key-facts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.key-facts-list li {
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+}
+
+.key-facts-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--info);
+}
+
+.company-alerts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.company-alerts-list li {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 4px;
+}
+
+.company-alerts-list li.alert-warning {
+    background: rgba(255, 193, 7, 0.15);
+    color: var(--warning);
+}
+
+.company-alerts-list li.alert-critical {
+    background: rgba(233, 69, 96, 0.15);
+    color: var(--accent);
+}
+
+/* Alerts Section */
+.cfo-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cfo-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.cfo-alert.alert-critical {
+    border-left: 3px solid var(--accent);
+    background: rgba(233, 69, 96, 0.08);
+}
+
+.cfo-alert.alert-warning {
+    border-left: 3px solid var(--warning);
+    background: rgba(255, 193, 7, 0.08);
+}
+
+.cfo-alert.alert-info {
+    border-left: 3px solid var(--info);
+    background: rgba(78, 205, 196, 0.08);
+}
+
+.alert-icon {
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.alert-message {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.alert-company {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+}
+
+/* Quick Actions */
+.cfo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cfo-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.cfo-action-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+}
+
+.cfo-action-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.cfo-action-btn.primary:hover {
+    background: var(--accent-hover);
+}
+
+.action-icon {
+    font-size: 1.25rem;
+}
+
+.action-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* CFO Desktop Adjustments */
+@media (min-width: 768px) {
+    .cfo-container {
+        padding: 20px;
+    }
+    
+    .portfolio-stats {
+        gap: 24px;
+    }
+    
+    .cfo-companies-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .cfo-actions {
+        flex-direction: row;
+    }
+    
+    .cfo-action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}

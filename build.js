@@ -1091,6 +1091,304 @@ function parseTaskFile(content, filename, stats) {
     };
 }
 
+/**
+ * Generate cfo.json from /life/areas/companies/
+ * Aggregates financial data for the CFO dashboard
+ */
+function generateCFOData() {
+    console.log('💰 Generating CFO data...');
+    
+    const companiesDir = path.join(CLAWD_ROOT, 'life', 'areas', 'companies');
+    
+    // Company configuration with financial defaults
+    const COMPANY_CONFIG = {
+        'kippen-concrete': { 
+            order: 1,
+            defaultRevenue: 5000000,
+            defaultStatus: 'profitable',
+            defaultGrossMargin: 45
+        },
+        'kippen-excavation': { 
+            order: 2,
+            defaultRevenue: 2000000,
+            defaultStatus: 'profitable',
+            defaultGrossMargin: 35
+        },
+        'dmi-tools': { 
+            order: 3,
+            defaultRevenue: 946000,
+            defaultStatus: 'losing',
+            defaultGrossMargin: -7.6
+        },
+        'roc-diamond': { 
+            order: 4,
+            defaultRevenue: 0,
+            defaultStatus: 'debt-holder',
+            defaultDebt: 1200000
+        },
+        'kippen-leasing': { 
+            order: 5,
+            defaultRevenue: 0,
+            defaultStatus: 'inactive'
+        },
+        'sawdot-city': { 
+            order: 6,
+            defaultRevenue: 0,
+            defaultStatus: 'software'
+        },
+        'calvin-kippen-properties': { 
+            order: 7,
+            defaultRevenue: 0,
+            defaultStatus: 'inactive'
+        },
+        'cj-kippen-properties': { 
+            order: 8,
+            defaultRevenue: 0,
+            defaultStatus: 'inactive'
+        },
+        'durno': { 
+            order: 9,
+            defaultRevenue: 0,
+            defaultStatus: 'inactive'
+        }
+    };
+    
+    const companies = [];
+    const alerts = [];
+    let totalRevenue = 0;
+    let totalDebt = 0;
+    let profitableCount = 0;
+    let needsAttentionCount = 0;
+    
+    try {
+        if (!fs.existsSync(companiesDir)) {
+            console.log('   ⚠️ Companies directory not found');
+            return generateCFODataFallback();
+        }
+        
+        // Get all company directories
+        const companyDirs = fs.readdirSync(companiesDir)
+            .filter(f => {
+                const fullPath = path.join(companiesDir, f);
+                return fs.statSync(fullPath).isDirectory() && !f.startsWith('{');
+            });
+        
+        console.log(`   - Found ${companyDirs.length} companies`);
+        
+        companyDirs.forEach(companyId => {
+            const companyDir = path.join(companiesDir, companyId);
+            const summaryPath = path.join(companyDir, 'summary.md');
+            const itemsPath = path.join(companyDir, 'items.json');
+            
+            const config = COMPANY_CONFIG[companyId] || { order: 99 };
+            
+            let summary = '';
+            let facts = [];
+            let revenue = config.defaultRevenue || 0;
+            let status = config.defaultStatus || 'inactive';
+            let grossMargin = config.defaultGrossMargin;
+            let debt = config.defaultDebt;
+            let cashStatus = null;
+            const keyFacts = [];
+            const companyAlerts = [];
+            
+            // Read summary.md
+            try {
+                if (fs.existsSync(summaryPath)) {
+                    summary = fs.readFileSync(summaryPath, 'utf8');
+                    
+                    // Extract first paragraph as summary text
+                    const summaryMatch = summary.match(/## Overview\n+(.+?)(?=\n#|\n\n)/s);
+                    if (summaryMatch) {
+                        summary = summaryMatch[1].trim();
+                    }
+                }
+            } catch (e) { /* ignore */ }
+            
+            // Read items.json and extract financial data
+            try {
+                if (fs.existsSync(itemsPath)) {
+                    const itemsContent = fs.readFileSync(itemsPath, 'utf8');
+                    facts = JSON.parse(itemsContent);
+                    if (!Array.isArray(facts)) facts = [];
+                    
+                    // Extract financial facts
+                    facts.forEach(fact => {
+                        const text = fact.fact.toLowerCase();
+                        
+                        // Revenue extraction - look specifically for dollar amounts
+                        if (text.includes('revenue') || (text.includes('gross') && !text.includes('margin'))) {
+                            // Look for patterns like $5M, $946K, ~$5M, $1.5M
+                            const revenueMatch = fact.fact.match(/~?\$\s*([\d,.]+)\s*(m|k|million|thousand)?/i);
+                            if (revenueMatch) {
+                                let val = parseFloat(revenueMatch[1].replace(/,/g, ''));
+                                const unit = (revenueMatch[2] || '').toLowerCase();
+                                if (unit === 'm' || unit === 'million') val *= 1000000;
+                                else if (unit === 'k' || unit === 'thousand') val *= 1000;
+                                if (val > revenue) revenue = val; // Only update if larger (take max revenue mentioned)
+                            }
+                            keyFacts.push(fact.fact);
+                        }
+                        
+                        // Margin extraction - look for percentage patterns
+                        if (text.includes('margin')) {
+                            const marginMatch = fact.fact.match(/(-?[\d.]+)\s*%/);
+                            if (marginMatch) {
+                                grossMargin = parseFloat(marginMatch[1]);
+                            }
+                            keyFacts.push(fact.fact);
+                        }
+                        
+                        // Debt extraction
+                        if (text.includes('debt') || text.includes('loan')) {
+                            const debtMatch = fact.fact.match(/\$?([\d,.]+)\s*(m|k|million|thousand)?/i);
+                            if (debtMatch) {
+                                let val = parseFloat(debtMatch[1].replace(/,/g, ''));
+                                const unit = (debtMatch[2] || '').toLowerCase();
+                                if (unit === 'm' || unit === 'million') val *= 1000000;
+                                else if (unit === 'k' || unit === 'thousand') val *= 1000;
+                                if (val > 0) debt = val;
+                            }
+                            keyFacts.push(fact.fact);
+                        }
+                        
+                        // Status extraction
+                        if (text.includes('losing money') || text.includes('negative margin')) {
+                            status = 'losing';
+                        } else if (text.includes('profitable') && status !== 'losing') {
+                            status = 'profitable';
+                        }
+                        
+                        // Cash alerts
+                        if (text.includes('cash') && (text.includes('low') || text.includes('burn'))) {
+                            cashStatus = 'Low';
+                            companyAlerts.push({
+                                severity: 'warning',
+                                message: fact.fact
+                            });
+                        }
+                        
+                        // Important milestones or facts
+                        if (fact.category === 'milestone' || text.includes('pipeline') || text.includes('critical')) {
+                            keyFacts.push(fact.fact);
+                        }
+                    });
+                }
+            } catch (e) { 
+                console.error(`   ⚠️ Could not parse items.json for ${companyId}:`, e.message);
+            }
+            
+            // Determine cash status based on company situation
+            if (!cashStatus) {
+                if (status === 'losing') {
+                    cashStatus = 'Low';
+                } else if (status === 'profitable') {
+                    cashStatus = 'OK';
+                }
+            }
+            
+            // Update totals
+            totalRevenue += revenue;
+            if (debt) totalDebt += debt;
+            if (status === 'profitable') profitableCount++;
+            if (status === 'losing' || status === 'debt-holder') needsAttentionCount++;
+            
+            // Add global alerts for critical companies
+            if (status === 'losing' && revenue > 0) {
+                alerts.push({
+                    severity: 'critical',
+                    message: `${companyId.replace(/-/g, ' ')} is losing money`,
+                    company: companyId
+                });
+            }
+            
+            // Build company object
+            companies.push({
+                id: companyId,
+                name: companyId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                revenue: revenue,
+                status: status,
+                grossMargin: grossMargin,
+                cashStatus: cashStatus,
+                debt: debt,
+                summary: summary.substring(0, 200),
+                keyFacts: keyFacts.slice(0, 5),
+                alerts: companyAlerts,
+                order: config.order || 99
+            });
+            
+            console.log(`   - ${companyId}: ${status} | Revenue: $${revenue.toLocaleString()}`);
+        });
+        
+    } catch (e) {
+        console.error('   ⚠️ Error generating CFO data:', e.message);
+        return generateCFODataFallback();
+    }
+    
+    // Sort companies by order
+    companies.sort((a, b) => a.order - b.order);
+    
+    // Determine overall portfolio health
+    let portfolioHealth = 'good';
+    if (needsAttentionCount > 0) portfolioHealth = 'watch';
+    if (needsAttentionCount > 1 || alerts.some(a => a.severity === 'critical')) portfolioHealth = 'concern';
+    
+    const data = {
+        generated: GENERATED,
+        portfolio: {
+            health: portfolioHealth,
+            totalRevenue: totalRevenue,
+            totalDebt: totalDebt,
+            profitable: profitableCount,
+            needsAttention: needsAttentionCount,
+            companyCount: companies.length
+        },
+        companies: companies,
+        alerts: alerts
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'cfo.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`   ✅ cfo.json generated (${companies.length} companies)`);
+    console.log(`      Total Revenue: $${totalRevenue.toLocaleString()} | Health: ${portfolioHealth}`);
+    return data;
+}
+
+/**
+ * Fallback CFO data if generation fails
+ */
+function generateCFODataFallback() {
+    console.log('   ⚠️ Using CFO fallback data');
+    
+    const data = {
+        generated: GENERATED,
+        portfolio: {
+            health: 'unknown',
+            totalRevenue: 0,
+            totalDebt: 0,
+            profitable: 0,
+            needsAttention: 0,
+            companyCount: 0
+        },
+        companies: [],
+        alerts: [{
+            severity: 'warning',
+            message: 'Could not load company data',
+            company: null
+        }]
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'cfo.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    return data;
+}
+
 // Run all generators
 console.log('');
 generateBobStatus();
@@ -1104,6 +1402,8 @@ console.log('');
 generateTasksBoard();
 console.log('');
 generateMemoryTree();
+console.log('');
+generateCFOData();
 console.log('');
 generateSearchIndex();
 console.log('');

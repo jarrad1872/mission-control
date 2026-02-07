@@ -36,6 +36,7 @@
                 SessionsModule.init(),
                 KanbanModule.init(),
                 MemoryBrowser.init(),
+                CFOModule?.init?.(),
                 ControlModule?.init?.()
             ]);
             
@@ -232,7 +233,8 @@
                     CalendarModule.refresh(),
                     SearchModule.refresh(),
                     KanbanModule.refresh(),
-                    MemoryBrowser.refresh()
+                    MemoryBrowser.refresh(),
+                    CFOModule?.refresh?.()
                 ]);
                 
                 updateStatus('online');
@@ -291,6 +293,7 @@
         DataModule,
         KanbanModule,
         MemoryBrowser,
+        CFOModule,
         ControlModule
     };
 })();
