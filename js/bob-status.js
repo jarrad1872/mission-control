@@ -44,10 +44,11 @@ const BobStatusModule = (function() {
         // Make header clickable
         header.style.cursor = 'pointer';
         
-        // Add click handlers
+        // Add click handlers - both header and toggle button trigger collapse
         header.addEventListener('click', toggleCollapse);
         toggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent double-trigger
+            e.stopPropagation(); // Prevent double-trigger from header
+            toggleCollapse();    // Actually toggle the panel
         });
     }
     

@@ -1078,6 +1078,19 @@ html, body {
     margin-top: 0;
 }
 
+/* Hide the grid when collapsed too */
+.bob-status-grid {
+    overflow: hidden;
+    max-height: 2000px;
+    opacity: 1;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.bob-status-panel.collapsed .bob-status-grid {
+    max-height: 0;
+    opacity: 0;
+}
+
 .bob-status-header h2 {
     font-size: 1.125rem;
     font-weight: 600;
