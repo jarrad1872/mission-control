@@ -30,8 +30,11 @@ const PWA = {
     }
     
     try {
-      this.swRegistration = await navigator.serviceWorker.register('/service-worker.js', {
-        scope: '/'
+      // Use relative path for GitHub Pages subdirectory deployment
+      const swPath = './service-worker.js';
+      const swScope = './';
+      this.swRegistration = await navigator.serviceWorker.register(swPath, {
+        scope: swScope
       });
       
       console.log('[PWA] Service worker registered:', this.swRegistration.scope);

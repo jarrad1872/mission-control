@@ -1,6 +1,6 @@
 {
-  "generated": "2026-02-07T07:18:25.278Z",
-  "lastUpdate": "2026-02-07T07:18:25.278Z",
+  "generated": "2026-02-07T07:30:52.338Z",
+  "lastUpdate": "2026-02-07T07:30:52.338Z",
   "bobs": [
     {
       "id": "main",
@@ -9,8 +9,8 @@
       "channel": "telegram",
       "description": "Primary orchestrator",
       "status": "active",
-      "lastActivity": "2026-02-06T18:18:25.278Z",
-      "contextPercent": 64
+      "lastActivity": "2026-02-07T04:30:52.338Z",
+      "contextPercent": 76
     },
     {
       "id": "kcc",
@@ -19,8 +19,8 @@
       "channel": "telegram",
       "description": "Kippen Concrete & Construction",
       "status": "idle",
-      "lastActivity": "2026-02-07T07:18:25.278Z",
-      "contextPercent": 8
+      "lastActivity": "2026-02-06T09:30:52.338Z",
+      "contextPercent": 4
     },
     {
       "id": "dmi",
@@ -29,8 +29,8 @@
       "channel": "telegram",
       "description": "DMI Tools Corp",
       "status": "active",
-      "lastActivity": "2026-02-06T10:18:25.278Z",
-      "contextPercent": 36
+      "lastActivity": "2026-02-06T14:30:52.338Z",
+      "contextPercent": 63
     },
     {
       "id": "personal",
@@ -38,9 +38,9 @@
       "emoji": "🏠",
       "channel": "whatsapp",
       "description": "Personal assistant",
-      "status": "idle",
-      "lastActivity": "2026-02-07T01:18:25.278Z",
-      "contextPercent": 26
+      "status": "active",
+      "lastActivity": "2026-02-06T11:30:52.338Z",
+      "contextPercent": 61
     },
     {
       "id": "sawdot",
@@ -49,8 +49,8 @@
       "channel": "telegram",
       "description": "SawDot operations",
       "status": "idle",
-      "lastActivity": "2026-02-06T12:18:25.278Z",
-      "contextPercent": 10
+      "lastActivity": "2026-02-06T20:30:52.338Z",
+      "contextPercent": 9
     },
     {
       "id": "mrbex",
@@ -58,9 +58,9 @@
       "emoji": "🎬",
       "channel": "telegram",
       "description": "MrBex content",
-      "status": "active",
-      "lastActivity": "2026-02-06T18:18:25.278Z",
-      "contextPercent": 68
+      "status": "idle",
+      "lastActivity": "2026-02-07T05:30:52.338Z",
+      "contextPercent": 27
     }
   ]
 }
