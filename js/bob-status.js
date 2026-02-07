@@ -9,6 +9,7 @@ const BobStatusModule = (function() {
     
     const REFRESH_INTERVAL = 30000; // 30 seconds
     const DATA_URL = 'data/bob-status.json';
+    const STORAGE_KEY = 'bobStatusCollapsed';
     
     let refreshTimer = null;
     let statusData = null;
@@ -19,10 +20,65 @@ const BobStatusModule = (function() {
     async function init() {
         console.log('👥 Bob Status Module initializing...');
         
+        // Setup collapse/expand functionality
+        setupCollapseToggle();
+        
+        // Restore collapsed state from localStorage
+        restoreCollapsedState();
+        
         await refresh();
         startAutoRefresh();
         
         console.log('✅ Bob Status Module ready');
+    }
+    
+    /**
+     * Setup collapse toggle button
+     */
+    function setupCollapseToggle() {
+        const header = document.getElementById('bobStatusHeader');
+        const toggle = document.getElementById('bobStatusToggle');
+        
+        if (!header || !toggle) return;
+        
+        // Make header clickable
+        header.style.cursor = 'pointer';
+        
+        // Add click handlers
+        header.addEventListener('click', toggleCollapse);
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent double-trigger
+        });
+    }
+    
+    /**
+     * Toggle panel collapse state
+     */
+    function toggleCollapse() {
+        const panel = document.querySelector('.bob-status-panel');
+        if (!panel) return;
+        
+        const isCollapsed = panel.classList.toggle('collapsed');
+        
+        // Save state to localStorage
+        localStorage.setItem(STORAGE_KEY, isCollapsed ? 'true' : 'false');
+        
+        console.log(`📊 Bob Status Panel ${isCollapsed ? 'collapsed' : 'expanded'}`);
+    }
+    
+    /**
+     * Restore collapsed state from localStorage
+     */
+    function restoreCollapsedState() {
+        const panel = document.querySelector('.bob-status-panel');
+        if (!panel) return;
+        
+        const isCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
+        
+        if (isCollapsed) {
+            panel.classList.add('collapsed');
+            console.log('📊 Bob Status Panel restored as collapsed');
+        }
     }
     
     /**

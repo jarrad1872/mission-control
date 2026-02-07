@@ -102,8 +102,15 @@
 
         <!-- Bob Status Panel -->
         <section class="bob-status-panel">
-            <div class="bob-status-header">
+            <div class="bob-status-header" id="bobStatusHeader">
                 <h2>👥 Bob Collective Status</h2>
+                <button class="collapse-toggle" id="bobStatusToggle" title="Collapse/Expand" aria-label="Toggle Bob Status Panel">
+                    <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="bob-status-content">
                 <div class="bob-status-meta">
                     <div class="status-summary" id="bobStatusSummary">
                         <span class="status-count"><span class="dot active"></span> <span id="activeCount">0</span> active</span>
@@ -118,6 +125,7 @@
                     <div class="spinner"></div>
                     <span>Loading Bob status...</span>
                 </div>
+            </div>
             </div>
         </section>
 

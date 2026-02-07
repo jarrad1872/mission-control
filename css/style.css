@@ -1015,6 +1015,11 @@ html, body {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
+    transition: padding 0.3s ease;
+}
+
+.bob-status-panel.collapsed {
+    padding-bottom: 20px;
 }
 
 .bob-status-header {
@@ -1022,6 +1027,55 @@ html, body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s ease;
+}
+
+.bob-status-header:hover {
+    opacity: 0.85;
+}
+
+.collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.collapse-toggle:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
+.collapse-toggle .chevron {
+    transition: transform 0.3s ease;
+}
+
+.bob-status-panel.collapsed .collapse-toggle .chevron {
+    transform: rotate(-90deg);
+}
+
+.bob-status-content {
+    overflow: hidden;
+    max-height: 2000px;
+    opacity: 1;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.bob-status-panel.collapsed .bob-status-content {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
 }
 
 .bob-status-header h2 {
