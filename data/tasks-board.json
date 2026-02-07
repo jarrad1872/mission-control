@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-07T08:02:13.653Z",
+  "generated": "2026-02-07T15:00:02.540Z",
   "columns": {
     "todo": [
       {
@@ -17,6 +17,18 @@
     ],
     "inProgress": [
       {
+        "title": "Mission Control Overnight Polish",
+        "status": "in-progress",
+        "priority": "high",
+        "assignee": "** Personal Bob",
+        "created": "2026-02-07T08:21:00.000Z",
+        "due": null,
+        "objective": "Complete Mission Control UX overhaul while Jarrad sleeps. Deliver a polished, native-feeling mobile app.",
+        "notes": "- Jarrad went to bed ~08:21 UTC",
+        "file": "tasks/task-mc-overnight-polish.md",
+        "id": "task-3"
+      },
+      {
         "title": "Mission Control v2 — Master Tracker",
         "status": "in-progress",
         "priority": "medium",
@@ -26,7 +38,7 @@
         "objective": null,
         "notes": null,
         "file": "tasks/task-mc-v2-master.md",
-        "id": "task-3"
+        "id": "task-4"
       },
       {
         "title": "Voice Chat Setup (ClawChat)",
@@ -38,7 +50,7 @@
         "objective": "Set up real-time voice chat with Bob via browser.",
         "notes": null,
         "file": "tasks/task-voice-chat-setup.md",
-        "id": "task-8"
+        "id": "task-9"
       }
     ],
     "complete": [
@@ -64,7 +76,7 @@
         "objective": "Deploy the Mission Control dashboard to GitHub Pages for remote access.",
         "notes": null,
         "file": "tasks/task-mission-control-deploy.md",
-        "id": "task-5"
+        "id": "task-6"
       },
       {
         "title": "Mission Control Dashboard",
@@ -76,7 +88,7 @@
         "objective": "Build a Mission Control dashboard with 3 core features:",
         "notes": null,
         "file": "tasks/task-mission-control-dashboard.md",
-        "id": "task-4"
+        "id": "task-5"
       },
       {
         "title": "Quick Wins Implementation",
@@ -88,7 +100,7 @@
         "objective": "Implement the P0 quick wins from the system analysis to fix orchestration behavior.",
         "notes": null,
         "file": "tasks/task-quick-wins-impl.md",
-        "id": "task-18"
+        "id": "task-19"
       },
       {
         "title": "OpenClaw/Clawdbot System Analysis",
@@ -100,7 +112,7 @@
         "objective": "Analyze the OpenClaw + Clawdbot setup to identify what's been going wrong (reliability, memory, prompts, routing/models, infra, integrations), find root causes, and deliver an actionable improvement p",
         "notes": "- Analysis only — no implementation done",
         "file": "tasks/task-system-analysis.md",
-        "id": "task-7"
+        "id": "task-8"
       },
       {
         "title": "Core Shooter Sprint",
@@ -124,7 +136,7 @@
         "objective": "Implement hard rules for Bob Collective orchestration pattern: Bobs must delegate to sub-agents, never execute directly. Include recovery protocol for context compaction.",
         "notes": "- This is meta-proof: using the pattern to implement the pattern",
         "file": "tasks/task-orchestration-rules.md",
-        "id": "task-6"
+        "id": "task-7"
       },
       {
         "title": "Mission Control Arena — Optimum Agent Setup",
@@ -136,7 +148,7 @@
         "objective": "Analyze @pbteja1998's Mission Control guide and determine the optimum agent setup for Jarrad's needs.",
         "notes": "This is a meta-task: we're analyzing how we should work, not doing external work.",
         "file": "tasks/task-mission-control-arena.md",
-        "id": "task-14"
+        "id": "task-15"
       },
       {
         "title": "Mission Control Upgrade",
@@ -148,7 +160,7 @@
         "objective": "Implement Mission Control patterns from the article into Bob Collective.",
         "notes": "Based on: https://x.com/pbteja1998/status/2017662163540971756",
         "file": "tasks/task-mission-control-upgrade.md",
-        "id": "task-15"
+        "id": "task-16"
       },
       {
         "title": "ClawChat Voice Setup",
@@ -160,7 +172,7 @@
         "objective": "Get real-time voice chat working so Jarrad can talk to Bob hands-free.",
         "notes": null,
         "file": "tasks/task-clawchat-voice.md",
-        "id": "task-9"
+        "id": "task-10"
       },
       {
         "title": "Mobile Metrics Access (PWA + Twilio SMS)",
@@ -172,7 +184,7 @@
         "objective": "Make metrics dashboard accessible from mobile with home screen pin, plus optional SMS alerts via Twilio.",
         "notes": "- Twilio credentials saved in gateway config for future use",
         "file": "tasks/task-mobile-metrics-access.md",
-        "id": "task-16"
+        "id": "task-17"
       },
       {
         "title": "Build Measurement Infrastructure",
@@ -184,7 +196,7 @@
         "objective": "Build the dashboards, logs, and metrics that make testing routine — so we know if Bob Collective, Arena, and memory systems are actually working.",
         "notes": null,
         "file": "tasks/task-measurement-infrastructure.md",
-        "id": "task-13"
+        "id": "task-14"
       },
       {
         "title": "FSM Competitor Deep Research — Cenpoint & DSM",
@@ -196,7 +208,7 @@
         "objective": "Deep-dive research on Cenpoint and DSM — the two FSM platforms currently serving ~500 concrete cutting customers. These are Saw.City's lowest-hanging fruit for conversion.",
         "notes": "- ~500 combined customers = Saw.City's target market",
         "file": "tasks/task-fsm-competitor-research.md",
-        "id": "task-11"
+        "id": "task-12"
       },
       {
         "title": "DMI Games Blitz — Fix & Polish While Jarrad Flies",
@@ -208,7 +220,7 @@
         "objective": "Fix the failing Vercel deployments AND improve Heat Runner visual quality. Deliver a playable game that passes the \"Contractor Test\" — would you send this to a contractor saying \"check this out while ",
         "notes": "Arena Session defined \"Sensory Checklists\" for what makes games feel good:",
         "file": "tasks/task-dmi-games-blitz.md",
-        "id": "task-10"
+        "id": "task-11"
       },
       {
         "title": "Notify Bob Collective About Task File System",
@@ -220,7 +232,7 @@
         "objective": "Inform all Bobs about the new mandatory task file system.",
         "notes": "Jarrad on plane to Hawaii. Quick sync while in flight.",
         "file": "tasks/task-notify-bobs-task-system.md",
-        "id": "task-17"
+        "id": "task-18"
       },
       {
         "title": "Implement Task File System",
@@ -232,14 +244,14 @@
         "objective": "Create mandatory task file workflow to conquer compaction.",
         "notes": "This is the first task file. Meta! The pattern: write the plan, then execute.",
         "file": "tasks/task-implement-task-system.md",
-        "id": "task-12"
+        "id": "task-13"
       }
     ]
   },
   "stats": {
     "todo": 1,
-    "inProgress": 2,
+    "inProgress": 3,
     "complete": 16,
-    "total": 19
+    "total": 20
   }
 }

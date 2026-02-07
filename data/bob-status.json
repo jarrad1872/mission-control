@@ -1,6 +1,6 @@
 {
-  "generated": "2026-02-07T08:02:13.655Z",
-  "lastUpdate": "2026-02-07T08:02:13.655Z",
+  "generated": "2026-02-07T15:00:02.541Z",
+  "lastUpdate": "2026-02-07T15:00:02.541Z",
   "source": "real",
   "bobs": [
     {
@@ -9,11 +9,11 @@
       "emoji": "🎯",
       "channel": "whatsapp",
       "description": "Primary orchestrator",
-      "status": "active",
-      "lastActivity": "2026-02-07T08:00:33.526Z",
-      "contextPercent": 70,
+      "status": "idle",
+      "lastActivity": "2026-02-07T14:07:21.566Z",
+      "contextPercent": 72,
       "model": "claude-opus-4-5",
-      "totalTokens": 140827,
+      "totalTokens": 143406,
       "contextTokens": 200000,
       "sessionId": "03cb269c-09b0-490f-b66a-af018b7dee7c"
     },
@@ -52,10 +52,10 @@
       "channel": "telegram",
       "description": "Personal assistant",
       "status": "active",
-      "lastActivity": "2026-02-07T07:59:14.064Z",
-      "contextPercent": 48,
+      "lastActivity": "2026-02-07T14:55:46.257Z",
+      "contextPercent": 82,
       "model": "claude-opus-4-5",
-      "totalTokens": 96340,
+      "totalTokens": 163122,
       "contextTokens": 200000,
       "sessionId": "ba6169d4-71e7-48d3-9aea-d63bd3fbb296"
     },
@@ -93,11 +93,11 @@
       "emoji": "🎬",
       "channel": "telegram",
       "description": "MrBex content",
-      "status": "active",
-      "lastActivity": "2026-02-07T08:01:53.981Z",
-      "contextPercent": 43,
+      "status": "offline",
+      "lastActivity": "2026-02-07T08:08:21.802Z",
+      "contextPercent": 55,
       "model": "claude-opus-4-5",
-      "totalTokens": 86459,
+      "totalTokens": 109145,
       "contextTokens": 200000,
       "sessionId": "039d146b-ec4f-4d7c-b876-b0625c6967eb"
     }
