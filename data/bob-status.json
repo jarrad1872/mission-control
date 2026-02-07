@@ -1,0 +1,66 @@
+{
+  "generated": "2026-02-07T07:06:09.544Z",
+  "lastUpdate": "2026-02-07T07:06:09.544Z",
+  "bobs": [
+    {
+      "id": "main",
+      "name": "Main Bob",
+      "emoji": "🎯",
+      "channel": "telegram",
+      "description": "Primary orchestrator",
+      "status": "idle",
+      "lastActivity": "2026-02-06T14:06:09.544Z",
+      "contextPercent": 14
+    },
+    {
+      "id": "kcc",
+      "name": "KCC Bob",
+      "emoji": "🏗️",
+      "channel": "telegram",
+      "description": "Kippen Concrete & Construction",
+      "status": "active",
+      "lastActivity": "2026-02-06T14:06:09.544Z",
+      "contextPercent": 24
+    },
+    {
+      "id": "dmi",
+      "name": "DMI Bob",
+      "emoji": "🔧",
+      "channel": "telegram",
+      "description": "DMI Tools Corp",
+      "status": "idle",
+      "lastActivity": "2026-02-07T02:06:09.544Z",
+      "contextPercent": 14
+    },
+    {
+      "id": "personal",
+      "name": "Personal Bob",
+      "emoji": "🏠",
+      "channel": "whatsapp",
+      "description": "Personal assistant",
+      "status": "idle",
+      "lastActivity": "2026-02-07T02:06:09.544Z",
+      "contextPercent": 28
+    },
+    {
+      "id": "sawdot",
+      "name": "SawDot Bob",
+      "emoji": "🪚",
+      "channel": "telegram",
+      "description": "SawDot operations",
+      "status": "active",
+      "lastActivity": "2026-02-06T19:06:09.544Z",
+      "contextPercent": 64
+    },
+    {
+      "id": "mrbex",
+      "name": "MrBex Bob",
+      "emoji": "🎬",
+      "channel": "telegram",
+      "description": "MrBex content",
+      "status": "idle",
+      "lastActivity": "2026-02-06T23:06:09.544Z",
+      "contextPercent": 28
+    }
+  ]
+}

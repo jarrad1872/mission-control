@@ -21,10 +21,16 @@
         // Initialize all modules
         try {
             await Promise.all([
+                BobStatusModule.init(),
+                CostsModule.init(),
                 ActivityModule.init(),
                 CalendarModule.init(),
-                SearchModule.init()
+                SearchModule.init(),
+                VoiceModule.init()
             ]);
+            
+            // Update Bob status summary counts
+            updateBobStatusSummary();
             
             // Update status
             updateStatus('online', 'Data loaded');
@@ -88,10 +94,15 @@
             try {
                 await DataModule.refresh();
                 await Promise.all([
+                    BobStatusModule.refresh(),
+                    CostsModule.refresh(),
                     ActivityModule.refresh(),
                     CalendarModule.refresh(),
                     SearchModule.refresh()
                 ]);
+                
+                // Update Bob status summary
+                updateBobStatusSummary();
                 
                 const metadata = await DataModule.getMetadata();
                 if (metadata && metadata.lastUpdated) {
@@ -143,6 +154,21 @@
         });
     }
 
+    /**
+     * Update Bob status summary counts in the header
+     */
+    function updateBobStatusSummary() {
+        const counts = BobStatusModule.getStatusCounts();
+        
+        const activeEl = document.getElementById('activeCount');
+        const idleEl = document.getElementById('idleCount');
+        const errorEl = document.getElementById('errorCount');
+        
+        if (activeEl) activeEl.textContent = counts.active || 0;
+        if (idleEl) idleEl.textContent = counts.idle || 0;
+        if (errorEl) errorEl.textContent = counts.error || 0;
+    }
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -155,9 +181,12 @@
         refresh: async () => {
             document.getElementById('refreshBtn')?.click();
         },
+        BobStatusModule,
+        CostsModule,
         ActivityModule,
         CalendarModule,
         SearchModule,
+        VoiceModule,
         DataModule
     };
 })();

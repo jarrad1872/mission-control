@@ -428,7 +428,67 @@ function generateSearchIndex() {
     return data;
 }
 
+/**
+ * Generate bob-status.json
+ * TODO: In future, call sessions_list API to get real status
+ */
+function generateBobStatus() {
+    console.log('👥 Generating Bob status...');
+    
+    const now = new Date().toISOString();
+    
+    // Bob Collective configuration - update when adding/removing Bobs
+    const bobConfigs = [
+        { id: 'main', name: 'Main Bob', emoji: '🎯', channel: 'telegram', description: 'Primary orchestrator' },
+        { id: 'kcc', name: 'KCC Bob', emoji: '🏗️', channel: 'telegram', description: 'Kippen Concrete & Construction' },
+        { id: 'dmi', name: 'DMI Bob', emoji: '🔧', channel: 'telegram', description: 'DMI Tools Corp' },
+        { id: 'personal', name: 'Personal Bob', emoji: '🏠', channel: 'whatsapp', description: 'Personal assistant' },
+        { id: 'sawdot', name: 'SawDot Bob', emoji: '🪚', channel: 'telegram', description: 'SawDot operations' },
+        { id: 'mrbex', name: 'MrBex Bob', emoji: '🎬', channel: 'telegram', description: 'MrBex content' }
+    ];
+    
+    // TODO: Replace mock data with real session data from API
+    // For now, generate plausible mock status
+    const bobs = bobConfigs.map(config => {
+        // Randomize status for demo
+        const statuses = ['idle', 'idle', 'idle', 'active', 'active'];
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        
+        // Generate recent-ish last activity
+        const hoursAgo = Math.floor(Math.random() * 24);
+        const lastActivity = new Date(Date.now() - hoursAgo * 3600000).toISOString();
+        
+        // Random context percentage
+        const contextPercent = status === 'active' 
+            ? Math.floor(Math.random() * 60) + 20  // 20-80% if active
+            : Math.floor(Math.random() * 30);       // 0-30% if idle
+        
+        return {
+            ...config,
+            status,
+            lastActivity,
+            contextPercent
+        };
+    });
+    
+    const data = {
+        generated: now,
+        lastUpdate: now,
+        bobs
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'bob-status.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`   ✅ bob-status.json generated (${bobs.length} Bobs)`);
+    return data;
+}
+
 // Run all generators
+console.log('');
+generateBobStatus();
 console.log('');
 generateActivity();
 console.log('');
