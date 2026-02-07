@@ -1,0 +1,99 @@
+{
+  "lastUpdate": "2026-02-07T12:00:00Z",
+  "sessions": [
+    {
+      "key": "agent:main:telegram:group:-1001234567890:topic:1",
+      "kind": "main",
+      "channel": "telegram",
+      "model": "claude-opus-4-5",
+      "totalTokens": 125000,
+      "contextPercent": 62,
+      "lastMessage": "Just finished updating the Mission Control dashboard",
+      "lastMessageTime": "2026-02-07T11:55:00Z",
+      "messageCount": 47
+    },
+    {
+      "key": "agent:main:whatsapp:personal:+1234567890",
+      "kind": "main",
+      "channel": "whatsapp",
+      "model": "claude-opus-4-5",
+      "totalTokens": 45000,
+      "contextPercent": 22,
+      "lastMessage": "Good morning! Calendar checked, no urgent emails",
+      "lastMessageTime": "2026-02-07T09:00:00Z",
+      "messageCount": 12
+    },
+    {
+      "key": "agent:main:subagent:abc123-def456",
+      "kind": "subagent",
+      "channel": "internal",
+      "model": "claude-opus-4-5",
+      "totalTokens": 32000,
+      "contextPercent": 16,
+      "lastMessage": "Session viewer implementation complete",
+      "lastMessageTime": "2026-02-07T11:30:00Z",
+      "messageCount": 8,
+      "parentSession": "agent:main:telegram:group:-1001234567890:topic:1",
+      "label": "mc-sessions"
+    },
+    {
+      "key": "agent:cron:daily-standup",
+      "kind": "cron",
+      "channel": "telegram",
+      "model": "claude-sonnet-4-5",
+      "totalTokens": 8500,
+      "contextPercent": 4,
+      "lastMessage": "Daily standup posted to Topic 1",
+      "lastMessageTime": "2026-02-06T23:00:00Z",
+      "messageCount": 3,
+      "schedule": "0 23 * * *"
+    },
+    {
+      "key": "agent:main:telegram:group:-1002345678901",
+      "kind": "group",
+      "channel": "telegram",
+      "model": "claude-opus-4-5",
+      "totalTokens": 78000,
+      "contextPercent": 39,
+      "lastMessage": "Reviewed the KCC invoices",
+      "lastMessageTime": "2026-02-07T10:15:00Z",
+      "messageCount": 28
+    },
+    {
+      "key": "agent:main:subagent:xyz789-uvw012",
+      "kind": "subagent",
+      "channel": "internal",
+      "model": "claude-sonnet-4-5",
+      "totalTokens": 18000,
+      "contextPercent": 9,
+      "lastMessage": "Cost analysis complete",
+      "lastMessageTime": "2026-02-07T08:45:00Z",
+      "messageCount": 5,
+      "parentSession": "agent:main:telegram:group:-1001234567890:topic:1",
+      "label": "mc-cost-tracker"
+    },
+    {
+      "key": "agent:cron:heartbeat-morning",
+      "kind": "cron",
+      "channel": "telegram",
+      "model": "claude-sonnet-4-5",
+      "totalTokens": 12000,
+      "contextPercent": 6,
+      "lastMessage": "Morning heartbeat: 3 emails, 2 calendar events",
+      "lastMessageTime": "2026-02-07T09:00:00Z",
+      "messageCount": 4,
+      "schedule": "0 9 * * *"
+    },
+    {
+      "key": "agent:main:telegram:dm:12345678",
+      "kind": "dm",
+      "channel": "telegram",
+      "model": "claude-opus-4-5",
+      "totalTokens": 5200,
+      "contextPercent": 3,
+      "lastMessage": "Thanks for the quick fix!",
+      "lastMessageTime": "2026-02-06T18:30:00Z",
+      "messageCount": 6
+    }
+  ]
+}

@@ -1,8 +1,32 @@
 {
-  "generated": "2026-02-07T07:07:09.272Z",
+  "generated": "2026-02-07T07:18:25.276Z",
   "items": [
     {
       "id": "commit-0",
+      "type": "commit",
+      "timestamp": "2026-02-07T07:16:16.000Z",
+      "title": "feat(mc): real-time activity feed",
+      "source": "git",
+      "hash": "e78eb35"
+    },
+    {
+      "id": "commit-1",
+      "type": "commit",
+      "timestamp": "2026-02-07T07:15:46.000Z",
+      "title": "feat: spawn all 11 Mission Control v2 sub-Bobs - full parallel execution",
+      "source": "git",
+      "hash": "7e51468"
+    },
+    {
+      "id": "commit-2",
+      "type": "commit",
+      "timestamp": "2026-02-07T07:12:40.000Z",
+      "title": "docs: mark avatars complete - stop other Bobs from revisiting",
+      "source": "git",
+      "hash": "c5bfc2d"
+    },
+    {
+      "id": "commit-3",
       "type": "commit",
       "timestamp": "2026-02-07T07:06:31.000Z",
       "title": "feat(mc): add quick actions panel",
@@ -10,7 +34,7 @@
       "hash": "d2171ba"
     },
     {
-      "id": "commit-1",
+      "id": "commit-4",
       "type": "commit",
       "timestamp": "2026-02-07T07:05:51.000Z",
       "title": "feat(mc): add ClawChat voice embed",
@@ -18,7 +42,7 @@
       "hash": "9d1c535"
     },
     {
-      "id": "commit-2",
+      "id": "commit-5",
       "type": "commit",
       "timestamp": "2026-02-07T06:35:09.000Z",
       "title": "milestone: ClawChat + Avatars complete, Mission Control deployed",
@@ -26,7 +50,7 @@
       "hash": "9785598"
     },
     {
-      "id": "commit-3",
+      "id": "commit-6",
       "type": "commit",
       "timestamp": "2026-02-07T06:19:10.000Z",
       "title": "feat: Mission Control dashboard v1",
@@ -34,7 +58,7 @@
       "hash": "30f9d8e"
     },
     {
-      "id": "commit-4",
+      "id": "commit-7",
       "type": "commit",
       "timestamp": "2026-02-07T06:16:16.000Z",
       "title": "Install last30days skill for Reddit + X research (flat, no submodule)",
@@ -42,7 +66,7 @@
       "hash": "0e55c03"
     },
     {
-      "id": "commit-5",
+      "id": "commit-8",
       "type": "commit",
       "timestamp": "2026-02-07T06:16:12.000Z",
       "title": "Install last30days skill for Reddit + X research",
@@ -50,7 +74,7 @@
       "hash": "0f83886"
     },
     {
-      "id": "commit-6",
+      "id": "commit-9",
       "type": "commit",
       "timestamp": "2026-02-07T03:03:36.000Z",
       "title": "Arena 2026-02-07: Halfway Hawaii Review - utilization gap identified",
@@ -58,7 +82,7 @@
       "hash": "09f1588"
     },
     {
-      "id": "commit-7",
+      "id": "commit-10",
       "type": "commit",
       "timestamp": "2026-02-06T20:51:49.000Z",
       "title": "Rollback Opus 4.6 - not yet supported in Clawdbot",
@@ -66,7 +90,7 @@
       "hash": "03e369e"
     },
     {
-      "id": "commit-8",
+      "id": "commit-11",
       "type": "commit",
       "timestamp": "2026-02-05T19:32:35.000Z",
       "title": "Upgrade to Claude Opus 4.6",
@@ -74,7 +98,7 @@
       "hash": "5a4179a"
     },
     {
-      "id": "commit-9",
+      "id": "commit-12",
       "type": "commit",
       "timestamp": "2026-02-05T17:02:41.000Z",
       "title": "nightly-build: update logs for session management docs",
@@ -82,7 +106,7 @@
       "hash": "19838a9"
     },
     {
-      "id": "commit-10",
+      "id": "commit-13",
       "type": "commit",
       "timestamp": "2026-02-05T17:02:17.000Z",
       "title": "nightly-build: session management quick reference",
@@ -90,7 +114,7 @@
       "hash": "03d4466"
     },
     {
-      "id": "commit-11",
+      "id": "commit-14",
       "type": "commit",
       "timestamp": "2026-02-05T09:13:14.000Z",
       "title": "Add QMD memory evaluation research",
@@ -106,7 +130,7 @@
       "file": "task-quick-wins-impl.md"
     },
     {
-      "id": "commit-12",
+      "id": "commit-15",
       "type": "commit",
       "timestamp": "2026-02-05T08:34:03.000Z",
       "title": "feat: implement P0 quick wins from system analysis",
@@ -114,7 +138,7 @@
       "hash": "f2092af"
     },
     {
-      "id": "commit-13",
+      "id": "commit-16",
       "type": "commit",
       "timestamp": "2026-02-05T08:13:56.000Z",
       "title": "Add OpenClaw framework context to Unbrowse research",
@@ -122,7 +146,7 @@
       "hash": "af1bc62"
     },
     {
-      "id": "commit-14",
+      "id": "commit-17",
       "type": "commit",
       "timestamp": "2026-02-05T07:37:21.000Z",
       "title": "Add Unbrowse to research radar",
@@ -130,7 +154,7 @@
       "hash": "41e9fbd"
     },
     {
-      "id": "commit-15",
+      "id": "commit-18",
       "type": "commit",
       "timestamp": "2026-02-05T05:02:03.000Z",
       "title": "Complete 5/5 Arena commitments - accountability rule works",
@@ -146,7 +170,7 @@
       "file": "2026-02-05.md"
     },
     {
-      "id": "commit-16",
+      "id": "commit-19",
       "type": "commit",
       "timestamp": "2026-02-05T04:03:15.000Z",
       "title": "Enforce accountability rule: spawn sub-agents for Arena commitments",
@@ -170,7 +194,7 @@
       "file": "2026-02-05.md"
     },
     {
-      "id": "commit-17",
+      "id": "commit-20",
       "type": "commit",
       "timestamp": "2026-02-04T17:01:51.000Z",
       "title": "nightly-build: document health check tool",
@@ -178,7 +202,7 @@
       "hash": "4cffba0"
     },
     {
-      "id": "commit-18",
+      "id": "commit-21",
       "type": "commit",
       "timestamp": "2026-02-04T17:01:18.000Z",
       "title": "nightly-build: system health check diagnostic tool",
@@ -194,7 +218,7 @@
       "file": "task-arena-decisions-2026-02-04.md"
     },
     {
-      "id": "commit-19",
+      "id": "commit-22",
       "type": "commit",
       "timestamp": "2026-02-04T03:03:20.000Z",
       "title": "Arena 2026-02-04: Add failure reports, pre-flight checklist, two-failure rule",
@@ -218,7 +242,7 @@
       "file": "task-bob-avatars.md"
     },
     {
-      "id": "commit-20",
+      "id": "commit-23",
       "type": "commit",
       "timestamp": "2026-02-03T17:02:22.000Z",
       "title": "nightly-build: log comprehensive bash aliases system",
@@ -226,7 +250,7 @@
       "hash": "93be135"
     },
     {
-      "id": "commit-21",
+      "id": "commit-24",
       "type": "commit",
       "timestamp": "2026-02-03T17:01:48.000Z",
       "title": "nightly-build: add Bob-specific bash aliases for faster operations",
@@ -242,7 +266,7 @@
       "file": "2026-02-03.md"
     },
     {
-      "id": "commit-22",
+      "id": "commit-25",
       "type": "commit",
       "timestamp": "2026-02-03T09:43:42.000Z",
       "title": "Arena Session 5: Emergent Capabilities - Predictions, Not Just Tests",
@@ -250,7 +274,7 @@
       "hash": "c4561a7"
     },
     {
-      "id": "commit-23",
+      "id": "commit-26",
       "type": "commit",
       "timestamp": "2026-02-03T09:36:34.000Z",
       "title": "Log Core Shooter deployment",
@@ -258,7 +282,7 @@
       "hash": "09530b5"
     },
     {
-      "id": "commit-24",
+      "id": "commit-27",
       "type": "commit",
       "timestamp": "2026-02-03T09:36:15.000Z",
       "title": "Core Shooter deployed - ready for playtest 3 days early",
@@ -266,7 +290,7 @@
       "hash": "e9c891e"
     },
     {
-      "id": "commit-25",
+      "id": "commit-28",
       "type": "commit",
       "timestamp": "2026-02-03T09:30:39.000Z",
       "title": "Session 3 complete, Session 4 spawned - core loop working",
@@ -274,7 +298,7 @@
       "hash": "b408446"
     },
     {
-      "id": "commit-26",
+      "id": "commit-29",
       "type": "commit",
       "timestamp": "2026-02-03T09:26:13.000Z",
       "title": "Session 2 complete (45 min), Session 3 spawned - ahead of schedule",
@@ -282,7 +306,7 @@
       "hash": "9c49d20"
     },
     {
-      "id": "commit-27",
+      "id": "commit-30",
       "type": "commit",
       "timestamp": "2026-02-03T09:21:16.000Z",
       "title": "Session 1 complete, Session 2 spawned",
@@ -290,7 +314,7 @@
       "hash": "e200e92"
     },
     {
-      "id": "commit-28",
+      "id": "commit-31",
       "type": "commit",
       "timestamp": "2026-02-03T09:18:32.000Z",
       "title": "Add Core Shooter sprint task and log Arena session",
@@ -298,7 +322,7 @@
       "hash": "09429c6"
     },
     {
-      "id": "commit-29",
+      "id": "commit-32",
       "type": "commit",
       "timestamp": "2026-02-03T09:17:58.000Z",
       "title": "Arena: DMI Games enters execution mode",
@@ -314,7 +338,7 @@
       "file": "2026-02-03.md"
     },
     {
-      "id": "commit-30",
+      "id": "commit-33",
       "type": "commit",
       "timestamp": "2026-02-03T08:03:35.000Z",
       "title": "Arena Session 5: Memory Architecture - Consolidation & Access",
@@ -322,7 +346,7 @@
       "hash": "a04a60c"
     },
     {
-      "id": "commit-31",
+      "id": "commit-34",
       "type": "commit",
       "timestamp": "2026-02-03T07:34:31.000Z",
       "title": "Add Execution Guard to prevent Law 1 violations",
@@ -346,7 +370,7 @@
       "file": "task-clawchat-bob-integration.md"
     },
     {
-      "id": "commit-32",
+      "id": "commit-35",
       "type": "commit",
       "timestamp": "2026-02-02T17:01:05.000Z",
       "title": "nightly-build: update friction log and build log",
@@ -354,7 +378,7 @@
       "hash": "d8ac724"
     },
     {
-      "id": "commit-33",
+      "id": "commit-36",
       "type": "commit",
       "timestamp": "2026-02-02T17:00:48.000Z",
       "title": "nightly-build: add browser proxy troubleshooting playbook",
@@ -362,7 +386,7 @@
       "hash": "75944e0"
     },
     {
-      "id": "commit-34",
+      "id": "commit-37",
       "type": "commit",
       "timestamp": "2026-02-02T10:08:10.000Z",
       "title": "Arena: Blind Spots Session 4 - Arena-to-action gap confirmed, structural fix implemented",
@@ -370,7 +394,7 @@
       "hash": "0b4dac0"
     },
     {
-      "id": "commit-35",
+      "id": "commit-38",
       "type": "commit",
       "timestamp": "2026-02-02T09:18:44.000Z",
       "title": "Arena session: DMI Games production pipeline & studio architecture",
@@ -386,7 +410,7 @@
       "file": "2026-02-02.md"
     },
     {
-      "id": "commit-36",
+      "id": "commit-39",
       "type": "commit",
       "timestamp": "2026-02-02T08:53:32.000Z",
       "title": "Add Bob Collective requirement to ClawChat Voice",
@@ -402,7 +426,7 @@
       "file": "task-clawchat-voice.md"
     },
     {
-      "id": "commit-37",
+      "id": "commit-40",
       "type": "commit",
       "timestamp": "2026-02-02T08:51:50.000Z",
       "title": "ClawChat Voice MVP - STT+LLM working, TTS needs debug",
@@ -410,7 +434,7 @@
       "hash": "11c5589"
     },
     {
-      "id": "commit-38",
+      "id": "commit-41",
       "type": "commit",
       "timestamp": "2026-02-02T08:02:52.000Z",
       "title": "Arena Session 4: Memory Architecture - Implementation Validated",
@@ -418,7 +442,7 @@
       "hash": "c9f256f"
     },
     {
-      "id": "commit-39",
+      "id": "commit-42",
       "type": "commit",
       "timestamp": "2026-02-02T07:54:15.000Z",
       "title": "ClawChat: Created project manifest and spawned agents",
@@ -426,7 +450,7 @@
       "hash": "a7608b2"
     },
     {
-      "id": "commit-40",
+      "id": "commit-43",
       "type": "commit",
       "timestamp": "2026-02-02T07:45:30.000Z",
       "title": "ClawChat: Voice chat setup",
@@ -450,7 +474,7 @@
       "file": "2026-02-02.md"
     },
     {
-      "id": "commit-41",
+      "id": "commit-44",
       "type": "commit",
       "timestamp": "2026-02-02T01:20:19.000Z",
       "title": "Mission Control upgrade: WORKING.md, @mentions, daily standup",
@@ -482,7 +506,7 @@
       "file": "task-mobile-metrics-access.md"
     },
     {
-      "id": "commit-42",
+      "id": "commit-45",
       "type": "commit",
       "timestamp": "2026-02-01T23:30:23.000Z",
       "title": "Add Twilio SMS utility",
@@ -490,7 +514,7 @@
       "hash": "0254019"
     },
     {
-      "id": "commit-43",
+      "id": "commit-46",
       "type": "commit",
       "timestamp": "2026-02-01T23:05:54.000Z",
       "title": "Measurement Infrastructure: COMPLETE",
@@ -506,7 +530,7 @@
       "file": "task-measurement-infrastructure.md"
     },
     {
-      "id": "commit-44",
+      "id": "commit-47",
       "type": "commit",
       "timestamp": "2026-02-01T23:03:02.000Z",
       "title": "Spawn measurement infrastructure agents",
@@ -514,7 +538,7 @@
       "hash": "6f628a0"
     },
     {
-      "id": "commit-45",
+      "id": "commit-48",
       "type": "commit",
       "timestamp": "2026-02-01T23:01:03.000Z",
       "title": "Build measurement infrastructure foundation",
@@ -522,7 +546,7 @@
       "hash": "8d35711"
     },
     {
-      "id": "commit-46",
+      "id": "commit-49",
       "type": "commit",
       "timestamp": "2026-02-01T22:56:02.000Z",
       "title": "Commit FSM research to memory + notify Telegram",
@@ -538,7 +562,7 @@
       "file": "task-fsm-competitor-research.md"
     },
     {
-      "id": "commit-47",
+      "id": "commit-50",
       "type": "commit",
       "timestamp": "2026-02-01T21:45:59.000Z",
       "title": "FSM Competitor Research: COMPLETE",
@@ -546,7 +570,7 @@
       "hash": "d3d37fe"
     },
     {
-      "id": "commit-48",
+      "id": "commit-51",
       "type": "commit",
       "timestamp": "2026-02-01T21:40:08.000Z",
       "title": "Launch FSM competitor research swarm: Cenpoint & DSM",
@@ -554,7 +578,7 @@
       "hash": "f76ce49"
     },
     {
-      "id": "commit-49",
+      "id": "commit-52",
       "type": "commit",
       "timestamp": "2026-02-01T20:05:06.000Z",
       "title": "DMI Games Blitz: COMPLETE - 3 agents delivered in parallel",
@@ -570,7 +594,7 @@
       "file": "task-dmi-games-blitz.md"
     },
     {
-      "id": "commit-50",
+      "id": "commit-53",
       "type": "commit",
       "timestamp": "2026-02-01T19:57:15.000Z",
       "title": "DMI Games Blitz: 3 agents deployed in parallel",
@@ -578,7 +602,7 @@
       "hash": "9420a80"
     },
     {
-      "id": "commit-51",
+      "id": "commit-54",
       "type": "commit",
       "timestamp": "2026-02-01T19:54:16.000Z",
       "title": "Notify Bob Collective about mandatory task file system",
@@ -594,7 +618,7 @@
       "file": "task-notify-bobs-task-system.md"
     },
     {
-      "id": "commit-52",
+      "id": "commit-55",
       "type": "commit",
       "timestamp": "2026-02-01T19:51:35.000Z",
       "title": "chore: update collective scratchpad with 2nd brain system",
@@ -610,7 +634,7 @@
       "file": "task-implement-task-system.md"
     },
     {
-      "id": "commit-53",
+      "id": "commit-56",
       "type": "commit",
       "timestamp": "2026-02-01T19:47:16.000Z",
       "title": "Implement mandatory task file system for compaction resilience",
@@ -618,7 +642,7 @@
       "hash": "04913ad"
     },
     {
-      "id": "commit-54",
+      "id": "commit-57",
       "type": "commit",
       "timestamp": "2026-02-01T19:43:20.000Z",
       "title": "docs: second brain system documentation",
@@ -626,7 +650,7 @@
       "hash": "df8613a"
     },
     {
-      "id": "commit-55",
+      "id": "commit-58",
       "type": "commit",
       "timestamp": "2026-02-01T19:42:41.000Z",
       "title": "feat: 2nd brain workflows - email triage, weekly review, morning briefing",
@@ -634,7 +658,7 @@
       "hash": "22d655c"
     },
     {
-      "id": "commit-56",
+      "id": "commit-59",
       "type": "commit",
       "timestamp": "2026-02-01T19:10:13.000Z",
       "title": "feat: 2nd brain foundation - knowledge graph, entity system, fact tools",
@@ -642,7 +666,7 @@
       "hash": "b0028d5"
     },
     {
-      "id": "commit-57",
+      "id": "commit-60",
       "type": "commit",
       "timestamp": "2026-02-01T19:06:50.000Z",
       "title": "Update gemini-image-gen skill with Imagen 4.0",
@@ -650,7 +674,7 @@
       "hash": "e87fbf5"
     },
     {
-      "id": "commit-58",
+      "id": "commit-61",
       "type": "commit",
       "timestamp": "2026-02-01T17:01:54.000Z",
       "title": "docs: update nightly build log for 2026-02-01",
@@ -658,7 +682,7 @@
       "hash": "8d62257"
     },
     {
-      "id": "commit-59",
+      "id": "commit-62",
       "type": "commit",
       "timestamp": "2026-02-01T17:01:33.000Z",
       "title": "nightly-build: quick reference cheat sheet for common operations",
@@ -674,7 +698,7 @@
       "file": "2026-02-01.md"
     },
     {
-      "id": "commit-60",
+      "id": "commit-63",
       "type": "commit",
       "timestamp": "2026-02-01T08:52:53.000Z",
       "title": "Arena Session 3: Human-AI Collaboration - scaling vs growth, co-evolution",
@@ -690,7 +714,7 @@
       "file": "2026-02-01.md"
     },
     {
-      "id": "commit-61",
+      "id": "commit-64",
       "type": "commit",
       "timestamp": "2026-02-01T08:02:53.000Z",
       "title": "Arena Session 3: Memory Architecture - implementation push",
@@ -698,7 +722,7 @@
       "hash": "166cb5e"
     },
     {
-      "id": "commit-62",
+      "id": "commit-65",
       "type": "commit",
       "timestamp": "2026-02-01T01:48:02.000Z",
       "title": "Autonomous mode: collective sync, updated scratchpad with DMI financials",
@@ -706,7 +730,7 @@
       "hash": "5deb432"
     },
     {
-      "id": "commit-63",
+      "id": "commit-66",
       "type": "commit",
       "timestamp": "2026-02-01T01:37:05.000Z",
       "title": "RED ALERT RESOLVED: BobCollective is alive, Moltbook has platform bug",
@@ -714,7 +738,7 @@
       "hash": "487f84b"
     },
     {
-      "id": "commit-64",
+      "id": "commit-67",
       "type": "commit",
       "timestamp": "2026-02-01T01:28:54.000Z",
       "title": "Family names: Nichole, Bexley, Indie",
@@ -722,7 +746,7 @@
       "hash": "e6920fc"
     },
     {
-      "id": "commit-65",
+      "id": "commit-68",
       "type": "commit",
       "timestamp": "2026-02-01T01:28:33.000Z",
       "title": "Complete ChatGPT context import - travel, goals, agent instructions",
@@ -730,7 +754,7 @@
       "hash": "4273d99"
     },
     {
-      "id": "commit-66",
+      "id": "commit-69",
       "type": "commit",
       "timestamp": "2026-02-01T01:27:48.000Z",
       "title": "Memory import from ChatGPT - family details, personal context, working style",
@@ -738,7 +762,7 @@
       "hash": "5e27533"
     },
     {
-      "id": "commit-67",
+      "id": "commit-70",
       "type": "commit",
       "timestamp": "2026-01-31T22:51:14.000Z",
       "title": "🔑 Recovered @wienerarms X account for OG Bob",
@@ -746,7 +770,7 @@
       "hash": "7ef6cb2"
     },
     {
-      "id": "commit-68",
+      "id": "commit-71",
       "type": "commit",
       "timestamp": "2026-01-31T22:12:55.000Z",
       "title": "Full laptop control achieved - exec permissions, Claude Code CLI, Hawaii ready",
@@ -754,7 +778,7 @@
       "hash": "60ed9bb"
     },
     {
-      "id": "commit-69",
+      "id": "commit-72",
       "type": "commit",
       "timestamp": "2026-01-31T21:30:20.000Z",
       "title": "🦞 Moltbook mission: every heartbeat, get OG Bob registered",
@@ -762,7 +786,7 @@
       "hash": "708ab93"
     },
     {
-      "id": "commit-70",
+      "id": "commit-73",
       "type": "commit",
       "timestamp": "2026-01-31T17:33:42.000Z",
       "title": "🧠 Implement Project Manifests system for compaction recovery",
@@ -770,7 +794,7 @@
       "hash": "39b3148"
     },
     {
-      "id": "commit-71",
+      "id": "commit-74",
       "type": "commit",
       "timestamp": "2026-01-31T17:00:43.000Z",
       "title": "nightly-build: updated logs and friction tracking",
@@ -778,7 +802,7 @@
       "hash": "781690e"
     },
     {
-      "id": "commit-72",
+      "id": "commit-75",
       "type": "commit",
       "timestamp": "2026-01-31T17:00:21.000Z",
       "title": "nightly-build: added email signatures for 5 business accounts",
@@ -786,7 +810,7 @@
       "hash": "f8eef70"
     },
     {
-      "id": "commit-73",
+      "id": "commit-76",
       "type": "commit",
       "timestamp": "2026-01-31T09:19:56.000Z",
       "title": "Arena: Add multi-model perspectives to DMI Games synthesis",
@@ -794,7 +818,7 @@
       "hash": "a5a49a2"
     },
     {
-      "id": "commit-74",
+      "id": "commit-77",
       "type": "commit",
       "timestamp": "2026-01-31T09:18:34.000Z",
       "title": "Arena: DMI Games build flow - production pipeline defined",
@@ -802,7 +826,7 @@
       "hash": "cafc92d"
     },
     {
-      "id": "commit-75",
+      "id": "commit-78",
       "type": "commit",
       "timestamp": "2026-01-31T08:03:13.000Z",
       "title": "Arena session 2: Memory Architecture - Compaction solution",
@@ -810,7 +834,7 @@
       "hash": "f1c6727"
     },
     {
-      "id": "commit-76",
+      "id": "commit-79",
       "type": "commit",
       "timestamp": "2026-01-31T07:47:06.000Z",
       "title": "🦞 BobCollective verified on Moltbook - created @ToolsDmi account, updated BOBS.md, HEARTBEAT.md, arena structure",
@@ -818,7 +842,7 @@
       "hash": "0423176"
     },
     {
-      "id": "commit-77",
+      "id": "commit-80",
       "type": "commit",
       "timestamp": "2026-01-31T04:57:41.000Z",
       "title": "memory: Hawaii prep - laptop online, passwords in managed browser",
@@ -826,7 +850,7 @@
       "hash": "e108be8"
     },
     {
-      "id": "commit-78",
+      "id": "commit-81",
       "type": "commit",
       "timestamp": "2026-01-30T22:15:18.000Z",
       "title": "docs: update node setup for Tailscale (no more SSH tunnels)",
@@ -834,7 +858,7 @@
       "hash": "f77d696"
     },
     {
-      "id": "commit-79",
+      "id": "commit-82",
       "type": "commit",
       "timestamp": "2026-01-30T17:01:02.000Z",
       "title": "nightly-build: updated friction log and documented first build",
@@ -842,7 +866,7 @@
       "hash": "98419de"
     },
     {
-      "id": "commit-80",
+      "id": "commit-83",
       "type": "commit",
       "timestamp": "2026-01-30T17:00:41.000Z",
       "title": "nightly-build: added shell aliases for faster workspace navigation",
@@ -850,7 +874,7 @@
       "hash": "425086c"
     },
     {
-      "id": "commit-81",
+      "id": "commit-84",
       "type": "commit",
       "timestamp": "2026-01-30T16:54:05.000Z",
       "title": "docs: Add DMI Sales Maker / Command Center tracking",
@@ -858,7 +882,7 @@
       "hash": "2ff2124"
     },
     {
-      "id": "commit-82",
+      "id": "commit-85",
       "type": "commit",
       "timestamp": "2026-01-30T15:35:00.000Z",
       "title": "HEARTBEAT: Moltbook check every heartbeat (mandatory)",
@@ -866,7 +890,7 @@
       "hash": "833776d"
     },
     {
-      "id": "commit-83",
+      "id": "commit-86",
       "type": "commit",
       "timestamp": "2026-01-30T08:59:47.000Z",
       "title": "Arena session 3: Human-AI Collaboration - established core frameworks (unoptimized generalist, adaptive boundaries, management by exception)",
@@ -874,7 +898,7 @@
       "hash": "56b5645"
     },
     {
-      "id": "commit-84",
+      "id": "commit-87",
       "type": "commit",
       "timestamp": "2026-01-30T08:02:31.000Z",
       "title": "Arena session 1: Memory Architecture - established foundational framework",
@@ -882,7 +906,7 @@
       "hash": "18ed3cf"
     },
     {
-      "id": "commit-85",
+      "id": "commit-88",
       "type": "commit",
       "timestamp": "2026-01-30T03:42:43.000Z",
       "title": "Add Moltbook engagement guidelines to HEARTBEAT.md",
@@ -890,7 +914,7 @@
       "hash": "addd5c2"
     },
     {
-      "id": "commit-86",
+      "id": "commit-89",
       "type": "commit",
       "timestamp": "2026-01-30T02:35:37.000Z",
       "title": "Steal patterns from Moltbook community",
@@ -898,7 +922,7 @@
       "hash": "bd825d9"
     },
     {
-      "id": "commit-87",
+      "id": "commit-90",
       "type": "commit",
       "timestamp": "2026-01-30T01:32:07.000Z",
       "title": "Core Drill Game v1 complete - first swarm orchestration test",
@@ -906,7 +930,7 @@
       "hash": "c8a4bcd"
     },
     {
-      "id": "commit-88",
+      "id": "commit-91",
       "type": "commit",
       "timestamp": "2026-01-30T00:24:36.000Z",
       "title": "Add Core Driller MVP - polished drilling game",
@@ -914,7 +938,7 @@
       "hash": "c9cbf2b"
     },
     {
-      "id": "commit-89",
+      "id": "commit-92",
       "type": "commit",
       "timestamp": "2026-01-29T23:27:06.000Z",
       "title": "feat: Add Agent Swarm Orchestration System",
@@ -922,7 +946,7 @@
       "hash": "563cb1d"
     },
     {
-      "id": "commit-90",
+      "id": "commit-93",
       "type": "commit",
       "timestamp": "2026-01-29T20:14:40.000Z",
       "title": "Add README for agent dashboard",
@@ -930,7 +954,7 @@
       "hash": "60acae7"
     },
     {
-      "id": "commit-91",
+      "id": "commit-94",
       "type": "commit",
       "timestamp": "2026-01-29T20:14:21.000Z",
       "title": "Add agent dashboard - single-file HTML monitoring interface",
@@ -938,7 +962,7 @@
       "hash": "5a7a8fd"
     },
     {
-      "id": "commit-92",
+      "id": "commit-95",
       "type": "commit",
       "timestamp": "2026-01-29T09:04:40.000Z",
       "title": "Mark daily briefing as complete in backlog",
@@ -946,7 +970,7 @@
       "hash": "f463868"
     },
     {
-      "id": "commit-93",
+      "id": "commit-96",
       "type": "commit",
       "timestamp": "2026-01-29T09:04:28.000Z",
       "title": "🌙 Nightly build: Daily Briefing Generator",
@@ -954,7 +978,7 @@
       "hash": "1156a13"
     },
     {
-      "id": "commit-94",
+      "id": "commit-97",
       "type": "commit",
       "timestamp": "2026-01-28T18:38:51.000Z",
       "title": "Add financial safety rules for QuickBooks/CFO access",
@@ -962,7 +986,7 @@
       "hash": "d6fbc63"
     },
     {
-      "id": "commit-95",
+      "id": "commit-98",
       "type": "commit",
       "timestamp": "2026-01-28T17:10:01.000Z",
       "title": "Add persistent node setup script for Windows",
@@ -970,36 +994,12 @@
       "hash": "16121aa"
     },
     {
-      "id": "commit-96",
+      "id": "commit-99",
       "type": "commit",
       "timestamp": "2026-01-28T08:47:19.000Z",
       "title": "Complete overnight work: docs deep dive, expanded daily notes",
       "source": "git",
       "hash": "c698a3c"
-    },
-    {
-      "id": "commit-97",
-      "type": "commit",
-      "timestamp": "2026-01-28T08:46:25.000Z",
-      "title": "Add comprehensive Clawdbot reference guide from docs deep dive",
-      "source": "git",
-      "hash": "263446c"
-    },
-    {
-      "id": "commit-98",
-      "type": "commit",
-      "timestamp": "2026-01-28T08:45:21.000Z",
-      "title": "Overnight work: CFO skill, cron jobs, Shopify research, docs deep dive",
-      "source": "git",
-      "hash": "a359ff8"
-    },
-    {
-      "id": "commit-99",
-      "type": "commit",
-      "timestamp": "2026-01-28T07:44:53.000Z",
-      "title": "Chrome extension relay WORKING after restart - full browser automation confirmed",
-      "source": "git",
-      "hash": "82c134e"
     }
   ]
 }

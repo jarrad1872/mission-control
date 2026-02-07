@@ -26,7 +26,11 @@
                 ActivityModule.init(),
                 CalendarModule.init(),
                 SearchModule.init(),
-                VoiceModule.init()
+                VoiceModule.init(),
+                SessionsModule.init(),
+                KanbanModule.init(),
+                MemoryBrowser.init(),
+                ControlModule?.init?.()
             ]);
             
             // Update Bob status summary counts
@@ -98,7 +102,9 @@
                     CostsModule.refresh(),
                     ActivityModule.refresh(),
                     CalendarModule.refresh(),
-                    SearchModule.refresh()
+                    SearchModule.refresh(),
+                    KanbanModule.refresh(),
+                    MemoryBrowser.refresh()
                 ]);
                 
                 // Update Bob status summary
@@ -187,6 +193,9 @@
         CalendarModule,
         SearchModule,
         VoiceModule,
-        DataModule
+        DataModule,
+        KanbanModule,
+        MemoryBrowser,
+        ControlModule
     };
 })();

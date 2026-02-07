@@ -622,6 +622,292 @@ function generateCosts() {
     return data;
 }
 
+/**
+ * Generate tasks-board.json for Kanban board
+ * Parses task files and categorizes into columns
+ */
+function generateTasksBoard() {
+    console.log('📋 Generating task board...');
+    
+    const tasksDir = path.join(CLAWD_ROOT, 'tasks');
+    const completedDir = path.join(tasksDir, 'completed');
+    
+    const columns = {
+        todo: [],
+        inProgress: [],
+        complete: []
+    };
+    
+    let taskId = 0;
+    
+    // Parse active task files
+    try {
+        const files = fs.readdirSync(tasksDir)
+            .filter(f => f.startsWith('task-') && f.endsWith('.md'));
+        
+        files.forEach(filename => {
+            const filePath = path.join(tasksDir, filename);
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                const stats = fs.statSync(filePath);
+                const task = parseTaskFile(content, filename, stats);
+                task.id = `task-${taskId++}`;
+                
+                // Categorize by status
+                if (task.status.includes('complete') || task.status.includes('✅')) {
+                    columns.complete.push(task);
+                } else if (task.status.includes('progress') || task.status.includes('🟡') || task.status.includes('active')) {
+                    columns.inProgress.push(task);
+                } else if (task.status.includes('blocked') || task.status.includes('🔴')) {
+                    columns.todo.push(task); // Blocked tasks go to todo
+                    task.status = 'blocked';
+                } else {
+                    columns.todo.push(task);
+                }
+            } catch (e) {
+                console.error(`   ⚠️ Could not parse ${filename}:`, e.message);
+            }
+        });
+    } catch (e) {
+        console.error('   ⚠️ Could not read tasks directory:', e.message);
+    }
+    
+    // Parse completed task files
+    try {
+        if (fs.existsSync(completedDir)) {
+            const files = fs.readdirSync(completedDir)
+                .filter(f => f.endsWith('.md'))
+                .slice(-10); // Only last 10 completed tasks
+            
+            files.forEach(filename => {
+                const filePath = path.join(completedDir, filename);
+                try {
+                    const content = fs.readFileSync(filePath, 'utf8');
+                    const stats = fs.statSync(filePath);
+                    const task = parseTaskFile(content, filename, stats);
+                    task.id = `task-${taskId++}`;
+                    task.status = 'complete';
+                    columns.complete.push(task);
+                } catch (e) {
+                    console.error(`   ⚠️ Could not parse ${filename}:`, e.message);
+                }
+            });
+        }
+    } catch (e) {
+        console.error('   ⚠️ Could not read completed directory:', e.message);
+    }
+    
+    // Sort: In Progress by priority, Todo by priority, Complete by date (newest first)
+    const priorityOrder = { 'P0': 0, 'high': 1, 'P1': 1, 'P2': 2, 'medium': 2, 'P3': 3, 'low': 3 };
+    const sortByPriority = (a, b) => (priorityOrder[a.priority] || 5) - (priorityOrder[b.priority] || 5);
+    
+    columns.todo.sort(sortByPriority);
+    columns.inProgress.sort(sortByPriority);
+    columns.complete.sort((a, b) => new Date(b.created) - new Date(a.created));
+    
+    const data = {
+        generated: GENERATED,
+        columns: columns,
+        stats: {
+            todo: columns.todo.length,
+            inProgress: columns.inProgress.length,
+            complete: columns.complete.length,
+            total: columns.todo.length + columns.inProgress.length + columns.complete.length
+        }
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'tasks-board.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`   ✅ tasks-board.json generated (${data.stats.total} tasks)`);
+    console.log(`      To Do: ${data.stats.todo} | In Progress: ${data.stats.inProgress} | Complete: ${data.stats.complete}`);
+    return data;
+}
+
+/**
+ * Generate memory-tree.json from /life/areas/
+ */
+function generateMemoryTree() {
+    console.log('🧠 Generating memory tree...');
+    
+    const areasDir = path.join(CLAWD_ROOT, 'life', 'areas');
+    const categories = ['people', 'companies', 'projects'];
+    const tree = {};
+    
+    let totalEntities = 0;
+    let totalFacts = 0;
+    
+    categories.forEach(category => {
+        tree[category] = {};
+        const categoryDir = path.join(areasDir, category);
+        
+        try {
+            if (!fs.existsSync(categoryDir)) {
+                console.log(`   - ${category}/ not found, skipping`);
+                return;
+            }
+            
+            const entities = fs.readdirSync(categoryDir)
+                .filter(f => {
+                    const entityPath = path.join(categoryDir, f);
+                    return fs.statSync(entityPath).isDirectory();
+                });
+            
+            console.log(`   - Scanning ${category}/ (${entities.length} entities)...`);
+            
+            entities.forEach(entityName => {
+                const entityDir = path.join(categoryDir, entityName);
+                const summaryPath = path.join(entityDir, 'summary.md');
+                const itemsPath = path.join(entityDir, 'items.json');
+                
+                let summary = '';
+                let facts = [];
+                
+                // Read summary.md
+                try {
+                    if (fs.existsSync(summaryPath)) {
+                        summary = fs.readFileSync(summaryPath, 'utf8');
+                    }
+                } catch (e) {
+                    // ignore
+                }
+                
+                // Read items.json
+                try {
+                    if (fs.existsSync(itemsPath)) {
+                        const itemsContent = fs.readFileSync(itemsPath, 'utf8');
+                        facts = JSON.parse(itemsContent);
+                        if (!Array.isArray(facts)) facts = [];
+                    }
+                } catch (e) {
+                    // ignore
+                }
+                
+                tree[category][entityName] = {
+                    summary: summary,
+                    factCount: facts.length,
+                    facts: facts.slice(0, 50) // Limit facts for performance
+                };
+                
+                totalEntities++;
+                totalFacts += facts.length;
+            });
+            
+        } catch (e) {
+            console.error(`   ⚠️ Could not scan ${category}:`, e.message);
+        }
+    });
+    
+    const data = {
+        generated: GENERATED,
+        stats: {
+            entities: totalEntities,
+            facts: totalFacts
+        },
+        tree: tree
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'memory-tree.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`   ✅ memory-tree.json generated (${totalEntities} entities, ${totalFacts} facts)`);
+    return data;
+}
+
+/**
+ * Parse a task markdown file and extract metadata
+ */
+function parseTaskFile(content, filename, stats) {
+    // Get title from first # heading
+    const titleMatch = content.match(/^#\s+(.+)$/m);
+    let title = titleMatch ? titleMatch[1].replace(/^Task:\s*/i, '').trim() : filename.replace('.md', '');
+    
+    // Get status
+    let status = 'pending';
+    const statusMatch = content.match(/\*?\*?Status\*?\*?:\s*(.+)$/im);
+    if (statusMatch) {
+        const statusText = statusMatch[1].toLowerCase();
+        if (statusText.includes('complete') || statusText.includes('✅')) {
+            status = 'complete';
+        } else if (statusText.includes('progress') || statusText.includes('🟡') || statusText.includes('active') || statusText.includes('running')) {
+            status = 'in-progress';
+        } else if (statusText.includes('blocked') || statusText.includes('🔴')) {
+            status = 'blocked';
+        }
+    }
+    
+    // Get priority
+    let priority = 'medium';
+    const priorityMatch = content.match(/\*?\*?Priority\*?\*?:\s*(\w+)/im);
+    if (priorityMatch) {
+        priority = priorityMatch[1].toUpperCase().startsWith('P') ? priorityMatch[1] : priorityMatch[1].toLowerCase();
+    } else if (content.toLowerCase().includes('urgent') || content.toLowerCase().includes('critical')) {
+        priority = 'high';
+    }
+    
+    // Get assignee (orchestrator)
+    let assignee = null;
+    const assigneeMatch = content.match(/\*?\*?(?:Orchestrator|Assigned|Owner)\*?\*?:\s*(.+)$/im);
+    if (assigneeMatch) {
+        assignee = assigneeMatch[1].replace(/\(.+\)/, '').trim();
+    }
+    
+    // Get created date
+    let created = stats.mtime.toISOString();
+    const createdMatch = content.match(/\*?\*?Created\*?\*?:\s*(.+)$/im);
+    if (createdMatch) {
+        try {
+            const parsed = new Date(createdMatch[1].replace(' UTC', 'Z'));
+            if (!isNaN(parsed.getTime())) {
+                created = parsed.toISOString();
+            }
+        } catch (e) { /* ignore */ }
+    }
+    
+    // Get due date
+    let due = null;
+    const dueMatch = content.match(/\*?\*?(?:Due|Deadline|Target)\*?\*?:\s*(.+)$/im);
+    if (dueMatch) {
+        const dueText = dueMatch[1].trim();
+        try {
+            const parsed = new Date(dueText);
+            if (!isNaN(parsed.getTime())) {
+                due = parsed.toISOString();
+            }
+        } catch (e) { /* ignore */ }
+    }
+    
+    // Get objective
+    let objective = null;
+    const objMatch = content.match(/^##\s*Objective\s*\n+(.+?)(?=\n#|$)/ms);
+    if (objMatch) {
+        objective = objMatch[1].trim().split('\n')[0].substring(0, 200);
+    }
+    
+    // Get notes section (first 200 chars)
+    let notes = null;
+    const notesMatch = content.match(/^##\s*Notes\s*\n+(.+?)(?=\n#|$)/ms);
+    if (notesMatch) {
+        notes = notesMatch[1].trim().substring(0, 200);
+    }
+    
+    return {
+        title: title,
+        status: status,
+        priority: priority,
+        assignee: assignee,
+        created: created,
+        due: due,
+        objective: objective,
+        notes: notes,
+        file: `tasks/${filename}`
+    };
+}
+
 // Run all generators
 console.log('');
 generateBobStatus();
@@ -631,6 +917,10 @@ console.log('');
 generateCalendar();
 console.log('');
 generateCosts();
+console.log('');
+generateTasksBoard();
+console.log('');
+generateMemoryTree();
 console.log('');
 generateSearchIndex();
 console.log('');

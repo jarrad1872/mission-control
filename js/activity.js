@@ -1,32 +1,77 @@
 /**
- * Activity Feed Module - Displays chronological activity log
+ * Activity Feed Module - Real-time activity log with live updates
+ * Feature 2.1 for Mission Control v2
  */
 
 const ActivityModule = (function() {
+    // State
     let allItems = [];
     let filteredItems = [];
+    let lastItemId = null;
+    let lastFetchTime = null;
+    let pollInterval = null;
+    let consecutiveNoChanges = 0;
+    let isLive = false;
+    let soundEnabled = false;
+    let notificationCount = 0;
+    
+    // Config
+    const BASE_POLL_INTERVAL = 10000;  // 10 seconds
+    const MAX_POLL_INTERVAL = 60000;   // 60 seconds max backoff
+    const MAX_ITEMS = 100;
+    const BACKOFF_MULTIPLIER = 1.5;
 
     /**
      * Initialize the activity feed
      */
     async function init() {
-        const data = await DataModule.loadActivity();
-        if (!data || !data.items) {
-            showEmpty();
-            return;
-        }
-
-        allItems = data.items;
-        applyFilters();
+        renderLiveHeader();
         setupListeners();
+        await fetchAndRender();
+        startPolling();
     }
 
     /**
-     * Set up event listeners for filters
+     * Render the live indicator header
+     */
+    function renderLiveHeader() {
+        const sectionHeader = document.querySelector('#activity-tab .section-header h2');
+        if (sectionHeader) {
+            sectionHeader.innerHTML = `
+                Activity Feed
+                <span class="live-indicator" id="liveIndicator">
+                    <span class="live-dot"></span>
+                    <span class="live-text">LIVE</span>
+                </span>
+                <span class="last-update" id="lastUpdateTime"></span>
+            `;
+        }
+        
+        // Add notification badge and sound toggle to filters
+        const filters = document.querySelector('#activity-tab .filters');
+        if (filters) {
+            const controls = document.createElement('div');
+            controls.className = 'activity-controls';
+            controls.innerHTML = `
+                <span class="new-badge" id="newActivityBadge" style="display: none;">
+                    <span class="badge-count">0</span> new
+                </span>
+                <button class="sound-toggle" id="soundToggle" title="Toggle notification sound">
+                    🔇
+                </button>
+            `;
+            filters.prepend(controls);
+        }
+    }
+
+    /**
+     * Set up event listeners for filters and controls
      */
     function setupListeners() {
         const typeFilter = document.getElementById('activityType');
         const dateFilter = document.getElementById('dateRange');
+        const soundToggle = document.getElementById('soundToggle');
+        const newBadge = document.getElementById('newActivityBadge');
 
         if (typeFilter) {
             typeFilter.addEventListener('change', applyFilters);
@@ -34,12 +79,279 @@ const ActivityModule = (function() {
         if (dateFilter) {
             dateFilter.addEventListener('change', applyFilters);
         }
+        if (soundToggle) {
+            soundToggle.addEventListener('click', toggleSound);
+        }
+        if (newBadge) {
+            newBadge.addEventListener('click', scrollToTop);
+        }
+        
+        // Update relative times every minute
+        setInterval(updateRelativeTimes, 60000);
+        
+        // Visibility change - pause/resume polling
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+
+    /**
+     * Fetch data and render
+     */
+    async function fetchAndRender() {
+        const data = await DataModule.loadActivity();
+        if (!data || !data.items) {
+            showEmpty();
+            setLiveStatus(false);
+            return;
+        }
+
+        const oldFirstId = allItems.length > 0 ? allItems[0].id : null;
+        const previousItemIds = new Set(allItems.map(item => item.id));
+        
+        // Keep only the last MAX_ITEMS
+        allItems = data.items.slice(0, MAX_ITEMS);
+        
+        // Check for new items
+        const newItems = allItems.filter(item => !previousItemIds.has(item.id));
+        
+        if (newItems.length > 0 && oldFirstId !== null) {
+            // We have new items that weren't there before
+            handleNewItems(newItems);
+            consecutiveNoChanges = 0;
+        } else if (oldFirstId !== null) {
+            // No changes
+            consecutiveNoChanges++;
+        }
+        
+        lastFetchTime = new Date();
+        lastItemId = allItems.length > 0 ? allItems[0].id : null;
+        
+        applyFilters(newItems.length > 0);
+        setLiveStatus(true);
+        updateLastUpdateDisplay();
+    }
+
+    /**
+     * Handle new items arriving
+     */
+    function handleNewItems(newItems) {
+        // Update notification count
+        notificationCount += newItems.length;
+        updateNotificationBadge();
+        
+        // Play sound if enabled
+        if (soundEnabled && document.hidden) {
+            playNotificationSound();
+        }
+        
+        // Flash the browser tab title
+        if (document.hidden) {
+            flashTabTitle(newItems.length);
+        }
+    }
+
+    /**
+     * Update the notification badge
+     */
+    function updateNotificationBadge() {
+        const badge = document.getElementById('newActivityBadge');
+        const countEl = badge?.querySelector('.badge-count');
+        
+        if (badge && countEl) {
+            if (notificationCount > 0) {
+                countEl.textContent = notificationCount;
+                badge.style.display = 'inline-flex';
+                badge.classList.add('pulse');
+            } else {
+                badge.style.display = 'none';
+                badge.classList.remove('pulse');
+            }
+        }
+    }
+
+    /**
+     * Clear notification count and scroll to top
+     */
+    function scrollToTop() {
+        notificationCount = 0;
+        updateNotificationBadge();
+        
+        const container = document.getElementById('activityList');
+        if (container) {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    /**
+     * Toggle notification sound
+     */
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const toggle = document.getElementById('soundToggle');
+        if (toggle) {
+            toggle.textContent = soundEnabled ? '🔊' : '🔇';
+            toggle.classList.toggle('active', soundEnabled);
+        }
+    }
+
+    /**
+     * Play notification sound
+     */
+    function playNotificationSound() {
+        try {
+            const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + 'tvT18'.repeat(100));
+            audio.volume = 0.3;
+            audio.play().catch(() => {});
+        } catch (e) {
+            // Ignore audio errors
+        }
+    }
+
+    /**
+     * Flash tab title when new items arrive
+     */
+    function flashTabTitle(count) {
+        const originalTitle = document.title;
+        let isFlashing = true;
+        
+        const flashInterval = setInterval(() => {
+            if (!document.hidden || !isFlashing) {
+                document.title = originalTitle;
+                clearInterval(flashInterval);
+                return;
+            }
+            document.title = document.title.startsWith('🔴') 
+                ? originalTitle 
+                : `🔴 (${count}) New Activity`;
+        }, 1000);
+        
+        // Stop flashing when tab becomes visible
+        const stopFlash = () => {
+            isFlashing = false;
+            document.title = originalTitle;
+            document.removeEventListener('visibilitychange', stopFlash);
+        };
+        document.addEventListener('visibilitychange', stopFlash);
+    }
+
+    /**
+     * Start polling for updates
+     */
+    function startPolling() {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+        }
+        
+        const interval = calculatePollInterval();
+        pollInterval = setInterval(async () => {
+            // Clear cache to force fresh fetch
+            await DataModule.refresh();
+            await fetchAndRender();
+            
+            // Adjust polling interval based on activity
+            restartPollingWithNewInterval();
+        }, interval);
+    }
+
+    /**
+     * Calculate poll interval with backoff
+     */
+    function calculatePollInterval() {
+        if (consecutiveNoChanges === 0) {
+            return BASE_POLL_INTERVAL;
+        }
+        
+        const backoff = BASE_POLL_INTERVAL * Math.pow(BACKOFF_MULTIPLIER, Math.min(consecutiveNoChanges, 5));
+        return Math.min(backoff, MAX_POLL_INTERVAL);
+    }
+
+    /**
+     * Restart polling with new interval
+     */
+    function restartPollingWithNewInterval() {
+        clearInterval(pollInterval);
+        startPolling();
+    }
+
+    /**
+     * Handle visibility change
+     */
+    function handleVisibilityChange() {
+        if (document.hidden) {
+            // Page is hidden, slow down polling
+            clearInterval(pollInterval);
+            pollInterval = setInterval(async () => {
+                await DataModule.refresh();
+                await fetchAndRender();
+            }, MAX_POLL_INTERVAL);
+        } else {
+            // Page is visible, reset and poll immediately
+            notificationCount = 0;
+            updateNotificationBadge();
+            consecutiveNoChanges = 0;
+            startPolling();
+            fetchAndRender();
+        }
+    }
+
+    /**
+     * Set live status indicator
+     */
+    function setLiveStatus(live) {
+        isLive = live;
+        const indicator = document.getElementById('liveIndicator');
+        if (indicator) {
+            indicator.classList.toggle('live', live);
+            indicator.classList.toggle('offline', !live);
+            indicator.querySelector('.live-text').textContent = live ? 'LIVE' : 'OFFLINE';
+        }
+    }
+
+    /**
+     * Update the last update display
+     */
+    function updateLastUpdateDisplay() {
+        const el = document.getElementById('lastUpdateTime');
+        if (el && lastFetchTime) {
+            el.textContent = `Updated ${formatSmartTime(lastFetchTime)}`;
+        }
+    }
+
+    /**
+     * Format time smartly
+     */
+    function formatSmartTime(date) {
+        const now = new Date();
+        const diff = now - new Date(date);
+        const seconds = Math.floor(diff / 1000);
+        
+        if (seconds < 5) return 'just now';
+        if (seconds < 60) return `${seconds}s ago`;
+        
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        
+        const days = Math.floor(hours / 24);
+        return `${days}d ago`;
+    }
+
+    /**
+     * Update all relative times in the DOM
+     */
+    function updateRelativeTimes() {
+        document.querySelectorAll('.activity-time[data-timestamp]').forEach(el => {
+            const timestamp = el.getAttribute('data-timestamp');
+            el.textContent = formatSmartTime(new Date(timestamp));
+        });
+        updateLastUpdateDisplay();
     }
 
     /**
      * Apply filters and re-render
      */
-    function applyFilters() {
+    function applyFilters(animateNew = false) {
         const typeFilter = document.getElementById('activityType');
         const dateFilter = document.getElementById('dateRange');
         
@@ -65,13 +377,13 @@ const ActivityModule = (function() {
             return true;
         });
 
-        render();
+        render(animateNew);
     }
 
     /**
      * Render the activity feed
      */
-    function render() {
+    function render(animateNew = false) {
         const container = document.getElementById('activityList');
         if (!container) return;
 
@@ -80,6 +392,11 @@ const ActivityModule = (function() {
             return;
         }
 
+        // Get existing item IDs for animation detection
+        const existingIds = new Set(
+            Array.from(container.querySelectorAll('.activity-item')).map(el => el.dataset.id)
+        );
+
         // Group by date
         const grouped = groupByDate(filteredItems);
         
@@ -87,11 +404,25 @@ const ActivityModule = (function() {
         Object.entries(grouped).forEach(([date, items]) => {
             html += `<div class="date-divider">${formatDateHeader(date)}</div>`;
             items.forEach(item => {
-                html += renderItem(item);
+                const isNew = animateNew && !existingIds.has(item.id);
+                html += renderItem(item, isNew);
             });
         });
 
         container.innerHTML = html;
+        
+        // Trigger animations for new items
+        if (animateNew) {
+            requestAnimationFrame(() => {
+                container.querySelectorAll('.activity-item.new-item').forEach(el => {
+                    el.classList.add('animate-in');
+                    // Remove animation class after animation completes
+                    setTimeout(() => {
+                        el.classList.remove('new-item', 'animate-in');
+                    }, 600);
+                });
+            });
+        }
     }
 
     /**
@@ -134,19 +465,19 @@ const ActivityModule = (function() {
     /**
      * Render a single activity item
      */
-    function renderItem(item) {
+    function renderItem(item, isNew = false) {
         const icon = DataModule.getActivityIcon(item.type);
         const time = DataModule.formatTime(item.timestamp);
-        const relativeTime = DataModule.formatRelativeTime(item.timestamp);
+        const relativeTime = formatSmartTime(new Date(item.timestamp));
 
         return `
-            <div class="activity-item" data-type="${item.type}">
+            <div class="activity-item ${isNew ? 'new-item' : ''}" data-type="${item.type}" data-id="${item.id}">
                 <div class="activity-icon ${item.type}">${icon}</div>
                 <div class="activity-content">
                     <div class="activity-title">${escapeHtml(item.title)}</div>
                     <div class="activity-meta">
                         <span class="activity-source">${getSourceLabel(item.source)}</span>
-                        <span class="activity-time" title="${time}">${relativeTime}</span>
+                        <span class="activity-time" title="${time}" data-timestamp="${item.timestamp}">${relativeTime}</span>
                         ${item.file ? `<span class="activity-file">${item.file}</span>` : ''}
                     </div>
                 </div>
@@ -198,8 +529,6 @@ const ActivityModule = (function() {
      * Refresh activity data
      */
     async function refresh() {
-        allItems = [];
-        filteredItems = [];
         const container = document.getElementById('activityList');
         if (container) {
             container.innerHTML = `
@@ -209,13 +538,29 @@ const ActivityModule = (function() {
                 </div>
             `;
         }
-        await init();
+        
+        await DataModule.refresh();
+        allItems = [];
+        filteredItems = [];
+        consecutiveNoChanges = 0;
+        await fetchAndRender();
+    }
+
+    /**
+     * Stop polling (for cleanup)
+     */
+    function destroy() {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+        }
     }
 
     return {
         init,
         refresh,
-        applyFilters
+        applyFilters,
+        destroy
     };
 })();
 
