@@ -122,23 +122,52 @@ const CostsModule = (function() {
     }
     
     /**
+     * Get data freshness info
+     */
+    function getDataFreshness(lastUpdate) {
+        if (!lastUpdate) return { text: 'Unknown', status: 'outdated', relative: 'unknown' };
+        
+        const now = new Date();
+        const updated = new Date(lastUpdate);
+        const diffMs = now - updated;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        let relative;
+        if (diffMins < 1) relative = 'just now';
+        else if (diffMins < 60) relative = `${diffMins}m ago`;
+        else if (diffHours < 24) relative = `${diffHours}h ago`;
+        else relative = `${diffDays}d ago`;
+        
+        let status;
+        if (diffHours >= 6) status = 'outdated';
+        else if (diffHours >= 1) status = 'stale';
+        else status = 'fresh';
+        
+        return { text: lastUpdate, status, relative };
+    }
+    
+    /**
      * Render the usage stats panel
      */
     function render() {
         const container = document.getElementById('costTrackerContent');
         if (!container || !data) return;
         
-        // Update the header timestamp
+        // Update the header timestamp with freshness indicator
         const updateTimeEl = document.getElementById('costUpdateTime');
         if (updateTimeEl && data.lastUpdate) {
-            const d = new Date(data.lastUpdate);
-            updateTimeEl.textContent = 'Updated: ' + d.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
+            const freshness = getDataFreshness(data.lastUpdate);
+            
+            let badgeHTML = '';
+            if (freshness.status === 'stale') {
+                badgeHTML = '<span class="freshness-badge stale">⚠️ Stale</span>';
+            } else if (freshness.status === 'outdated') {
+                badgeHTML = '<span class="freshness-badge outdated">🔴 Outdated</span>';
+            }
+            
+            updateTimeEl.innerHTML = `${freshness.relative} ${badgeHTML}`;
         }
         
         const todayTokens = data.today?.totalTokens || 0;
@@ -219,7 +248,7 @@ const CostsModule = (function() {
     }
     
     /**
-     * Render weekly bar chart (token usage per day)
+     * Render weekly bar chart (horizontal bars for token usage per day)
      */
     function renderWeeklyChart(days) {
         if (!days || days.length === 0) {
@@ -240,8 +269,10 @@ const CostsModule = (function() {
                     
                     return `
                         <div class="chart-bar ${isToday ? 'today' : ''}" title="${day.date}: ${formatTokens(totalTokens)}">
-                            <div class="chart-bar-fill" style="height: ${percentage}%"></div>
                             <div class="chart-bar-label">${dayName}</div>
+                            <div class="chart-bar-track">
+                                <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
                             <div class="chart-bar-value">${formatTokens(totalTokens)}</div>
                         </div>
                     `;
