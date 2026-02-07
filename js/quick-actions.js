@@ -1,5 +1,7 @@
-// Quick Actions Panel — Mission Control v2
-// Buttons for common Bob operations with visual feedback
+/**
+ * Quick Actions Module — FAB Version (#3)
+ * Floating Action Button with bottom sheet menu
+ */
 
 (function() {
     'use strict';
@@ -8,66 +10,71 @@
     const GATEWAY_URL = 'http://localhost:18789';
 
     // Action definitions
-    const ACTIONS = {
-        checkEmail: {
+    const ACTIONS = [
+        {
             id: 'checkEmail',
             icon: '📧',
             label: 'Check Email',
             description: 'Trigger email check across all accounts',
             handler: async () => {
-                // Simulated for now — real implementation will call gateway
                 await simulateAction(1500);
-                return { success: true, message: 'Email check triggered! Found 3 new messages.' };
+                return { success: true, message: 'Email check triggered!' };
             }
         },
-        runHeartbeat: {
+        {
             id: 'runHeartbeat',
             icon: '💓',
-            label: 'Run Heartbeat',
-            description: 'Trigger a heartbeat poll for main Bob',
+            label: 'Heartbeat',
+            description: 'Trigger a heartbeat poll',
             handler: async () => {
                 await simulateAction(2000);
-                return { success: true, message: 'Heartbeat triggered! Bob is checking in.' };
+                return { success: true, message: 'Heartbeat triggered!' };
             }
         },
-        spawnSubBob: {
+        {
             id: 'spawnSubBob',
             icon: '🤖',
-            label: 'Spawn Sub-Bob',
-            description: 'Create a new sub-agent for a task',
-            handler: async (data) => {
-                // Opens modal, actual spawn happens after form submit
+            label: 'Spawn Bob',
+            description: 'Create a new sub-agent',
+            handler: async () => {
                 openSpawnModal();
-                return null; // Don't show toast, modal handles it
+                return null;
             },
             isModal: true
         },
-        refreshData: {
+        {
             id: 'refreshData',
             icon: '🔄',
-            label: 'Refresh Data',
-            description: 'Rebuild dashboard data from source files',
+            label: 'Refresh',
+            description: 'Rebuild dashboard data',
             handler: async () => {
-                await simulateAction(1000);
-                // Trigger existing refresh functionality
-                if (window.refreshData) {
-                    window.refreshData();
-                }
-                return { success: true, message: 'Dashboard data refreshed!' };
+                document.getElementById('refreshBtn')?.click();
+                return null;
             }
         },
-        newTask: {
+        {
             id: 'newTask',
             icon: '📋',
             label: 'New Task',
             description: 'Create a new task file',
-            handler: async (data) => {
+            handler: async () => {
                 openTaskModal();
                 return null;
             },
             isModal: true
+        },
+        {
+            id: 'sendMessage',
+            icon: '💬',
+            label: 'Message',
+            description: 'Send a message to Bob',
+            handler: async () => {
+                openMessageModal();
+                return null;
+            },
+            isModal: true
         }
-    };
+    ];
 
     // Simulated delay for placeholder actions
     function simulateAction(ms) {
@@ -76,33 +83,23 @@
 
     // Initialize quick actions
     function init() {
-        renderQuickActionsPanel();
+        renderFabMenu();
         renderModals();
         renderToastContainer();
         attachEventListeners();
     }
 
-    // Render the Quick Actions panel HTML
-    function renderQuickActionsPanel() {
-        const panel = document.getElementById('quick-actions-panel');
-        if (!panel) return;
+    // Render the FAB menu content
+    function renderFabMenu() {
+        const grid = document.getElementById('fabMenuGrid');
+        if (!grid) return;
 
-        const actionsHTML = Object.values(ACTIONS).map(action => `
-            <button class="quick-action-btn" data-action="${action.id}" title="${action.description}">
-                <span class="quick-action-icon">${action.icon}</span>
-                <span class="quick-action-label">${action.label}</span>
-                <span class="quick-action-spinner"></span>
+        grid.innerHTML = ACTIONS.map(action => `
+            <button class="fab-action-btn" data-action="${action.id}" title="${action.description}">
+                <span class="fab-action-icon">${action.icon}</span>
+                <span class="fab-action-label">${action.label}</span>
             </button>
         `).join('');
-
-        panel.innerHTML = `
-            <div class="quick-actions-header">
-                <h3>⚡ Quick Actions</h3>
-            </div>
-            <div class="quick-actions-grid">
-                ${actionsHTML}
-            </div>
-        `;
     }
 
     // Render modals
@@ -113,7 +110,7 @@
             <!-- Spawn Sub-Bob Modal -->
             <div class="modal qa-modal" id="spawnModal">
                 <div class="modal-backdrop"></div>
-                <div class="modal-content qa-modal-content">
+                <div class="modal-content modal-bottom-sheet">
                     <div class="modal-header">
                         <h3>🤖 Spawn Sub-Bob</h3>
                         <button class="close-btn" data-close-modal="spawnModal">×</button>
@@ -135,22 +132,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="spawnPrompt">Instructions</label>
-                                <textarea id="spawnPrompt" name="prompt" rows="4" placeholder="What should this sub-Bob do?" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="spawnChannel">Report To</label>
-                                <select id="spawnChannel" name="channel">
-                                    <option value="telegram">Telegram (Main)</option>
-                                    <option value="discord">Discord</option>
-                                    <option value="none">No Report</option>
-                                </select>
+                                <textarea id="spawnPrompt" name="prompt" rows="3" placeholder="What should this sub-Bob do?" required></textarea>
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" data-close-modal="spawnModal">Cancel</button>
-                                <button type="submit" class="btn btn-primary">
-                                    <span class="btn-text">🚀 Spawn Agent</span>
-                                    <span class="btn-spinner"></span>
-                                </button>
+                                <button type="submit" class="btn btn-primary">🚀 Spawn</button>
                             </div>
                         </form>
                     </div>
@@ -160,25 +146,20 @@
             <!-- New Task Modal -->
             <div class="modal qa-modal" id="taskModal">
                 <div class="modal-backdrop"></div>
-                <div class="modal-content qa-modal-content">
+                <div class="modal-content modal-bottom-sheet">
                     <div class="modal-header">
-                        <h3>📋 Create New Task</h3>
+                        <h3>📋 New Task</h3>
                         <button class="close-btn" data-close-modal="taskModal">×</button>
                     </div>
                     <div class="modal-body">
                         <form id="taskForm" class="qa-form">
                             <div class="form-group">
                                 <label for="taskName">Task Name</label>
-                                <input type="text" id="taskName" name="name" placeholder="e.g., update-documentation" required>
-                                <span class="form-hint">Will create /tasks/task-[name].md</span>
+                                <input type="text" id="taskName" name="name" placeholder="e.g., update-docs" required>
                             </div>
                             <div class="form-group">
                                 <label for="taskObjective">Objective</label>
-                                <input type="text" id="taskObjective" name="objective" placeholder="One sentence describing the goal" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="taskSuccess">Success Criteria</label>
-                                <textarea id="taskSuccess" name="success" rows="2" placeholder="How do we know it's done?"></textarea>
+                                <input type="text" id="taskObjective" name="objective" placeholder="One sentence goal" required>
                             </div>
                             <div class="form-group">
                                 <label for="taskPriority">Priority</label>
@@ -190,10 +171,38 @@
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" data-close-modal="taskModal">Cancel</button>
-                                <button type="submit" class="btn btn-primary">
-                                    <span class="btn-text">✨ Create Task</span>
-                                    <span class="btn-spinner"></span>
-                                </button>
+                                <button type="submit" class="btn btn-primary">✨ Create</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Modal -->
+            <div class="modal qa-modal" id="messageModal">
+                <div class="modal-backdrop"></div>
+                <div class="modal-content modal-bottom-sheet">
+                    <div class="modal-header">
+                        <h3>💬 Send Message</h3>
+                        <button class="close-btn" data-close-modal="messageModal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="messageForm" class="qa-form">
+                            <div class="form-group">
+                                <label for="messageTarget">Send To</label>
+                                <select id="messageTarget" name="target">
+                                    <option value="main">Main Bob</option>
+                                    <option value="telegram">Telegram</option>
+                                    <option value="discord">Discord</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="messageContent">Message</label>
+                                <textarea id="messageContent" name="content" rows="3" placeholder="Your message..." required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" data-close-modal="messageModal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">📤 Send</button>
                             </div>
                         </form>
                     </div>
@@ -205,6 +214,8 @@
 
     // Render toast notification container
     function renderToastContainer() {
+        if (document.getElementById('toast-container')) return;
+        
         const container = document.createElement('div');
         container.id = 'toast-container';
         container.className = 'toast-container';
@@ -232,7 +243,6 @@
             <button class="toast-close">×</button>
         `;
 
-        // Add click handler for close button
         toast.querySelector('.toast-close').addEventListener('click', () => {
             toast.classList.add('toast-hiding');
             setTimeout(() => toast.remove(), 300);
@@ -240,12 +250,10 @@
 
         container.appendChild(toast);
 
-        // Trigger animation
         requestAnimationFrame(() => {
             toast.classList.add('toast-visible');
         });
 
-        // Auto-remove
         setTimeout(() => {
             if (toast.parentElement) {
                 toast.classList.add('toast-hiding');
@@ -254,22 +262,56 @@
         }, duration);
     }
 
-    // Open Spawn Sub-Bob modal
-    function openSpawnModal() {
-        const modal = document.getElementById('spawnModal');
-        if (modal) {
-            modal.classList.add('open');
-            document.getElementById('spawnLabel')?.focus();
+    // Open/close FAB menu
+    function toggleFabMenu() {
+        const fab = document.getElementById('fabButton');
+        const menu = document.getElementById('fabMenu');
+        
+        if (menu?.classList.contains('open')) {
+            closeFabMenu();
+        } else {
+            openFabMenu();
         }
     }
 
-    // Open New Task modal
+    function openFabMenu() {
+        const fab = document.getElementById('fabButton');
+        const menu = document.getElementById('fabMenu');
+        
+        fab?.classList.add('open');
+        menu?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFabMenu() {
+        const fab = document.getElementById('fabButton');
+        const menu = document.getElementById('fabMenu');
+        
+        fab?.classList.remove('open');
+        menu?.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Modal openers
+    function openSpawnModal() {
+        closeFabMenu();
+        const modal = document.getElementById('spawnModal');
+        modal?.classList.add('open');
+        document.getElementById('spawnLabel')?.focus();
+    }
+
     function openTaskModal() {
+        closeFabMenu();
         const modal = document.getElementById('taskModal');
-        if (modal) {
-            modal.classList.add('open');
-            document.getElementById('taskName')?.focus();
-        }
+        modal?.classList.add('open');
+        document.getElementById('taskName')?.focus();
+    }
+
+    function openMessageModal() {
+        closeFabMenu();
+        const modal = document.getElementById('messageModal');
+        modal?.classList.add('open');
+        document.getElementById('messageContent')?.focus();
     }
 
     // Close modal by ID
@@ -277,32 +319,18 @@
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.remove('open');
-            // Reset form
             const form = modal.querySelector('form');
             if (form) form.reset();
         }
-    }
-
-    // Set button loading state
-    function setButtonLoading(button, isLoading) {
-        if (isLoading) {
-            button.classList.add('loading');
-            button.disabled = true;
-        } else {
-            button.classList.remove('loading');
-            button.disabled = false;
-        }
+        document.body.style.overflow = '';
     }
 
     // Handle action button click
-    async function handleActionClick(actionId, button) {
-        const action = ACTIONS[actionId];
+    async function handleActionClick(actionId) {
+        const action = ACTIONS.find(a => a.id === actionId);
         if (!action) return;
 
-        // Skip loading state for modal actions
-        if (!action.isModal) {
-            setButtonLoading(button, true);
-        }
+        closeFabMenu();
 
         try {
             const result = await action.handler();
@@ -317,77 +345,80 @@
         } catch (error) {
             console.error(`Action ${actionId} failed:`, error);
             showToast(`Error: ${error.message}`, 'error');
-        } finally {
-            if (!action.isModal) {
-                setButtonLoading(button, false);
-            }
         }
     }
 
-    // Handle Spawn form submit
+    // Form handlers
     async function handleSpawnSubmit(e) {
         e.preventDefault();
         const form = e.target;
-        const submitBtn = form.querySelector('button[type="submit"]');
         
         const data = {
             label: form.label.value,
             model: form.model.value,
-            prompt: form.prompt.value,
-            channel: form.channel.value
+            prompt: form.prompt.value
         };
 
-        setButtonLoading(submitBtn, true);
-
         try {
-            // Simulated spawn - real implementation will call gateway API
             await simulateAction(2000);
-            
-            showToast(`Sub-Bob "${data.label}" spawned successfully!`, 'success');
+            showToast(`Sub-Bob "${data.label}" spawned!`, 'success');
             closeModal('spawnModal');
         } catch (error) {
-            showToast(`Failed to spawn agent: ${error.message}`, 'error');
-        } finally {
-            setButtonLoading(submitBtn, false);
+            showToast(`Failed to spawn: ${error.message}`, 'error');
         }
     }
 
-    // Handle Task form submit
     async function handleTaskSubmit(e) {
         e.preventDefault();
         const form = e.target;
-        const submitBtn = form.querySelector('button[type="submit"]');
         
         const data = {
             name: form.name.value,
             objective: form.objective.value,
-            success: form.success.value,
             priority: form.priority.value
         };
 
-        setButtonLoading(submitBtn, true);
-
         try {
-            // Simulated task creation - real implementation will create file via API
             await simulateAction(1500);
-            
-            showToast(`Task "task-${data.name}.md" created!`, 'success');
+            showToast(`Task "${data.name}" created!`, 'success');
             closeModal('taskModal');
         } catch (error) {
             showToast(`Failed to create task: ${error.message}`, 'error');
-        } finally {
-            setButtonLoading(submitBtn, false);
+        }
+    }
+
+    async function handleMessageSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        const data = {
+            target: form.target.value,
+            content: form.content.value
+        };
+
+        try {
+            await simulateAction(1000);
+            showToast(`Message sent to ${data.target}!`, 'success');
+            closeModal('messageModal');
+        } catch (error) {
+            showToast(`Failed to send: ${error.message}`, 'error');
         }
     }
 
     // Attach event listeners
     function attachEventListeners() {
+        // FAB button
+        document.getElementById('fabButton')?.addEventListener('click', toggleFabMenu);
+        
+        // FAB menu backdrop and close
+        document.querySelector('.fab-menu-backdrop')?.addEventListener('click', closeFabMenu);
+        document.querySelector('.fab-menu-close')?.addEventListener('click', closeFabMenu);
+        
         // Action button clicks
         document.addEventListener('click', (e) => {
-            const actionBtn = e.target.closest('.quick-action-btn');
+            const actionBtn = e.target.closest('.fab-action-btn');
             if (actionBtn) {
-                const actionId = actionBtn.dataset.action;
-                handleActionClick(actionId, actionBtn);
+                handleActionClick(actionBtn.dataset.action);
             }
 
             // Modal close buttons
@@ -408,10 +439,12 @@
         // Form submissions
         document.getElementById('spawnForm')?.addEventListener('submit', handleSpawnSubmit);
         document.getElementById('taskForm')?.addEventListener('submit', handleTaskSubmit);
+        document.getElementById('messageForm')?.addEventListener('submit', handleMessageSubmit);
 
-        // Escape key to close modals
+        // Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                closeFabMenu();
                 document.querySelectorAll('.qa-modal.open').forEach(modal => {
                     closeModal(modal.id);
                 });
@@ -419,11 +452,14 @@
         });
     }
 
-    // Expose for potential external use
+    // Expose for external use
     window.QuickActions = {
         showToast,
         openSpawnModal,
-        openTaskModal
+        openTaskModal,
+        openMessageModal,
+        openFabMenu,
+        closeFabMenu
     };
 
     // Initialize when DOM is ready

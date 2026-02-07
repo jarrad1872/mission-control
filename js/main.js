@@ -1,6 +1,6 @@
 /**
  * Main Application Controller
- * Coordinates all modules and handles global UI interactions
+ * Mobile-first navigation with bottom nav and collapsible sections
  */
 
 (function() {
@@ -12,8 +12,14 @@
     async function init() {
         console.log('🎯 Mission Control initializing...');
         
-        // Set up tab navigation
-        setupTabs();
+        // Set up bottom navigation
+        setupBottomNav();
+        
+        // Set up more drawer
+        setupMoreDrawer();
+        
+        // Set up collapsible sections
+        setupCollapsibleSections();
         
         // Set up refresh button
         setupRefresh();
@@ -33,117 +39,175 @@
                 ControlModule?.init?.()
             ]);
             
-            // Update Bob status summary counts
-            updateBobStatusSummary();
-            
-            // Update status
-            updateStatus('online', 'Data loaded');
-            
-            // Update last updated time
-            const metadata = await DataModule.getMetadata();
-            if (metadata && metadata.lastUpdated) {
-                updateLastUpdated(metadata.lastUpdated);
-            }
+            // Update status indicator
+            updateStatus('online');
             
             console.log('✅ Mission Control ready');
         } catch (error) {
             console.error('❌ Initialization error:', error);
-            updateStatus('error', 'Load failed');
+            updateStatus('error');
         }
     }
 
     /**
-     * Set up tab scroll indicators for mobile
+     * Set up bottom navigation (#1)
      */
-    function setupTabScrollIndicators() {
-        const wrapper = document.getElementById('navTabsWrapper');
-        const navTabs = document.getElementById('navTabs');
-        
-        if (!wrapper || !navTabs) return;
-        
-        function updateScrollIndicators() {
-            const scrollLeft = navTabs.scrollLeft;
-            const maxScroll = navTabs.scrollWidth - navTabs.clientWidth;
-            
-            // Show/hide left indicator
-            if (scrollLeft > 5) {
-                wrapper.classList.add('can-scroll-left');
-            } else {
-                wrapper.classList.remove('can-scroll-left');
-            }
-            
-            // Show/hide right indicator
-            if (scrollLeft < maxScroll - 5) {
-                wrapper.classList.add('can-scroll-right');
-            } else {
-                wrapper.classList.remove('can-scroll-right');
-            }
-        }
-        
-        // Check on scroll
-        navTabs.addEventListener('scroll', updateScrollIndicators);
-        
-        // Initial check and on resize
-        updateScrollIndicators();
-        window.addEventListener('resize', updateScrollIndicators);
-    }
-
-    /**
-     * Set up tab navigation
-     * Proper show/hide tab switching with mobile scroll support
-     */
-    function setupTabs() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
+    function setupBottomNav() {
+        const navItems = document.querySelectorAll('.nav-item');
         const tabContents = document.querySelectorAll('.tab-content');
         const mainContent = document.querySelector('.main-content');
-        
-        // Set up scroll indicators for mobile
-        setupTabScrollIndicators();
 
-        // Ensure initial state: only active tab content is visible
+        // Ensure initial state
         tabContents.forEach(content => {
-            if (!content.classList.contains('active')) {
-                content.style.display = 'none';
-            } else {
-                content.style.display = 'block';
-            }
+            content.style.display = content.classList.contains('active') ? 'block' : 'none';
         });
 
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.dataset.tab;
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.dataset.tab;
                 
-                // Remove active state from all tabs
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                
-                // Hide ALL tab contents explicitly
-                tabContents.forEach(content => {
-                    content.classList.remove('active');
-                    content.style.display = 'none';
-                });
-                
-                // Activate clicked tab
-                button.classList.add('active');
-                
-                // Show target content
-                const targetContent = document.getElementById(`${tabId}-tab`);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                    targetContent.style.display = 'block';
-                    
-                    // On mobile, scroll to the main content area for better UX
-                    if (window.innerWidth <= 768 && mainContent) {
-                        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                // Handle "more" tab specially
+                if (tabId === 'more') {
+                    openMoreDrawer();
+                    return;
                 }
                 
-                // Focus search input when switching to search tab
-                if (tabId === 'search') {
-                    const searchInput = document.getElementById('searchInput');
-                    if (searchInput) {
-                        setTimeout(() => searchInput.focus(), 100);
-                    }
+                // Remove active from all nav items
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Switch tab content
+                switchTab(tabId);
+                
+                // Scroll to top on tab change
+                if (mainContent) {
+                    mainContent.scrollTo({ top: 0, behavior: 'smooth' });
                 }
+            });
+        });
+    }
+
+    /**
+     * Switch to a specific tab
+     */
+    function switchTab(tabId) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        // Hide all tabs
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            content.style.display = 'none';
+        });
+        
+        // Show target tab
+        const targetTab = document.getElementById(`${tabId}-tab`);
+        if (targetTab) {
+            targetTab.classList.add('active');
+            targetTab.style.display = 'block';
+        }
+        
+        // Update nav active state (for tabs opened from More drawer)
+        const mainTabs = ['dashboard', 'tasks', 'stats', 'activity'];
+        if (!mainTabs.includes(tabId)) {
+            // It's a secondary tab from More drawer
+            navItems.forEach(nav => nav.classList.remove('active'));
+        }
+        
+        // Focus search input when switching to search tab
+        if (tabId === 'search') {
+            setTimeout(() => {
+                document.getElementById('searchInput')?.focus();
+            }, 100);
+        }
+    }
+
+    /**
+     * Set up more drawer (#1)
+     */
+    function setupMoreDrawer() {
+        const moreDrawer = document.getElementById('moreDrawer');
+        const moreItems = document.querySelectorAll('.more-item');
+        const closeBtn = moreDrawer?.querySelector('.more-drawer-close');
+        const backdrop = moreDrawer?.querySelector('.more-drawer-backdrop');
+
+        // More item clicks
+        moreItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.dataset.tab;
+                switchTab(tabId);
+                closeMoreDrawer();
+            });
+        });
+
+        // Close button
+        closeBtn?.addEventListener('click', closeMoreDrawer);
+        
+        // Backdrop click
+        backdrop?.addEventListener('click', closeMoreDrawer);
+        
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && moreDrawer?.classList.contains('open')) {
+                closeMoreDrawer();
+            }
+        });
+    }
+
+    /**
+     * Open more drawer
+     */
+    function openMoreDrawer() {
+        const drawer = document.getElementById('moreDrawer');
+        drawer?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Close more drawer
+     */
+    function closeMoreDrawer() {
+        const drawer = document.getElementById('moreDrawer');
+        drawer?.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    /**
+     * Set up collapsible sections (#6)
+     */
+    function setupCollapsibleSections() {
+        const sections = document.querySelectorAll('.collapsible-section');
+        const STORAGE_KEY = 'collapsedSections';
+        
+        // Restore saved state
+        let savedState = {};
+        try {
+            savedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch (e) {
+            console.warn('Could not parse collapsed sections state');
+        }
+
+        sections.forEach(section => {
+            const sectionId = section.dataset.section;
+            const header = section.querySelector('.collapsible-header');
+            
+            if (!header || !sectionId) return;
+            
+            // Restore collapsed state
+            if (savedState[sectionId]) {
+                section.classList.add('collapsed');
+            }
+            
+            // Add click handler
+            header.addEventListener('click', (e) => {
+                // Don't collapse if clicking on filter selects
+                if (e.target.closest('.filter-select')) return;
+                
+                const isCollapsed = section.classList.toggle('collapsed');
+                
+                // Save state
+                savedState[sectionId] = isCollapsed;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(savedState));
             });
         });
     }
@@ -157,7 +221,7 @@
 
         refreshBtn.addEventListener('click', async () => {
             refreshBtn.classList.add('spinning');
-            updateStatus('loading', 'Refreshing...');
+            updateStatus('loading');
             
             try {
                 await DataModule.refresh();
@@ -171,18 +235,12 @@
                     MemoryBrowser.refresh()
                 ]);
                 
-                // Update Bob status summary
-                updateBobStatusSummary();
-                
-                const metadata = await DataModule.getMetadata();
-                if (metadata && metadata.lastUpdated) {
-                    updateLastUpdated(metadata.lastUpdated);
-                }
-                
-                updateStatus('online', 'Data loaded');
+                updateStatus('online');
+                showToast?.('Data refreshed!', 'success');
             } catch (error) {
                 console.error('Refresh error:', error);
-                updateStatus('error', 'Refresh failed');
+                updateStatus('error');
+                showToast?.('Refresh failed', 'error');
             } finally {
                 refreshBtn.classList.remove('spinning');
             }
@@ -190,53 +248,25 @@
     }
 
     /**
-     * Update status indicator
+     * Update status indicator (#10 - subtle status)
      */
-    function updateStatus(status, text) {
-        const statusDot = document.querySelector('.status-dot');
-        const statusText = document.getElementById('statusText');
+    function updateStatus(status) {
+        const statusDot = document.getElementById('globalStatusDot');
         
         if (statusDot) {
             statusDot.className = 'status-dot';
-            if (status === 'online') statusDot.classList.add('online');
+            if (status === 'loading') statusDot.classList.add('loading');
             if (status === 'error') statusDot.classList.add('error');
         }
-        
-        if (statusText) {
-            statusText.textContent = text;
+    }
+
+    /**
+     * Show toast notification (uses QuickActions if available)
+     */
+    function showToast(message, type = 'info') {
+        if (window.QuickActions?.showToast) {
+            window.QuickActions.showToast(message, type);
         }
-    }
-
-    /**
-     * Update last updated timestamp
-     */
-    function updateLastUpdated(date) {
-        const element = document.getElementById('lastUpdated');
-        if (!element) return;
-
-        const d = new Date(date);
-        element.textContent = d.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
-    }
-
-    /**
-     * Update Bob status summary counts in the header
-     */
-    function updateBobStatusSummary() {
-        const counts = BobStatusModule.getStatusCounts();
-        
-        const activeEl = document.getElementById('activeCount');
-        const idleEl = document.getElementById('idleCount');
-        const errorEl = document.getElementById('errorCount');
-        
-        if (activeEl) activeEl.textContent = counts.active || 0;
-        if (idleEl) idleEl.textContent = counts.idle || 0;
-        if (errorEl) errorEl.textContent = counts.error || 0;
     }
 
     // Initialize when DOM is ready
@@ -246,11 +276,12 @@
         init();
     }
 
-    // Expose for debugging
+    // Expose for debugging and external access
     window.MissionControl = {
-        refresh: async () => {
-            document.getElementById('refreshBtn')?.click();
-        },
+        switchTab,
+        openMoreDrawer,
+        closeMoreDrawer,
+        refresh: () => document.getElementById('refreshBtn')?.click(),
         BobStatusModule,
         CostsModule,
         ActivityModule,

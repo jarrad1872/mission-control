@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
@@ -44,13 +44,14 @@
         <header class="header">
             <div class="header-left">
                 <h1>🎯 Mission Control</h1>
-                <span class="subtitle">Bob Collective Dashboard</span>
             </div>
             <div class="header-right">
-                <span class="status-indicator" id="dataStatus">
-                    <span class="status-dot"></span>
-                    <span id="statusText">Loading...</span>
-                </span>
+                <div class="status-indicator" id="dataStatus">
+                    <span class="status-dot" id="globalStatusDot"></span>
+                </div>
+                <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
                 <button class="btn-refresh" id="refreshBtn" title="Refresh Data">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                         <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
@@ -60,125 +61,70 @@
             </div>
         </header>
 
-        <!-- Navigation Tabs (wrapper for scroll indicators) -->
-        <div class="nav-tabs-wrapper" id="navTabsWrapper">
-            <nav class="nav-tabs" id="navTabs">
-                <button class="tab-btn active" data-tab="activity">
-                    <span class="tab-icon">📋</span>
-                    <span class="tab-label">Activity</span>
-                </button>
-                <button class="tab-btn" data-tab="tasks">
-                    <span class="tab-icon">✅</span>
-                    <span class="tab-label">Tasks</span>
-                </button>
-                <button class="tab-btn" data-tab="analytics">
-                    <span class="tab-icon">📊</span>
-                    <span class="tab-label">Stats</span>
-                </button>
-                <button class="tab-btn" data-tab="calendar">
-                    <span class="tab-icon">📅</span>
-                    <span class="tab-label">Calendar</span>
-                </button>
-                <button class="tab-btn" data-tab="search">
-                    <span class="tab-icon">🔍</span>
-                    <span class="tab-label">Search</span>
-                </button>
-                <button class="tab-btn" data-tab="voice">
-                    <span class="tab-icon">🎙️</span>
-                    <span class="tab-label">Voice</span>
-                </button>
-                <button class="tab-btn" data-tab="sessions">
-                    <span class="tab-icon">📡</span>
-                    <span class="tab-label">Sessions</span>
-                </button>
-                <button class="tab-btn" data-tab="memory">
-                    <span class="tab-icon">🧠</span>
-                    <span class="tab-label">Memory</span>
-                </button>
-                <button class="tab-btn" data-tab="control">
-                    <span class="tab-icon">🎮</span>
-                    <span class="tab-label">Control</span>
-                </button>
-            </nav>
+        <!-- Pull to Refresh Indicator -->
+        <div class="pull-refresh-indicator" id="pullRefreshIndicator">
+            <div class="pull-refresh-spinner"></div>
+            <span class="pull-refresh-text">Release to refresh</span>
         </div>
 
-        <!-- Bob Status Panel -->
-        <section class="bob-status-panel">
-            <div class="bob-status-header" id="bobStatusHeader">
-                <h2>👥 Bob Collective Status</h2>
-                <button class="collapse-toggle" id="bobStatusToggle" title="Collapse/Expand" aria-label="Toggle Bob Status Panel">
-                    <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="bob-status-content">
-                <div class="bob-status-meta">
-                    <div class="status-summary" id="bobStatusSummary">
-                        <span class="status-count"><span class="dot active"></span> <span id="activeCount">0</span> active</span>
-                        <span class="status-count"><span class="dot idle"></span> <span id="idleCount">0</span> idle</span>
-                        <span class="status-count"><span class="dot error"></span> <span id="errorCount">0</span> error</span>
-                    </div>
-                    <span>Updated: <span id="bobStatusUpdated">—</span></span>
-                </div>
-            </div>
-            <div class="bob-status-grid" id="bobStatusGrid">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <span>Loading Bob status...</span>
-                </div>
+        <!-- Bob Status Summary Row (Compact) -->
+        <section class="bob-summary-row" id="bobSummaryRow">
+            <div class="bob-summary-chips" id="bobSummaryChips">
+                <!-- Chips rendered by bob-status.js -->
+                <div class="loading-dots"><span></span><span></span><span></span></div>
             </div>
         </section>
 
-        <!-- Quick Actions Panel -->
-        <section class="quick-actions-section">
-            <div id="quick-actions-panel">
-                <!-- Rendered by quick-actions.js -->
-            </div>
-        </section>
-
-        <!-- Usage Stats Panel -->
-        <section class="cost-tracker-panel" id="costTrackerPanel">
-            <div class="cost-tracker-header">
-                <h2>📊 Usage Stats</h2>
-                <span class="update-time" id="costUpdateTime">—</span>
-            </div>
-            <div id="costTrackerContent">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <span>Loading cost data...</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Activity Feed Tab -->
-            <section class="tab-content active" id="activity-tab">
-                <div class="section-header">
-                    <h2>Activity Feed</h2>
-                    <div class="filters">
-                        <select id="activityType" class="filter-select">
-                            <option value="all">All Types</option>
-                            <option value="commit">Git Commits</option>
-                            <option value="task">Task Completions</option>
-                            <option value="event">Daily Events</option>
-                            <option value="arena">Arena Sessions</option>
-                        </select>
-                        <select id="dateRange" class="filter-select">
-                            <option value="7">Last 7 days</option>
-                            <option value="14">Last 14 days</option>
-                            <option value="30">Last 30 days</option>
-                            <option value="all">All time</option>
-                        </select>
+        <!-- Main Content (Scrollable) -->
+        <main class="main-content" id="mainContent">
+            <!-- Dashboard Tab -->
+            <section class="tab-content active" id="dashboard-tab">
+                <!-- Usage Stats Panel -->
+                <section class="collapsible-section" data-section="usage-stats">
+                    <div class="section-header collapsible-header">
+                        <h2>📊 Usage Stats</h2>
+                        <div class="section-header-right">
+                            <span class="update-time" id="costUpdateTime">—</span>
+                            <svg class="collapse-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            </svg>
+                        </div>
                     </div>
-                </div>
-                <div class="activity-list" id="activityList">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <span>Loading activity...</span>
+                    <div class="collapsible-content" id="costTrackerContent">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <span>Loading cost data...</span>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <!-- Activity Feed Section -->
+                <section class="collapsible-section" data-section="activity-feed">
+                    <div class="section-header collapsible-header">
+                        <h2>Activity Feed</h2>
+                        <div class="section-header-right">
+                            <div class="filters inline-filters">
+                                <select id="activityType" class="filter-select">
+                                    <option value="all">All</option>
+                                    <option value="commit">Commits</option>
+                                    <option value="task">Tasks</option>
+                                    <option value="event">Events</option>
+                                </select>
+                            </div>
+                            <svg class="collapse-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="activity-list" id="activityList">
+                            <div class="loading-spinner">
+                                <div class="spinner"></div>
+                                <span>Loading activity...</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </section>
 
             <!-- Tasks Tab (Kanban Board) -->
@@ -197,15 +143,15 @@
                 </div>
             </section>
 
-            <!-- Analytics Tab -->
-            <section class="tab-content" id="analytics-tab">
+            <!-- Stats/Analytics Tab -->
+            <section class="tab-content" id="stats-tab">
                 <div class="section-header">
                     <h2>📊 Analytics Dashboard</h2>
                     <div class="filters">
                         <select id="analyticsRange" class="filter-select">
-                            <option value="7">Last 7 days</option>
-                            <option value="14">Last 14 days</option>
-                            <option value="30">Last 30 days</option>
+                            <option value="7">7 days</option>
+                            <option value="14">14 days</option>
+                            <option value="30">30 days</option>
                         </select>
                         <button class="btn-refresh" id="refreshAnalytics" title="Refresh Analytics">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -215,7 +161,6 @@
                         </button>
                     </div>
                 </div>
-                
                 <div class="analytics-container" id="analyticsContainer">
                     <div class="loading-spinner">
                         <div class="spinner"></div>
@@ -224,88 +169,8 @@
                 </div>
             </section>
 
-            <!-- Calendar Tab -->
-            <section class="tab-content" id="calendar-tab">
-                <div class="section-header">
-                    <h2>Weekly Schedule</h2>
-                    <div class="calendar-nav">
-                        <button class="nav-btn" id="prevWeek">← Prev</button>
-                        <span class="current-week" id="currentWeek">Loading...</span>
-                        <button class="nav-btn" id="nextWeek">Next →</button>
-                    </div>
-                </div>
-                <div class="calendar-grid" id="calendarGrid">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <span>Loading calendar...</span>
-                    </div>
-                </div>
-                <div class="event-detail-panel" id="eventDetailPanel">
-                    <div class="panel-header">
-                        <h3 id="eventDetailTitle">Select an event</h3>
-                        <button class="close-btn" id="closeEventPanel">×</button>
-                    </div>
-                    <div class="panel-content" id="eventDetailContent">
-                        <p class="placeholder-text">Click on a calendar event to view details.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Search Tab -->
-            <section class="tab-content" id="search-tab">
-                <div class="search-header">
-                    <div class="search-box">
-                        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
-                        </svg>
-                        <input type="text" id="searchInput" placeholder="Search memory, tasks, documents..." autocomplete="off">
-                        <kbd class="search-hint">⌘K</kbd>
-                    </div>
-                </div>
-                <div class="search-filters">
-                    <label class="filter-checkbox">
-                        <input type="checkbox" value="memory" checked> Memory
-                    </label>
-                    <label class="filter-checkbox">
-                        <input type="checkbox" value="tasks" checked> Tasks
-                    </label>
-                    <label class="filter-checkbox">
-                        <input type="checkbox" value="docs" checked> Docs
-                    </label>
-                    <label class="filter-checkbox">
-                        <input type="checkbox" value="root" checked> Root Files
-                    </label>
-                </div>
-                <div class="search-results" id="searchResults">
-                    <div class="search-placeholder">
-                        <span class="placeholder-emoji">🔍</span>
-                        <p>Start typing to search across all files</p>
-                        <p class="placeholder-hint">Searches memory/, tasks/, docs/, and root markdown files</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Voice Tab (ClawChat) -->
-            <section class="tab-content" id="voice-tab">
-                <div class="voice-container">
-                    <div class="voice-loading">
-                        <div class="spinner"></div>
-                        <span>Loading ClawChat voice interface...</span>
-                    </div>
-                    <div class="voice-iframe-wrapper">
-                        <!-- Iframe lazy-loaded by voice.js -->
-                    </div>
-                    <div class="voice-fallback">
-                        <p>Can't load iframe?</p>
-                        <a href="https://infrared-lounge-sherman-set.trycloudflare.com" target="_blank" class="voice-fallback-link">
-                            Open ClawChat in new tab →
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Sessions Tab -->
-            <section class="tab-content" id="sessions-tab">
+            <!-- Activity/Sessions Tab -->
+            <section class="tab-content" id="activity-tab">
                 <div class="sessions-panel">
                     <div class="sessions-header">
                         <h2>📡 Active Sessions</h2>
@@ -318,25 +183,17 @@
                                 All <span class="filter-count">0</span>
                             </button>
                             <button class="filter-btn" data-session-filter="main">
-                                🎯 Main <span class="filter-count">0</span>
+                                Main <span class="filter-count">0</span>
                             </button>
                             <button class="filter-btn" data-session-filter="subagent">
-                                🤖 Sub-Bobs <span class="filter-count">0</span>
-                            </button>
-                            <button class="filter-btn" data-session-filter="cron">
-                                ⏰ Cron <span class="filter-count">0</span>
-                            </button>
-                            <button class="filter-btn" data-session-filter="group">
-                                👥 Groups <span class="filter-count">0</span>
+                                Sub <span class="filter-count">0</span>
                             </button>
                         </div>
                         <div class="session-sort">
-                            <label for="sessionSort">Sort by:</label>
                             <select id="sessionSort" class="filter-select">
-                                <option value="recent">Most Recent</option>
-                                <option value="tokens">Token Usage</option>
-                                <option value="context">Context %</option>
-                                <option value="name">Name</option>
+                                <option value="recent">Recent</option>
+                                <option value="tokens">Tokens</option>
+                                <option value="context">Context</option>
                             </select>
                         </div>
                     </div>
@@ -350,7 +207,54 @@
                 </div>
             </section>
 
-            <!-- Memory Tab (Knowledge Graph Browser) -->
+            <!-- More: Search Tab -->
+            <section class="tab-content" id="search-tab">
+                <div class="search-header">
+                    <div class="search-box">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search memory, tasks, docs..." autocomplete="off">
+                    </div>
+                </div>
+                <div class="search-filters">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="memory" checked> Memory
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="tasks" checked> Tasks
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="docs" checked> Docs
+                    </label>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <div class="search-placeholder">
+                        <span class="placeholder-emoji">🔍</span>
+                        <p>Start typing to search</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- More: Voice Tab -->
+            <section class="tab-content" id="voice-tab">
+                <div class="voice-container">
+                    <div class="voice-loading">
+                        <div class="spinner"></div>
+                        <span>Loading ClawChat...</span>
+                    </div>
+                    <div class="voice-iframe-wrapper">
+                        <!-- Iframe lazy-loaded by voice.js -->
+                    </div>
+                    <div class="voice-fallback">
+                        <a href="https://infrared-lounge-sherman-set.trycloudflare.com" target="_blank" class="voice-fallback-link">
+                            Open ClawChat →
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- More: Memory Tab -->
             <section class="tab-content" id="memory-tab">
                 <div class="memory-browser">
                     <div class="loading-spinner">
@@ -360,11 +264,11 @@
                 </div>
             </section>
 
-            <!-- Control Tab (Two-Way Control Panel) -->
-            <section class="tab-content" id="control-tab">
+            <!-- More: Sessions/Control Tab -->
+            <section class="tab-content" id="sessions-tab">
                 <div class="section-header">
                     <h2>🎮 Command Center</h2>
-                    <p class="section-subtitle">Send commands, create tasks, and trigger actions via the Gateway API</p>
+                    <p class="section-subtitle">Send commands and trigger actions</p>
                 </div>
                 <div id="control-panel">
                     <div class="loading-spinner">
@@ -373,54 +277,164 @@
                     </div>
                 </div>
             </section>
+
+            <!-- More: Calendar Tab -->
+            <section class="tab-content" id="calendar-tab">
+                <div class="section-header">
+                    <h2>Weekly Schedule</h2>
+                    <div class="calendar-nav">
+                        <button class="nav-btn" id="prevWeek">←</button>
+                        <span class="current-week" id="currentWeek">Loading...</span>
+                        <button class="nav-btn" id="nextWeek">→</button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading calendar...</span>
+                    </div>
+                </div>
+            </section>
         </main>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <span>Last updated: <span id="lastUpdated">—</span></span>
-            <span class="separator">|</span>
-            <span>Data generated by <code>build.sh</code></span>
-        </footer>
-    </div>
+        <!-- Floating Action Button (FAB) -->
+        <button class="fab" id="fabButton" aria-label="Quick Actions" title="Quick Actions">
+            <span class="fab-icon">⚡</span>
+        </button>
 
-    <!-- Result Detail Modal -->
-    <div class="modal" id="resultModal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">File Content</h3>
-                <button class="close-btn" id="closeModal">×</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <pre id="modalContent"></pre>
+        <!-- FAB Menu (Bottom Sheet on Mobile) -->
+        <div class="fab-menu" id="fabMenu">
+            <div class="fab-menu-backdrop"></div>
+            <div class="fab-menu-content">
+                <div class="fab-menu-header">
+                    <h3>Quick Actions</h3>
+                    <button class="fab-menu-close" aria-label="Close">×</button>
+                </div>
+                <div class="fab-menu-grid" id="fabMenuGrid">
+                    <!-- Actions rendered by quick-actions.js -->
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Session History Modal -->
-    <div class="modal" id="sessionHistoryModal">
-        <div class="modal-backdrop" onclick="SessionsModule.closeHistoryModal()"></div>
-        <div class="modal-content modal-large">
-            <div class="modal-header">
-                <h3 id="historyModalTitle">Session History</h3>
-                <button class="close-btn" onclick="SessionsModule.closeHistoryModal()">×</button>
-            </div>
-            <div class="modal-body" id="historyModalContent">
-                <!-- History content loaded dynamically -->
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav" id="bottomNav">
+            <button class="nav-item active" data-tab="dashboard" title="Dashboard">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-item" data-tab="tasks" title="Tasks">
+                <span class="nav-icon">✅</span>
+                <span class="nav-label">Tasks</span>
+            </button>
+            <button class="nav-item" data-tab="stats" title="Statistics">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Stats</span>
+            </button>
+            <button class="nav-item" data-tab="activity" title="Sessions & Activity">
+                <span class="nav-icon">📡</span>
+                <span class="nav-label">Activity</span>
+            </button>
+            <button class="nav-item" data-tab="more" title="More Options">
+                <span class="nav-icon">⋯</span>
+                <span class="nav-label">More</span>
+            </button>
+        </nav>
+
+        <!-- More Menu Drawer -->
+        <div class="more-drawer" id="moreDrawer">
+            <div class="more-drawer-backdrop"></div>
+            <div class="more-drawer-content">
+                <div class="more-drawer-header">
+                    <h3>More</h3>
+                    <button class="more-drawer-close" aria-label="Close">×</button>
+                </div>
+                <div class="more-drawer-items">
+                    <button class="more-item" data-tab="search">
+                        <span class="more-icon">🔍</span>
+                        <span class="more-label">Search</span>
+                    </button>
+                    <button class="more-item" data-tab="voice">
+                        <span class="more-icon">🎙️</span>
+                        <span class="more-label">Voice</span>
+                    </button>
+                    <button class="more-item" data-tab="memory">
+                        <span class="more-icon">🧠</span>
+                        <span class="more-label">Memory</span>
+                    </button>
+                    <button class="more-item" data-tab="sessions">
+                        <span class="more-icon">🎮</span>
+                        <span class="more-label">Control</span>
+                    </button>
+                    <button class="more-item" data-tab="calendar">
+                        <span class="more-icon">📅</span>
+                        <span class="more-label">Calendar</span>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Task Detail Modal -->
-    <div class="modal" id="taskDetailModal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="taskDetailTitle">Task Details</h3>
-                <button class="close-btn">×</button>
+        <!-- Bob Detail Modal -->
+        <div class="modal" id="bobDetailModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content modal-bottom-sheet">
+                <div class="modal-header">
+                    <h3 id="bobDetailTitle">Bob Details</h3>
+                    <button class="close-btn" id="closeBobDetail">×</button>
+                </div>
+                <div class="modal-body" id="bobDetailContent">
+                    <!-- Bob details rendered dynamically -->
+                </div>
             </div>
-            <div class="modal-body" id="taskDetailContent">
-                <!-- Task details loaded dynamically -->
+        </div>
+
+        <!-- Result Detail Modal -->
+        <div class="modal" id="resultModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">File Content</h3>
+                    <button class="close-btn" id="closeModal">×</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <pre id="modalContent"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session History Modal -->
+        <div class="modal" id="sessionHistoryModal">
+            <div class="modal-backdrop" onclick="SessionsModule.closeHistoryModal()"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 id="historyModalTitle">Session History</h3>
+                    <button class="close-btn" onclick="SessionsModule.closeHistoryModal()">×</button>
+                </div>
+                <div class="modal-body" id="historyModalContent">
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Detail Modal -->
+        <div class="modal" id="taskDetailModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="taskDetailTitle">Task Details</h3>
+                    <button class="close-btn">×</button>
+                </div>
+                <div class="modal-body" id="taskDetailContent">
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Detail Panel -->
+        <div class="event-detail-panel" id="eventDetailPanel">
+            <div class="panel-header">
+                <h3 id="eventDetailTitle">Select an event</h3>
+                <button class="close-btn" id="closeEventPanel">×</button>
+            </div>
+            <div class="panel-content" id="eventDetailContent">
+                <p class="placeholder-text">Click on a calendar event to view details.</p>
             </div>
         </div>
     </div>
@@ -430,6 +444,7 @@
     
     <!-- Core Scripts -->
     <script src="js/data.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/bob-status.js"></script>
     <script src="js/costs.js"></script>
     <script src="js/activity.js"></script>
@@ -442,6 +457,7 @@
     <script src="js/memory-browser.js"></script>
     <script src="js/kanban.js"></script>
     <script src="js/control.js"></script>
+    <script src="js/pull-refresh.js"></script>
     <script src="js/main.js"></script>
     
     <!-- PWA Support -->

@@ -1,7 +1,7 @@
 /**
- * Bob Status Module
- * Live status panel for the Bob Collective
- * Auto-refreshes every 30 seconds
+ * Bob Status Module — Compact Chip View (#2)
+ * Shows all Bobs as compact chips in a horizontal row
+ * Tap to expand full details in a modal
  */
 
 const BobStatusModule = (function() {
@@ -9,7 +9,6 @@ const BobStatusModule = (function() {
     
     const REFRESH_INTERVAL = 30000; // 30 seconds
     const DATA_URL = 'data/bob-status.json';
-    const STORAGE_KEY = 'bobStatusCollapsed';
     
     let refreshTimer = null;
     let statusData = null;
@@ -20,12 +19,7 @@ const BobStatusModule = (function() {
     async function init() {
         console.log('👥 Bob Status Module initializing...');
         
-        // Setup collapse/expand functionality
-        setupCollapseToggle();
-        
-        // Restore collapsed state from localStorage
-        restoreCollapsedState();
-        
+        setupModalHandlers();
         await refresh();
         startAutoRefresh();
         
@@ -33,53 +27,143 @@ const BobStatusModule = (function() {
     }
     
     /**
-     * Setup collapse toggle button
+     * Setup modal handlers
      */
-    function setupCollapseToggle() {
-        const header = document.getElementById('bobStatusHeader');
-        const toggle = document.getElementById('bobStatusToggle');
+    function setupModalHandlers() {
+        const modal = document.getElementById('bobDetailModal');
+        const closeBtn = document.getElementById('closeBobDetail');
+        const backdrop = modal?.querySelector('.modal-backdrop');
         
-        if (!header || !toggle) return;
+        closeBtn?.addEventListener('click', closeDetailModal);
+        backdrop?.addEventListener('click', closeDetailModal);
         
-        // Make header clickable
-        header.style.cursor = 'pointer';
-        
-        // Add click handlers - both header and toggle button trigger collapse
-        header.addEventListener('click', toggleCollapse);
-        toggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent double-trigger from header
-            toggleCollapse();    // Actually toggle the panel
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal?.classList.contains('open')) {
+                closeDetailModal();
+            }
         });
     }
     
     /**
-     * Toggle panel collapse state
+     * Close detail modal
      */
-    function toggleCollapse() {
-        const panel = document.querySelector('.bob-status-panel');
-        if (!panel) return;
-        
-        const isCollapsed = panel.classList.toggle('collapsed');
-        
-        // Save state to localStorage
-        localStorage.setItem(STORAGE_KEY, isCollapsed ? 'true' : 'false');
-        
-        console.log(`📊 Bob Status Panel ${isCollapsed ? 'collapsed' : 'expanded'}`);
+    function closeDetailModal() {
+        const modal = document.getElementById('bobDetailModal');
+        modal?.classList.remove('open');
+        document.body.style.overflow = '';
     }
     
     /**
-     * Restore collapsed state from localStorage
+     * Open detail modal for a specific Bob
      */
-    function restoreCollapsedState() {
-        const panel = document.querySelector('.bob-status-panel');
-        if (!panel) return;
+    function openDetailModal(bobId) {
+        if (!statusData || !statusData.bobs) return;
         
-        const isCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
+        const bob = statusData.bobs.find(b => b.id === bobId);
+        if (!bob) return;
         
-        if (isCollapsed) {
-            panel.classList.add('collapsed');
-            console.log('📊 Bob Status Panel restored as collapsed');
-        }
+        const modal = document.getElementById('bobDetailModal');
+        const title = document.getElementById('bobDetailTitle');
+        const content = document.getElementById('bobDetailContent');
+        
+        if (!modal || !content) return;
+        
+        title.textContent = bob.name;
+        content.innerHTML = renderBobDetail(bob);
+        
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    /**
+     * Render full Bob detail view
+     */
+    function renderBobDetail(bob) {
+        const statusLabels = {
+            active: 'Active — Currently working',
+            idle: 'Idle — Ready for tasks',
+            error: 'Error — Needs attention',
+            offline: 'Offline'
+        };
+        
+        const contextLevel = getContextLevel(bob.contextPercent || 0);
+        
+        return `
+            <div class="bob-detail-card">
+                <div class="bob-detail-header">
+                    <span class="bob-detail-emoji">${bob.emoji}</span>
+                    <div class="bob-detail-info">
+                        <h4>${bob.name}</h4>
+                        <span class="bob-detail-channel">${bob.channel || 'Unknown channel'}</span>
+                    </div>
+                </div>
+                
+                <div class="bob-detail-status">
+                    <span class="bob-detail-status-dot ${bob.status}"></span>
+                    <span class="bob-detail-status-text">${statusLabels[bob.status] || bob.status}</span>
+                </div>
+                
+                ${bob.description ? `<p class="bob-detail-description">${bob.description}</p>` : ''}
+                
+                ${bob.errorMessage ? `
+                    <div class="bob-error-banner">
+                        ⚠️ ${bob.errorMessage}
+                    </div>
+                ` : ''}
+                
+                <div class="bob-detail-metrics">
+                    <div class="bob-metric-row">
+                        <span class="bob-metric-label">Context</span>
+                        ${renderContextGauge(bob.contextPercent || 0)}
+                        <span class="bob-metric-value">${bob.contextPercent || 0}%</span>
+                    </div>
+                    <div class="bob-metric-row">
+                        <span class="bob-metric-label">Last Active</span>
+                        <span class="bob-metric-value">${formatRelativeTime(bob.lastActivity)}</span>
+                    </div>
+                    ${bob.sessionId ? `
+                        <div class="bob-metric-row">
+                            <span class="bob-metric-label">Session</span>
+                            <span class="bob-metric-value" style="font-size: 0.75rem;">${bob.sessionId.slice(0, 20)}...</span>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render circular context gauge (#9)
+     */
+    function renderContextGauge(percent) {
+        const radius = 16;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (percent / 100) * circumference;
+        const level = getContextLevel(percent);
+        
+        return `
+            <div class="context-gauge">
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <circle class="context-gauge-bg" cx="20" cy="20" r="${radius}" />
+                    <circle 
+                        class="context-gauge-fill ${level}" 
+                        cx="20" cy="20" r="${radius}"
+                        stroke-dasharray="${circumference}"
+                        stroke-dashoffset="${offset}"
+                    />
+                </svg>
+                <span class="context-gauge-text">${percent}</span>
+            </div>
+        `;
+    }
+    
+    /**
+     * Get context level class
+     */
+    function getContextLevel(percent) {
+        if (percent < 50) return 'low';
+        if (percent < 80) return 'medium';
+        return 'high';
     }
     
     /**
@@ -91,8 +175,7 @@ const BobStatusModule = (function() {
             if (!response.ok) throw new Error('Failed to fetch bob status');
             
             statusData = await response.json();
-            render();
-            updatePanelTimestamp();
+            renderChips();
             
         } catch (error) {
             console.error('❌ Bob Status fetch error:', error);
@@ -101,60 +184,53 @@ const BobStatusModule = (function() {
     }
     
     /**
-     * Render the bob status cards
+     * Render compact Bob chips (#2)
      */
-    function render() {
-        const container = document.getElementById('bobStatusGrid');
+    function renderChips() {
+        const container = document.getElementById('bobSummaryChips');
         if (!container || !statusData) return;
         
         const bobs = statusData.bobs || [];
         
         container.innerHTML = bobs.map(bob => `
-            <div class="bob-card ${bob.status}" data-bob="${bob.id}">
-                <div class="bob-header">
-                    <span class="bob-emoji">${bob.emoji}</span>
-                    <div class="bob-info">
-                        <h3 class="bob-name">${bob.name}</h3>
-                        <span class="bob-channel">${bob.channel || 'unknown'}</span>
-                    </div>
-                    <div class="bob-status-dot" title="${getStatusText(bob.status)}"></div>
-                </div>
-                <div class="bob-body">
-                    ${bob.description ? `<p class="bob-description">${bob.description}</p>` : ''}
-                    ${bob.errorMessage ? `<p class="bob-error">${bob.errorMessage}</p>` : ''}
-                    <div class="bob-metrics">
-                        <div class="metric">
-                            <span class="metric-label">Context</span>
-                            <div class="context-bar">
-                                <div class="context-fill" style="width: ${bob.contextPercent || 0}%"></div>
-                            </div>
-                            <span class="metric-value">${bob.contextPercent || 0}%</span>
-                        </div>
-                    </div>
-                    <div class="bob-activity">
-                        <span class="activity-label">Last active:</span>
-                        <span class="activity-time">${formatRelativeTime(bob.lastActivity)}</span>
-                    </div>
-                </div>
-            </div>
+            <button class="bob-chip" data-bob="${bob.id}" title="${bob.name} — ${getStatusText(bob.status)}">
+                <span class="bob-chip-emoji">${bob.emoji}</span>
+                <span class="bob-chip-name">${getShortName(bob.name)}</span>
+                <span class="bob-chip-status ${bob.status}"></span>
+            </button>
         `).join('');
         
-        // Add subtle animation for status changes
-        animateStatusDots();
+        // Add click handlers
+        container.querySelectorAll('.bob-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const bobId = chip.dataset.bob;
+                openDetailModal(bobId);
+            });
+        });
+    }
+    
+    /**
+     * Get shortened name for chip
+     */
+    function getShortName(name) {
+        // Extract just the first word or abbreviation
+        if (name.includes('-')) {
+            return name.split('-')[0];
+        }
+        return name.split(' ')[0];
     }
     
     /**
      * Render error state
      */
     function renderError() {
-        const container = document.getElementById('bobStatusGrid');
+        const container = document.getElementById('bobSummaryChips');
         if (!container) return;
         
         container.innerHTML = `
-            <div class="bob-status-error">
-                <span class="error-icon">⚠️</span>
-                <p>Failed to load Bob status</p>
-                <button class="retry-btn" onclick="BobStatusModule.refresh()">Retry</button>
+            <div class="bob-chip" style="cursor: default;">
+                <span class="bob-chip-emoji">⚠️</span>
+                <span class="bob-chip-name">Load failed</span>
             </div>
         `;
     }
@@ -164,9 +240,10 @@ const BobStatusModule = (function() {
      */
     function getStatusText(status) {
         const texts = {
-            'idle': 'Idle - Ready for tasks',
-            'active': 'Active - Currently working',
-            'error': 'Error - Needs attention'
+            'idle': 'Idle',
+            'active': 'Active',
+            'error': 'Error',
+            'offline': 'Offline'
         };
         return texts[status] || status;
     }
@@ -190,31 +267,6 @@ const BobStatusModule = (function() {
         if (diffDays < 7) return `${diffDays}d ago`;
         
         return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-    
-    /**
-     * Update the panel's last updated timestamp
-     */
-    function updatePanelTimestamp() {
-        const el = document.getElementById('bobStatusUpdated');
-        if (!el) return;
-        
-        const now = new Date();
-        el.textContent = now.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
-        });
-    }
-    
-    /**
-     * Animate status dots for active bobs
-     */
-    function animateStatusDots() {
-        const activeDots = document.querySelectorAll('.bob-card.active .bob-status-dot');
-        activeDots.forEach(dot => {
-            dot.classList.add('pulsing');
-        });
     }
     
     /**
@@ -260,6 +312,8 @@ const BobStatusModule = (function() {
         refresh,
         getData,
         getStatusCounts,
+        openDetailModal,
+        closeDetailModal,
         startAutoRefresh,
         stopAutoRefresh
     };
