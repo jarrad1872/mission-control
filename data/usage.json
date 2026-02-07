@@ -1,0 +1,76 @@
+{
+  "lastUpdate": "2026-02-07T08:02:13.653Z",
+  "source": "real",
+  "today": {
+    "date": "2026-02-07",
+    "tokens": {
+      "input": 311804,
+      "output": 387848,
+      "cacheRead": 65829894,
+      "cacheWrite": 6784961
+    },
+    "totalTokens": 699652,
+    "byModel": {
+      "claude-opus-4-5": 370151,
+      "delivery-mirror": 0,
+      "kimi-k2.5": 304769,
+      "claude-sonnet-4-5": 24732
+    },
+    "sessions": 32,
+    "messages": 1005
+  },
+  "week": {
+    "tokens": {
+      "input": 13828711,
+      "output": 1774636,
+      "cacheRead": 337065990,
+      "cacheWrite": 40516506
+    },
+    "totalTokens": 15603347,
+    "sessions": 141,
+    "messages": 5194,
+    "days": [
+      {
+        "date": "2026-02-01",
+        "totalTokens": 583041,
+        "sessions": 18
+      },
+      {
+        "date": "2026-02-02",
+        "totalTokens": 364131,
+        "sessions": 18
+      },
+      {
+        "date": "2026-02-03",
+        "totalTokens": 12988750,
+        "sessions": 32
+      },
+      {
+        "date": "2026-02-04",
+        "totalTokens": 109149,
+        "sessions": 22
+      },
+      {
+        "date": "2026-02-05",
+        "totalTokens": 815574,
+        "sessions": 15
+      },
+      {
+        "date": "2026-02-06",
+        "totalTokens": 43050,
+        "sessions": 4
+      },
+      {
+        "date": "2026-02-07",
+        "totalTokens": 699652,
+        "sessions": 32
+      }
+    ],
+    "byModel": {
+      "delivery-mirror": 0,
+      "claude-opus-4-5": 1641438,
+      "claude-sonnet-4-5": 122198,
+      "kimi-k2.5": 13839711
+    }
+  }
+}

@@ -429,51 +429,106 @@ function generateSearchIndex() {
 }
 
 /**
- * Generate bob-status.json
- * TODO: In future, call sessions_list API to get real status
+ * Clawdbot session data paths
+ */
+const CLAWDBOT_HOME = process.env.CLAWDBOT_HOME || '/home/node/.clawdbot';
+const SESSIONS_DIR = path.join(CLAWDBOT_HOME, 'agents', 'main', 'sessions');
+const SESSIONS_JSON = path.join(SESSIONS_DIR, 'sessions.json');
+
+/**
+ * Bob Collective configuration - maps session keys to Bob identities
+ */
+const BOB_CONFIG = {
+    'agent:main:main': { id: 'main', name: 'Main Bob', emoji: '🎯', channel: 'whatsapp', description: 'Primary orchestrator' },
+    'agent:main:telegram:group:-1003765361939:topic:1': { id: 'standup', name: 'Standup Bob', emoji: '📢', channel: 'telegram', description: 'Daily standup & general' },
+    'agent:main:telegram:group:-1003765361939:topic:4': { id: 'kcc', name: 'KCC Bob', emoji: '🏗️', channel: 'telegram', description: 'Kippen Concrete & Construction' },
+    'agent:main:telegram:group:-1003765361939:topic:5': { id: 'personal', name: 'Personal Bob', emoji: '🏠', channel: 'telegram', description: 'Personal assistant' },
+    'agent:main:telegram:group:-1003765361939:topic:6': { id: 'dmi', name: 'DMI Bob', emoji: '🔧', channel: 'telegram', description: 'DMI Tools Corp' },
+    'agent:main:telegram:group:-1003765361939:topic:7': { id: 'sawdot', name: 'SawDot Bob', emoji: '🪚', channel: 'telegram', description: 'SawDot operations' },
+    'agent:main:telegram:group:-1003765361939:topic:8': { id: 'mrbex', name: 'MrBex Bob', emoji: '🎬', channel: 'telegram', description: 'MrBex content' }
+};
+
+/**
+ * Determine Bob status based on last activity time
+ */
+function getBobStatus(lastActivityMs) {
+    const now = Date.now();
+    const diffMs = now - lastActivityMs;
+    const diffMinutes = diffMs / (1000 * 60);
+    
+    if (diffMinutes < 5) return 'active';
+    if (diffMinutes < 60) return 'idle';
+    return 'offline';
+}
+
+/**
+ * Generate bob-status.json from REAL session data
  */
 function generateBobStatus() {
-    console.log('👥 Generating Bob status...');
+    console.log('👥 Generating Bob status from real session data...');
     
     const now = new Date().toISOString();
+    const bobs = [];
     
-    // Bob Collective configuration - update when adding/removing Bobs
-    const bobConfigs = [
-        { id: 'main', name: 'Main Bob', emoji: '🎯', channel: 'telegram', description: 'Primary orchestrator' },
-        { id: 'kcc', name: 'KCC Bob', emoji: '🏗️', channel: 'telegram', description: 'Kippen Concrete & Construction' },
-        { id: 'dmi', name: 'DMI Bob', emoji: '🔧', channel: 'telegram', description: 'DMI Tools Corp' },
-        { id: 'personal', name: 'Personal Bob', emoji: '🏠', channel: 'whatsapp', description: 'Personal assistant' },
-        { id: 'sawdot', name: 'SawDot Bob', emoji: '🪚', channel: 'telegram', description: 'SawDot operations' },
-        { id: 'mrbex', name: 'MrBex Bob', emoji: '🎬', channel: 'telegram', description: 'MrBex content' }
-    ];
-    
-    // TODO: Replace mock data with real session data from API
-    // For now, generate plausible mock status
-    const bobs = bobConfigs.map(config => {
-        // Randomize status for demo
-        const statuses = ['idle', 'idle', 'idle', 'active', 'active'];
-        const status = statuses[Math.floor(Math.random() * statuses.length)];
+    try {
+        if (!fs.existsSync(SESSIONS_JSON)) {
+            console.error('   ⚠️ Sessions file not found:', SESSIONS_JSON);
+            return generateBobStatusFallback();
+        }
         
-        // Generate recent-ish last activity
-        const hoursAgo = Math.floor(Math.random() * 24);
-        const lastActivity = new Date(Date.now() - hoursAgo * 3600000).toISOString();
+        const sessionsData = JSON.parse(fs.readFileSync(SESSIONS_JSON, 'utf8'));
         
-        // Random context percentage
-        const contextPercent = status === 'active' 
-            ? Math.floor(Math.random() * 60) + 20  // 20-80% if active
-            : Math.floor(Math.random() * 30);       // 0-30% if idle
+        // Process each known Bob
+        Object.entries(BOB_CONFIG).forEach(([sessionKey, config]) => {
+            const session = sessionsData[sessionKey];
+            
+            if (session) {
+                const lastActivityMs = session.updatedAt || 0;
+                const lastActivity = new Date(lastActivityMs).toISOString();
+                const status = getBobStatus(lastActivityMs);
+                
+                // Calculate context usage percentage
+                const totalTokens = session.totalTokens || 0;
+                const contextTokens = session.contextTokens || 200000;
+                const contextPercent = Math.round((totalTokens / contextTokens) * 100);
+                
+                bobs.push({
+                    ...config,
+                    status,
+                    lastActivity,
+                    contextPercent: Math.min(contextPercent, 100),
+                    model: session.model || 'unknown',
+                    totalTokens,
+                    contextTokens,
+                    sessionId: session.sessionId
+                });
+                
+                console.log(`   - ${config.name}: ${status} (${contextPercent}% context, last: ${lastActivity})`);
+            } else {
+                // Bob exists in config but no session data
+                bobs.push({
+                    ...config,
+                    status: 'offline',
+                    lastActivity: null,
+                    contextPercent: 0,
+                    model: null,
+                    totalTokens: 0,
+                    contextTokens: 200000,
+                    sessionId: null
+                });
+                console.log(`   - ${config.name}: no session data`);
+            }
+        });
         
-        return {
-            ...config,
-            status,
-            lastActivity,
-            contextPercent
-        };
-    });
+    } catch (e) {
+        console.error('   ⚠️ Error reading session data:', e.message);
+        return generateBobStatusFallback();
+    }
     
     const data = {
         generated: now,
         lastUpdate: now,
+        source: 'real',
         bobs
     };
     
@@ -482,143 +537,271 @@ function generateBobStatus() {
         JSON.stringify(data, null, 2)
     );
     
-    console.log(`   ✅ bob-status.json generated (${bobs.length} Bobs)`);
+    console.log(`   ✅ bob-status.json generated (${bobs.length} Bobs from real data)`);
     return data;
 }
 
 /**
- * Generate costs.json from metrics data
+ * Fallback if session data unavailable
  */
-function generateCosts() {
-    console.log('💰 Generating cost data...');
+function generateBobStatusFallback() {
+    console.log('   ⚠️ Using fallback (no real data available)');
+    const now = new Date().toISOString();
+    const bobs = Object.values(BOB_CONFIG).map(config => ({
+        ...config,
+        status: 'unknown',
+        lastActivity: null,
+        contextPercent: 0,
+        model: null
+    }));
     
-    const metricsDir = path.join(CLAWD_ROOT, 'metrics');
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Model pricing (per 1M tokens) - approximate rates
-    const MODEL_PRICING = {
-        'claude-opus-4-5': { input: 15.00, output: 75.00, cacheRead: 1.50 },
-        'claude-sonnet-4-5': { input: 3.00, output: 15.00, cacheRead: 0.30 },
-        'claude-3-5-sonnet': { input: 3.00, output: 15.00, cacheRead: 0.30 },
-        'claude-3-5-haiku': { input: 0.80, output: 4.00, cacheRead: 0.08 },
-        'kimi-k2.5': { input: 0.60, output: 2.40, cacheRead: 0.06 },
-        'gpt-4o': { input: 5.00, output: 15.00, cacheRead: 2.50 },
-        'gemini-2.0-flash': { input: 0.10, output: 0.40, cacheRead: 0.025 }
+    const data = {
+        generated: now,
+        lastUpdate: now,
+        source: 'fallback',
+        bobs
     };
     
-    // Read all metrics files
-    let allDays = [];
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'bob-status.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    return data;
+}
+
+/**
+ * Parse usage data from a JSONL session file
+ * Returns token breakdown and model usage
+ */
+function parseSessionUsage(filePath) {
+    const result = {
+        tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+        byModel: {},
+        messageCount: 0
+    };
+    
     try {
-        const files = fs.readdirSync(metricsDir)
-            .filter(f => /^20\d{2}-\d{2}-\d{2}\.json$/.test(f))
-            .sort()
-            .slice(-7); // Last 7 days
+        const content = fs.readFileSync(filePath, 'utf8');
+        const lines = content.trim().split('\n');
         
-        files.forEach(filename => {
-            const filePath = path.join(metricsDir, filename);
+        for (const line of lines) {
             try {
-                const content = fs.readFileSync(filePath, 'utf8');
-                const data = JSON.parse(content);
-                const date = filename.replace('.json', '');
-                
-                // Extract activity metrics for cost estimation
-                const heartbeats = data.bobCollective?.heartbeatsProcessed || 0;
-                const agentsSpawned = data.swarms?.agentsSpawned || 0;
-                const arenaSessions = data.arena?.sessionsRun || 0;
-                const searches = data.memory?.searchesPerformed || 0;
-                
-                // Estimate token usage based on activity
-                const estimatedInputTokens = (heartbeats * 5000) + (agentsSpawned * 20000) + (arenaSessions * 30000) + (searches * 1000);
-                const estimatedOutputTokens = (heartbeats * 2000) + (agentsSpawned * 8000) + (arenaSessions * 15000) + (searches * 500);
-                const estimatedCacheTokens = (heartbeats * 3000) + (agentsSpawned * 10000);
-                
-                // Distribute across models (estimated distribution)
-                const modelDistribution = {
-                    'claude-opus-4-5': 0.40,
-                    'claude-sonnet-4-5': 0.35,
-                    'kimi-k2.5': 0.15,
-                    'gemini-2.0-flash': 0.10
-                };
-                
-                let totalCost = 0;
-                const byModel = {};
-                
-                Object.entries(modelDistribution).forEach(([model, ratio]) => {
-                    const pricing = MODEL_PRICING[model];
-                    if (pricing) {
-                        const inputCost = (estimatedInputTokens * ratio / 1000000) * pricing.input;
-                        const outputCost = (estimatedOutputTokens * ratio / 1000000) * pricing.output;
-                        const cacheCost = (estimatedCacheTokens * ratio / 1000000) * pricing.cacheRead;
-                        const modelCost = inputCost + outputCost + cacheCost;
-                        byModel[model] = parseFloat(modelCost.toFixed(2));
-                        totalCost += modelCost;
-                    }
-                });
-                
-                // Ensure minimum cost if there was activity
-                if (totalCost === 0 && (heartbeats > 0 || agentsSpawned > 0)) {
-                    totalCost = 0.10;
-                    byModel['claude-sonnet-4-5'] = 0.10;
+                const entry = JSON.parse(line);
+                if (entry.type === 'message' && entry.message?.usage) {
+                    const usage = entry.message.usage;
+                    const model = entry.message.model || 'unknown';
+                    
+                    // Aggregate tokens
+                    result.tokens.input += usage.input || 0;
+                    result.tokens.output += usage.output || 0;
+                    result.tokens.cacheRead += usage.cacheRead || 0;
+                    result.tokens.cacheWrite += usage.cacheWrite || 0;
+                    
+                    // Track model usage by total tokens
+                    const modelTokens = (usage.input || 0) + (usage.output || 0);
+                    result.byModel[model] = (result.byModel[model] || 0) + modelTokens;
+                    
+                    result.messageCount++;
                 }
-                
-                allDays.push({
-                    date: date,
-                    cost: parseFloat(totalCost.toFixed(2)),
-                    tokens: {
-                        input: estimatedInputTokens,
-                        output: estimatedOutputTokens,
-                        cacheRead: estimatedCacheTokens
-                    },
-                    byModel: byModel
-                });
             } catch (e) {
-                console.error(`   ⚠️ Could not parse ${filename}:`, e.message);
+                // Skip malformed lines
             }
-        });
+        }
     } catch (e) {
-        console.error('   ⚠️ Could not read metrics directory:', e.message);
+        // File read error, return empty result
     }
     
+    return result;
+}
+
+/**
+ * Get date from a timestamp in milliseconds
+ */
+function getDateFromMs(ms) {
+    return new Date(ms).toISOString().split('T')[0];
+}
+
+/**
+ * Generate usage.json from REAL session transcript data
+ */
+function generateCosts() {
+    console.log('📊 Generating usage data from real session transcripts...');
+    
+    const today = new Date().toISOString().split('T')[0];
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    // Aggregate by day
+    const dayData = {};
+    let totalProcessed = 0;
+    let totalTokens = 0;
+    
+    try {
+        if (!fs.existsSync(SESSIONS_DIR)) {
+            console.error('   ⚠️ Sessions directory not found:', SESSIONS_DIR);
+            return generateCostsFallback();
+        }
+        
+        // Get all JSONL files (session transcripts)
+        const sessionFiles = fs.readdirSync(SESSIONS_DIR)
+            .filter(f => f.endsWith('.jsonl') && !f.endsWith('.lock'));
+        
+        console.log(`   - Found ${sessionFiles.length} session files to scan`);
+        
+        // Process each session file
+        for (const filename of sessionFiles) {
+            const filePath = path.join(SESSIONS_DIR, filename);
+            const stats = fs.statSync(filePath);
+            const fileDate = getDateFromMs(stats.mtimeMs);
+            
+            // Only process files from the last 7 days
+            if (new Date(fileDate) < sevenDaysAgo) continue;
+            
+            const usage = parseSessionUsage(filePath);
+            const dayTokens = usage.tokens.input + usage.tokens.output;
+            
+            if (dayTokens > 0) {
+                if (!dayData[fileDate]) {
+                    dayData[fileDate] = {
+                        date: fileDate,
+                        tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                        byModel: {},
+                        sessions: 0,
+                        messages: 0
+                    };
+                }
+                
+                dayData[fileDate].tokens.input += usage.tokens.input;
+                dayData[fileDate].tokens.output += usage.tokens.output;
+                dayData[fileDate].tokens.cacheRead += usage.tokens.cacheRead;
+                dayData[fileDate].tokens.cacheWrite += usage.tokens.cacheWrite;
+                dayData[fileDate].messages += usage.messageCount;
+                dayData[fileDate].sessions++;
+                
+                // Merge model usage (by token count)
+                Object.entries(usage.byModel).forEach(([model, tokens]) => {
+                    dayData[fileDate].byModel[model] = (dayData[fileDate].byModel[model] || 0) + tokens;
+                });
+                
+                totalTokens += dayTokens;
+                totalProcessed++;
+            }
+        }
+        
+        console.log(`   - Processed ${totalProcessed} sessions with usage data`);
+        
+    } catch (e) {
+        console.error('   ⚠️ Error reading session data:', e.message);
+        return generateCostsFallback();
+    }
+    
+    // Convert to sorted array
+    const allDays = Object.values(dayData)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(d => ({
+            date: d.date,
+            tokens: d.tokens,
+            totalTokens: d.tokens.input + d.tokens.output,
+            byModel: d.byModel,
+            sessions: d.sessions,
+            messages: d.messages
+        }));
+    
     // Get today's data
-    const todayData = allDays.find(d => d.date === today) || {
+    const todayData = dayData[today] || {
         date: today,
-        cost: 0,
-        tokens: { input: 0, output: 0, cacheRead: 0 },
-        byModel: {}
+        tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+        byModel: {},
+        sessions: 0,
+        messages: 0
     };
     
     // Calculate weekly totals
-    const weekTotal = allDays.reduce((sum, d) => sum + d.cost, 0);
+    const weekTotalTokens = allDays.reduce((sum, d) => sum + d.totalTokens, 0);
+    const weekTotalSessions = allDays.reduce((sum, d) => sum + d.sessions, 0);
+    const weekTotalMessages = allDays.reduce((sum, d) => sum + d.messages, 0);
     const weekByModel = {};
+    const weekTokens = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+    
     allDays.forEach(day => {
-        Object.entries(day.byModel || {}).forEach(([model, cost]) => {
-            weekByModel[model] = (weekByModel[model] || 0) + cost;
+        weekTokens.input += day.tokens.input;
+        weekTokens.output += day.tokens.output;
+        weekTokens.cacheRead += day.tokens.cacheRead;
+        weekTokens.cacheWrite += day.tokens.cacheWrite;
+        
+        Object.entries(day.byModel || {}).forEach(([model, tokens]) => {
+            weekByModel[model] = (weekByModel[model] || 0) + tokens;
         });
-    });
-    Object.keys(weekByModel).forEach(model => {
-        weekByModel[model] = parseFloat(weekByModel[model].toFixed(2));
     });
     
     const data = {
         lastUpdate: GENERATED,
+        source: 'real',
         today: {
-            totalCost: todayData.cost,
+            date: today,
             tokens: todayData.tokens,
-            byModel: todayData.byModel
+            totalTokens: todayData.tokens.input + todayData.tokens.output,
+            byModel: todayData.byModel || {},
+            sessions: todayData.sessions || 0,
+            messages: todayData.messages || 0
         },
         week: {
-            totalCost: parseFloat(weekTotal.toFixed(2)),
-            days: allDays.map(d => ({ date: d.date, cost: d.cost })),
+            tokens: weekTokens,
+            totalTokens: weekTotalTokens,
+            sessions: weekTotalSessions,
+            messages: weekTotalMessages,
+            days: allDays.map(d => ({ 
+                date: d.date, 
+                totalTokens: d.totalTokens, 
+                sessions: d.sessions 
+            })),
             byModel: weekByModel
         }
     };
     
     fs.writeFileSync(
-        path.join(DATA_DIR, 'costs.json'),
+        path.join(DATA_DIR, 'usage.json'),
         JSON.stringify(data, null, 2)
     );
     
-    console.log(`   ✅ costs.json generated (${allDays.length} days, $${weekTotal.toFixed(2)} weekly)`);
+    console.log(`   ✅ usage.json generated from real data`);
+    console.log(`      Today: ${todayData.tokens.input + todayData.tokens.output} tokens | Week: ${weekTotalTokens} tokens`);
+    return data;
+}
+
+/**
+ * Fallback if session data unavailable
+ */
+function generateCostsFallback() {
+    console.log('   ⚠️ Using fallback (no real usage data available)');
+    const today = new Date().toISOString().split('T')[0];
+    
+    const data = {
+        lastUpdate: GENERATED,
+        source: 'fallback',
+        today: {
+            date: today,
+            tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            totalTokens: 0,
+            byModel: {},
+            sessions: 0,
+            messages: 0
+        },
+        week: {
+            tokens: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            totalTokens: 0,
+            sessions: 0,
+            messages: 0,
+            days: [],
+            byModel: {}
+        }
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'usage.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
     return data;
 }
 

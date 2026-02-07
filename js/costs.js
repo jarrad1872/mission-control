@@ -1,18 +1,12 @@
 /**
- * Costs Module - API Cost Tracker for Mission Control
- * Displays daily/weekly costs, token usage, and model breakdown
+ * Usage Stats Module - Token & Session Usage Tracker for Mission Control
+ * Displays daily/weekly token usage, session counts, and model distribution
  */
 
 const CostsModule = (function() {
     'use strict';
     
     let data = null;
-    
-    // Cost thresholds for color coding
-    const THRESHOLDS = {
-        daily: { low: 5, high: 15 },      // Under $5 = green, over $15 = red
-        weekly: { low: 30, high: 75 }     // Under $30 = green, over $75 = red
-    };
     
     // Model display names
     const MODEL_NAMES = {
@@ -40,31 +34,31 @@ const CostsModule = (function() {
      * Initialize the module
      */
     async function init() {
-        console.log('💰 Initializing Costs Module...');
+        console.log('📊 Initializing Usage Stats Module...');
         await loadData();
         render();
         return true;
     }
     
     /**
-     * Load cost data
+     * Load usage data
      */
     async function loadData() {
         try {
-            const response = await fetch('data/costs.json?t=' + Date.now());
+            const response = await fetch('data/usage.json?t=' + Date.now());
             if (!response.ok) {
-                throw new Error('costs.json not found');
+                throw new Error('usage.json not found');
             }
             data = await response.json();
-            console.log('   ✅ Cost data loaded');
+            console.log('   ✅ Usage data loaded');
         } catch (e) {
-            console.warn('   ⚠️ Could not load costs.json, using placeholder data');
+            console.warn('   ⚠️ Could not load usage.json, using placeholder data');
             data = getPlaceholderData();
         }
     }
     
     /**
-     * Generate placeholder data if costs.json doesn't exist
+     * Generate placeholder data if usage.json doesn't exist
      */
     function getPlaceholderData() {
         const today = new Date().toISOString().split('T')[0];
@@ -74,50 +68,49 @@ const CostsModule = (function() {
             date.setDate(date.getDate() - i);
             days.push({
                 date: date.toISOString().split('T')[0],
-                cost: parseFloat((Math.random() * 5 + 1).toFixed(2)),
+                totalTokens: Math.floor(Math.random() * 50000 + 10000),
                 tokens: {
-                    input: Math.floor(Math.random() * 50000 + 10000),
+                    input: Math.floor(Math.random() * 30000 + 5000),
                     output: Math.floor(Math.random() * 15000 + 3000),
-                    cacheRead: Math.floor(Math.random() * 40000 + 5000)
-                }
+                    cacheRead: Math.floor(Math.random() * 20000 + 2000)
+                },
+                sessions: Math.floor(Math.random() * 20 + 5)
             });
         }
         
         const todayData = days[days.length - 1];
-        const weekTotal = days.reduce((sum, d) => sum + d.cost, 0);
+        const weekTotalTokens = days.reduce((sum, d) => sum + d.totalTokens, 0);
+        const weekTotalSessions = days.reduce((sum, d) => sum + d.sessions, 0);
         
         return {
             lastUpdate: new Date().toISOString(),
             today: {
-                totalCost: todayData.cost,
                 tokens: todayData.tokens,
+                totalTokens: todayData.totalTokens,
+                sessions: todayData.sessions,
+                messages: Math.floor(todayData.sessions * 8.5),
                 byModel: {
-                    'claude-opus-4-5': todayData.cost * 0.6,
-                    'claude-sonnet-4-5': todayData.cost * 0.25,
-                    'kimi-k2.5': todayData.cost * 0.15
+                    'claude-opus-4-5': todayData.totalTokens * 0.55,
+                    'claude-sonnet-4-5': todayData.totalTokens * 0.30,
+                    'kimi-k2.5': todayData.totalTokens * 0.15
                 }
             },
             week: {
-                totalCost: parseFloat(weekTotal.toFixed(2)),
+                totalTokens: weekTotalTokens,
+                sessions: weekTotalSessions,
+                messages: Math.floor(weekTotalSessions * 8.5),
                 days: days,
                 byModel: {
-                    'claude-opus-4-5': weekTotal * 0.55,
-                    'claude-sonnet-4-5': weekTotal * 0.30,
-                    'kimi-k2.5': weekTotal * 0.15
+                    'claude-opus-4-5': weekTotalTokens * 0.55,
+                    'claude-sonnet-4-5': weekTotalTokens * 0.30,
+                    'kimi-k2.5': weekTotalTokens * 0.15
                 }
             }
         };
     }
     
     /**
-     * Format currency
-     */
-    function formatCurrency(amount) {
-        return '$' + amount.toFixed(2);
-    }
-    
-    /**
-     * Format token count (e.g., 50000 -> 50K)
+     * Format token count (e.g., 50000 -> 50K, 1500000 -> 1.5M)
      */
     function formatTokens(count) {
         if (count >= 1000000) {
@@ -129,27 +122,7 @@ const CostsModule = (function() {
     }
     
     /**
-     * Get cost color based on thresholds
-     */
-    function getCostColor(amount, type = 'daily') {
-        const threshold = THRESHOLDS[type];
-        if (amount < threshold.low) return 'var(--success)';
-        if (amount > threshold.high) return 'var(--accent)';
-        return 'var(--warning)';
-    }
-    
-    /**
-     * Get cost class based on thresholds
-     */
-    function getCostClass(amount, type = 'daily') {
-        const threshold = THRESHOLDS[type];
-        if (amount < threshold.low) return 'cost-low';
-        if (amount > threshold.high) return 'cost-high';
-        return 'cost-medium';
-    }
-    
-    /**
-     * Render the cost tracker panel
+     * Render the usage stats panel
      */
     function render() {
         const container = document.getElementById('costTrackerContent');
@@ -168,22 +141,23 @@ const CostsModule = (function() {
             });
         }
         
-        const todayCost = data.today?.totalCost || 0;
-        const weekCost = data.week?.totalCost || 0;
+        const todayTokens = data.today?.totalTokens || 0;
+        const weekTokens = data.week?.totalTokens || 0;
         const tokens = data.today?.tokens || { input: 0, output: 0, cacheRead: 0 };
-        const totalTokens = tokens.input + tokens.output + (tokens.cacheRead || 0);
+        const todaySessions = data.today?.sessions || 0;
+        const weekSessions = data.week?.sessions || 0;
         
         container.innerHTML = `
             <div class="cost-summary">
                 <div class="cost-card">
                     <div class="cost-label">Today</div>
-                    <div class="cost-amount ${getCostClass(todayCost, 'daily')}">${formatCurrency(todayCost)}</div>
-                    <div class="cost-tokens">${formatTokens(totalTokens)} tokens</div>
+                    <div class="cost-amount">${formatTokens(todayTokens)}</div>
+                    <div class="cost-tokens">${todaySessions} session${todaySessions !== 1 ? 's' : ''}</div>
                 </div>
                 <div class="cost-card">
                     <div class="cost-label">This Week</div>
-                    <div class="cost-amount ${getCostClass(weekCost, 'weekly')}">${formatCurrency(weekCost)}</div>
-                    <div class="cost-tokens">7-day total</div>
+                    <div class="cost-amount">${formatTokens(weekTokens)}</div>
+                    <div class="cost-tokens">${weekSessions} session${weekSessions !== 1 ? 's' : ''}</div>
                 </div>
             </div>
             
@@ -203,7 +177,7 @@ const CostsModule = (function() {
             </div>
             
             <div class="model-breakdown">
-                <div class="section-label">By Model (Today)</div>
+                <div class="section-label">Model Usage (Today)</div>
                 ${renderModelBars(data.today?.byModel || {})}
             </div>
             
@@ -215,7 +189,7 @@ const CostsModule = (function() {
     }
     
     /**
-     * Render model breakdown bars
+     * Render model usage bars (by token count)
      */
     function renderModelBars(byModel) {
         const entries = Object.entries(byModel).sort((a, b) => b[1] - a[1]);
@@ -223,10 +197,10 @@ const CostsModule = (function() {
             return '<div class="no-data">No model data available</div>';
         }
         
-        const maxCost = Math.max(...entries.map(e => e[1]));
+        const maxTokens = Math.max(...entries.map(e => e[1]));
         
-        return entries.map(([model, cost]) => {
-            const percentage = maxCost > 0 ? (cost / maxCost) * 100 : 0;
+        return entries.map(([model, tokens]) => {
+            const percentage = maxTokens > 0 ? (tokens / maxTokens) * 100 : 0;
             const color = MODEL_COLORS[model] || 'var(--accent)';
             const displayName = MODEL_NAMES[model] || model;
             
@@ -234,7 +208,7 @@ const CostsModule = (function() {
                 <div class="model-bar-container">
                     <div class="model-bar-header">
                         <span class="model-name">${displayName}</span>
-                        <span class="model-cost">${formatCurrency(cost)}</span>
+                        <span class="model-cost">${formatTokens(tokens)}</span>
                     </div>
                     <div class="model-bar-track">
                         <div class="model-bar-fill" style="width: ${percentage}%; background: ${color}"></div>
@@ -245,29 +219,30 @@ const CostsModule = (function() {
     }
     
     /**
-     * Render weekly bar chart
+     * Render weekly bar chart (token usage per day)
      */
     function renderWeeklyChart(days) {
         if (!days || days.length === 0) {
             return '<div class="no-data">No weekly data available</div>';
         }
         
-        const maxCost = Math.max(...days.map(d => d.cost));
+        const maxTokens = Math.max(...days.map(d => d.totalTokens || 0));
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         
         return `
             <div class="chart-container">
                 ${days.map(day => {
-                    const percentage = maxCost > 0 ? (day.cost / maxCost) * 100 : 0;
+                    const totalTokens = day.totalTokens || 0;
+                    const percentage = maxTokens > 0 ? (totalTokens / maxTokens) * 100 : 0;
                     const date = new Date(day.date);
                     const dayName = dayNames[date.getDay()];
                     const isToday = day.date === new Date().toISOString().split('T')[0];
                     
                     return `
-                        <div class="chart-bar ${isToday ? 'today' : ''}" title="${day.date}: ${formatCurrency(day.cost)}">
+                        <div class="chart-bar ${isToday ? 'today' : ''}" title="${day.date}: ${formatTokens(totalTokens)}">
                             <div class="chart-bar-fill" style="height: ${percentage}%"></div>
                             <div class="chart-bar-label">${dayName}</div>
-                            <div class="chart-bar-value">${formatCurrency(day.cost)}</div>
+                            <div class="chart-bar-value">${formatTokens(totalTokens)}</div>
                         </div>
                     `;
                 }).join('')}

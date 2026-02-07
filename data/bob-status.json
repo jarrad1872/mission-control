@@ -1,16 +1,35 @@
 {
-  "generated": "2026-02-07T07:51:49.879Z",
-  "lastUpdate": "2026-02-07T07:51:49.879Z",
+  "generated": "2026-02-07T08:02:13.655Z",
+  "lastUpdate": "2026-02-07T08:02:13.655Z",
+  "source": "real",
   "bobs": [
     {
       "id": "main",
       "name": "Main Bob",
       "emoji": "🎯",
-      "channel": "telegram",
+      "channel": "whatsapp",
       "description": "Primary orchestrator",
-      "status": "idle",
-      "lastActivity": "2026-02-07T06:51:49.879Z",
-      "contextPercent": 9
+      "status": "active",
+      "lastActivity": "2026-02-07T08:00:33.526Z",
+      "contextPercent": 70,
+      "model": "claude-opus-4-5",
+      "totalTokens": 140827,
+      "contextTokens": 200000,
+      "sessionId": "03cb269c-09b0-490f-b66a-af018b7dee7c"
+    },
+    {
+      "id": "standup",
+      "name": "Standup Bob",
+      "emoji": "📢",
+      "channel": "telegram",
+      "description": "Daily standup & general",
+      "status": "offline",
+      "lastActivity": "2026-02-06T20:50:11.500Z",
+      "contextPercent": 13,
+      "model": "claude-opus-4-5",
+      "totalTokens": 25962,
+      "contextTokens": 200000,
+      "sessionId": "42b6aa92-4862-4357-930a-0f84589d95a3"
     },
     {
       "id": "kcc",
@@ -18,9 +37,27 @@
       "emoji": "🏗️",
       "channel": "telegram",
       "description": "Kippen Concrete & Construction",
+      "status": "offline",
+      "lastActivity": "2026-02-06T20:50:09.971Z",
+      "contextPercent": 24,
+      "model": "claude-opus-4-5",
+      "totalTokens": 48469,
+      "contextTokens": 200000,
+      "sessionId": "19ea3e6a-4b61-477d-8c4b-865e002fc92e"
+    },
+    {
+      "id": "personal",
+      "name": "Personal Bob",
+      "emoji": "🏠",
+      "channel": "telegram",
+      "description": "Personal assistant",
       "status": "active",
-      "lastActivity": "2026-02-06T10:51:49.879Z",
-      "contextPercent": 32
+      "lastActivity": "2026-02-07T07:59:14.064Z",
+      "contextPercent": 48,
+      "model": "claude-opus-4-5",
+      "totalTokens": 96340,
+      "contextTokens": 200000,
+      "sessionId": "ba6169d4-71e7-48d3-9aea-d63bd3fbb296"
     },
     {
       "id": "dmi",
@@ -28,19 +65,13 @@
       "emoji": "🔧",
       "channel": "telegram",
       "description": "DMI Tools Corp",
-      "status": "idle",
-      "lastActivity": "2026-02-06T12:51:49.879Z",
-      "contextPercent": 5
-    },
-    {
-      "id": "personal",
-      "name": "Personal Bob",
-      "emoji": "🏠",
-      "channel": "whatsapp",
-      "description": "Personal assistant",
-      "status": "idle",
-      "lastActivity": "2026-02-07T00:51:49.879Z",
-      "contextPercent": 25
+      "status": "offline",
+      "lastActivity": "2026-02-07T06:51:31.280Z",
+      "contextPercent": 68,
+      "model": "claude-opus-4-5",
+      "totalTokens": 136200,
+      "contextTokens": 200000,
+      "sessionId": "09be970d-4c65-4ef1-8b6b-89fc5a9bda12"
     },
     {
       "id": "sawdot",
@@ -48,9 +79,13 @@
       "emoji": "🪚",
       "channel": "telegram",
       "description": "SawDot operations",
-      "status": "active",
-      "lastActivity": "2026-02-06T10:51:49.879Z",
-      "contextPercent": 40
+      "status": "offline",
+      "lastActivity": "2026-02-03T07:47:22.642Z",
+      "contextPercent": 45,
+      "model": "claude-opus-4-5",
+      "totalTokens": 90038,
+      "contextTokens": 200000,
+      "sessionId": "e89b86e1-850e-4efd-b039-e1054ab0180a"
     },
     {
       "id": "mrbex",
@@ -58,9 +93,13 @@
       "emoji": "🎬",
       "channel": "telegram",
       "description": "MrBex content",
-      "status": "idle",
-      "lastActivity": "2026-02-06T18:51:49.879Z",
-      "contextPercent": 14
+      "status": "active",
+      "lastActivity": "2026-02-07T08:01:53.981Z",
+      "contextPercent": 43,
+      "model": "claude-opus-4-5",
+      "totalTokens": 86459,
+      "contextTokens": 200000,
+      "sessionId": "039d146b-ec4f-4d7c-b876-b0625c6967eb"
     }
   ]
 }

@@ -1,12 +1,12 @@
 /**
  * Mission Control Analytics Module
- * Visualizes cost and usage data with charts
+ * Visualizes usage and activity data with charts
  */
 
 const Analytics = {
   container: null,
   range: 7,
-  costsData: null,
+  usageData: null,
   activityData: null,
 
   /**
@@ -50,19 +50,19 @@ const Analytics = {
 
     try {
       // Load data from JSON files
-      const [costsResponse, activityResponse] = await Promise.all([
-        fetch('data/costs.json?t=' + Date.now()),
+      const [usageResponse, activityResponse] = await Promise.all([
+        fetch('data/usage.json?t=' + Date.now()),
         fetch('data/activity.json?t=' + Date.now())
       ]);
       
-      this.costsData = costsResponse.ok ? await costsResponse.json() : null;
+      this.usageData = usageResponse.ok ? await usageResponse.json() : null;
       this.activityData = activityResponse.ok ? await activityResponse.json() : null;
 
-      if (!this.costsData) {
+      if (!this.usageData) {
         this.container.innerHTML = `
           <div class="empty-state">
             <span class="empty-icon">📊</span>
-            <p>No cost data available</p>
+            <p>No usage data available</p>
           </div>
         `;
         return;
@@ -84,17 +84,17 @@ const Analytics = {
    * Render the full analytics dashboard
    */
   renderDashboard() {
-    const week = this.costsData.week || {};
-    const today = this.costsData.today || {};
+    const week = this.usageData.week || {};
+    const today = this.usageData.today || {};
     const days = week.days || [];
     const byModel = week.byModel || {};
 
     // Calculate stats
-    const avgDailyCost = days.length > 0 
-      ? (days.reduce((sum, d) => sum + d.cost, 0) / days.length).toFixed(2)
-      : '0.00';
+    const avgDailyTokens = days.length > 0 
+      ? Math.round(days.reduce((sum, d) => sum + (d.totalTokens || 0), 0) / days.length)
+      : 0;
     const maxDay = days.length > 0 
-      ? days.reduce((max, d) => d.cost > max.cost ? d : max, days[0])
+      ? days.reduce((max, d) => (d.totalTokens || 0) > (max.totalTokens || 0) ? d : max, days[0])
       : null;
 
     // Activity stats
@@ -109,38 +109,38 @@ const Analytics = {
         <!-- Summary Cards -->
         <div class="analytics-row summary-cards">
           <div class="stat-card primary">
-            <div class="stat-icon">💰</div>
+            <div class="stat-icon">📊</div>
             <div class="stat-content">
-              <div class="stat-value">$${(week.totalCost || 0).toFixed(2)}</div>
-              <div class="stat-label">${this.range}-Day Total</div>
+              <div class="stat-value">${this.formatNumber(week.totalTokens || 0)}</div>
+              <div class="stat-label">${this.range}-Day Tokens</div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">📈</div>
             <div class="stat-content">
-              <div class="stat-value">$${avgDailyCost}</div>
+              <div class="stat-value">${this.formatNumber(avgDailyTokens)}</div>
               <div class="stat-label">Daily Average</div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🎯</div>
             <div class="stat-content">
-              <div class="stat-value">$${(today.totalCost || 0).toFixed(2)}</div>
+              <div class="stat-value">${this.formatNumber(today.totalTokens || 0)}</div>
               <div class="stat-label">Today</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">⚡</div>
+            <div class="stat-icon">💬</div>
             <div class="stat-content">
-              <div class="stat-value">${todayActivity}</div>
-              <div class="stat-label">Events Today</div>
+              <div class="stat-value">${week.sessions || 0}</div>
+              <div class="stat-label">Sessions (7d)</div>
             </div>
           </div>
         </div>
 
-        <!-- Cost Chart -->
+        <!-- Token Usage Chart -->
         <div class="analytics-section">
-          <h3>📊 Daily Costs</h3>
+          <h3>📊 Daily Token Usage</h3>
           <div class="chart-container">
             ${this.renderBarChart(days)}
           </div>
@@ -148,7 +148,7 @@ const Analytics = {
 
         <!-- Model Breakdown -->
         <div class="analytics-section">
-          <h3>🤖 Cost by Model</h3>
+          <h3>🤖 Usage by Model</h3>
           <div class="model-breakdown">
             ${this.renderModelBreakdown(byModel)}
           </div>
@@ -156,7 +156,7 @@ const Analytics = {
 
         <!-- Token Usage -->
         <div class="analytics-section">
-          <h3>🔢 Token Usage (Today)</h3>
+          <h3>🔢 Token Breakdown (Today)</h3>
           <div class="token-stats">
             ${this.renderTokenStats(today.tokens || {})}
           </div>
@@ -168,7 +168,7 @@ const Analytics = {
           <h3>🔥 Peak Day</h3>
           <div class="peak-day">
             <div class="peak-date">${this.formatDate(maxDay.date)}</div>
-            <div class="peak-cost">$${maxDay.cost.toFixed(2)}</div>
+            <div class="peak-cost">${this.formatNumber(maxDay.totalTokens || 0)} tokens</div>
           </div>
         </div>
         ` : ''}
@@ -177,24 +177,25 @@ const Analytics = {
   },
 
   /**
-   * Render bar chart for daily costs
+   * Render bar chart for daily token usage
    */
   renderBarChart(days) {
     if (!days || days.length === 0) {
       return '<div class="empty-chart">No data available</div>';
     }
 
-    const maxCost = Math.max(...days.map(d => d.cost), 1);
+    const maxTokens = Math.max(...days.map(d => d.totalTokens || 0), 1);
     
     return `
       <div class="bar-chart">
         ${days.map(day => {
-          const height = (day.cost / maxCost) * 100;
+          const tokens = day.totalTokens || 0;
+          const height = (tokens / maxTokens) * 100;
           const dayName = this.getDayName(day.date);
           return `
-            <div class="bar-wrapper" title="${this.formatDate(day.date)}: $${day.cost.toFixed(2)}">
+            <div class="bar-wrapper" title="${this.formatDate(day.date)}: ${this.formatNumber(tokens)} tokens">
               <div class="bar" style="height: ${Math.max(height, 2)}%">
-                <span class="bar-value">$${day.cost.toFixed(2)}</span>
+                <span class="bar-value">${this.formatNumber(tokens)}</span>
               </div>
               <span class="bar-label">${dayName}</span>
             </div>
@@ -213,7 +214,7 @@ const Analytics = {
       return '<div class="empty-state">No model data</div>';
     }
 
-    const total = models.reduce((sum, [_, cost]) => sum + cost, 0);
+    const total = models.reduce((sum, [_, tokens]) => sum + tokens, 0);
     const colors = {
       'claude-opus-4-5': '#FF6B6B',
       'claude-sonnet-4-5': '#4ECDC4',
@@ -223,8 +224,8 @@ const Analytics = {
 
     return `
       <div class="model-list">
-        ${models.map(([model, cost]) => {
-          const percentage = total > 0 ? ((cost / total) * 100).toFixed(1) : 0;
+        ${models.map(([model, tokens]) => {
+          const percentage = total > 0 ? ((tokens / total) * 100).toFixed(1) : 0;
           const color = colors[model] || '#888';
           const displayName = this.formatModelName(model);
           return `
@@ -234,7 +235,7 @@ const Analytics = {
                 <span class="model-name">${displayName}</span>
               </div>
               <div class="model-stats">
-                <span class="model-cost">$${cost.toFixed(2)}</span>
+                <span class="model-cost">${this.formatNumber(tokens)} tokens</span>
                 <span class="model-percentage">${percentage}%</span>
               </div>
               <div class="model-bar">
