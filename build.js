@@ -486,6 +486,142 @@ function generateBobStatus() {
     return data;
 }
 
+/**
+ * Generate costs.json from metrics data
+ */
+function generateCosts() {
+    console.log('💰 Generating cost data...');
+    
+    const metricsDir = path.join(CLAWD_ROOT, 'metrics');
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Model pricing (per 1M tokens) - approximate rates
+    const MODEL_PRICING = {
+        'claude-opus-4-5': { input: 15.00, output: 75.00, cacheRead: 1.50 },
+        'claude-sonnet-4-5': { input: 3.00, output: 15.00, cacheRead: 0.30 },
+        'claude-3-5-sonnet': { input: 3.00, output: 15.00, cacheRead: 0.30 },
+        'claude-3-5-haiku': { input: 0.80, output: 4.00, cacheRead: 0.08 },
+        'kimi-k2.5': { input: 0.60, output: 2.40, cacheRead: 0.06 },
+        'gpt-4o': { input: 5.00, output: 15.00, cacheRead: 2.50 },
+        'gemini-2.0-flash': { input: 0.10, output: 0.40, cacheRead: 0.025 }
+    };
+    
+    // Read all metrics files
+    let allDays = [];
+    try {
+        const files = fs.readdirSync(metricsDir)
+            .filter(f => /^20\d{2}-\d{2}-\d{2}\.json$/.test(f))
+            .sort()
+            .slice(-7); // Last 7 days
+        
+        files.forEach(filename => {
+            const filePath = path.join(metricsDir, filename);
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                const data = JSON.parse(content);
+                const date = filename.replace('.json', '');
+                
+                // Extract activity metrics for cost estimation
+                const heartbeats = data.bobCollective?.heartbeatsProcessed || 0;
+                const agentsSpawned = data.swarms?.agentsSpawned || 0;
+                const arenaSessions = data.arena?.sessionsRun || 0;
+                const searches = data.memory?.searchesPerformed || 0;
+                
+                // Estimate token usage based on activity
+                const estimatedInputTokens = (heartbeats * 5000) + (agentsSpawned * 20000) + (arenaSessions * 30000) + (searches * 1000);
+                const estimatedOutputTokens = (heartbeats * 2000) + (agentsSpawned * 8000) + (arenaSessions * 15000) + (searches * 500);
+                const estimatedCacheTokens = (heartbeats * 3000) + (agentsSpawned * 10000);
+                
+                // Distribute across models (estimated distribution)
+                const modelDistribution = {
+                    'claude-opus-4-5': 0.40,
+                    'claude-sonnet-4-5': 0.35,
+                    'kimi-k2.5': 0.15,
+                    'gemini-2.0-flash': 0.10
+                };
+                
+                let totalCost = 0;
+                const byModel = {};
+                
+                Object.entries(modelDistribution).forEach(([model, ratio]) => {
+                    const pricing = MODEL_PRICING[model];
+                    if (pricing) {
+                        const inputCost = (estimatedInputTokens * ratio / 1000000) * pricing.input;
+                        const outputCost = (estimatedOutputTokens * ratio / 1000000) * pricing.output;
+                        const cacheCost = (estimatedCacheTokens * ratio / 1000000) * pricing.cacheRead;
+                        const modelCost = inputCost + outputCost + cacheCost;
+                        byModel[model] = parseFloat(modelCost.toFixed(2));
+                        totalCost += modelCost;
+                    }
+                });
+                
+                // Ensure minimum cost if there was activity
+                if (totalCost === 0 && (heartbeats > 0 || agentsSpawned > 0)) {
+                    totalCost = 0.10;
+                    byModel['claude-sonnet-4-5'] = 0.10;
+                }
+                
+                allDays.push({
+                    date: date,
+                    cost: parseFloat(totalCost.toFixed(2)),
+                    tokens: {
+                        input: estimatedInputTokens,
+                        output: estimatedOutputTokens,
+                        cacheRead: estimatedCacheTokens
+                    },
+                    byModel: byModel
+                });
+            } catch (e) {
+                console.error(`   ⚠️ Could not parse ${filename}:`, e.message);
+            }
+        });
+    } catch (e) {
+        console.error('   ⚠️ Could not read metrics directory:', e.message);
+    }
+    
+    // Get today's data
+    const todayData = allDays.find(d => d.date === today) || {
+        date: today,
+        cost: 0,
+        tokens: { input: 0, output: 0, cacheRead: 0 },
+        byModel: {}
+    };
+    
+    // Calculate weekly totals
+    const weekTotal = allDays.reduce((sum, d) => sum + d.cost, 0);
+    const weekByModel = {};
+    allDays.forEach(day => {
+        Object.entries(day.byModel || {}).forEach(([model, cost]) => {
+            weekByModel[model] = (weekByModel[model] || 0) + cost;
+        });
+    });
+    Object.keys(weekByModel).forEach(model => {
+        weekByModel[model] = parseFloat(weekByModel[model].toFixed(2));
+    });
+    
+    const data = {
+        lastUpdate: GENERATED,
+        today: {
+            totalCost: todayData.cost,
+            tokens: todayData.tokens,
+            byModel: todayData.byModel
+        },
+        week: {
+            totalCost: parseFloat(weekTotal.toFixed(2)),
+            days: allDays.map(d => ({ date: d.date, cost: d.cost })),
+            byModel: weekByModel
+        }
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'costs.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`   ✅ costs.json generated (${allDays.length} days, $${weekTotal.toFixed(2)} weekly)`);
+    return data;
+}
+
 // Run all generators
 console.log('');
 generateBobStatus();
@@ -493,6 +629,8 @@ console.log('');
 generateActivity();
 console.log('');
 generateCalendar();
+console.log('');
+generateCosts();
 console.log('');
 generateSearchIndex();
 console.log('');
