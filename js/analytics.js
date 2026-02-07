@@ -49,9 +49,14 @@ const Analytics = {
     `;
 
     try {
-      // Load data
-      this.costsData = window.appData?.costs;
-      this.activityData = window.appData?.activity;
+      // Load data from JSON files
+      const [costsResponse, activityResponse] = await Promise.all([
+        fetch('data/costs.json?t=' + Date.now()),
+        fetch('data/activity.json?t=' + Date.now())
+      ]);
+      
+      this.costsData = costsResponse.ok ? await costsResponse.json() : null;
+      this.activityData = activityResponse.ok ? await activityResponse.json() : null;
 
       if (!this.costsData) {
         this.container.innerHTML = `
