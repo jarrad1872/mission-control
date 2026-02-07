@@ -49,6 +49,9 @@
                 <div class="status-indicator" id="dataStatus">
                     <span class="status-dot" id="globalStatusDot"></span>
                 </div>
+                <button class="search-trigger" id="quickSearchTrigger" title="Quick Search (⌘K)" aria-label="Quick Search">
+                    🔍
+                </button>
                 <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">
                     <span class="theme-icon">🌙</span>
                 </button>
@@ -435,6 +438,26 @@
             </div>
             <div class="panel-content" id="eventDetailContent">
                 <p class="placeholder-text">Click on a calendar event to view details.</p>
+            </div>
+        </div>
+
+        <!-- Quick Search Modal -->
+        <div class="quick-search-modal" id="quickSearchModal">
+            <div class="quick-search-backdrop"></div>
+            <div class="quick-search-content">
+                <div class="quick-search-header">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                    </svg>
+                    <input type="text" id="quickSearchInput" class="quick-search-input" placeholder="Search tasks, activity, memory..." autocomplete="off">
+                    <span class="quick-search-hint">ESC</span>
+                </div>
+                <div class="quick-search-results" id="quickSearchResults">
+                    <div class="quick-search-empty">
+                        <span class="quick-search-empty-icon">🔍</span>
+                        <p>Start typing to search</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -25,29 +25,173 @@ const SearchModule = (function() {
     function setupListeners() {
         const searchInput = document.getElementById('searchInput');
         const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
+        
+        // Quick search modal elements
+        const quickSearchTrigger = document.getElementById('quickSearchTrigger');
+        const quickSearchModal = document.getElementById('quickSearchModal');
+        const quickSearchInput = document.getElementById('quickSearchInput');
+        const quickSearchBackdrop = quickSearchModal?.querySelector('.quick-search-backdrop');
 
         if (searchInput) {
             searchInput.addEventListener('input', handleSearchInput);
-            
-            // Keyboard shortcut (Cmd/Ctrl + K)
-            document.addEventListener('keydown', (e) => {
-                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                    e.preventDefault();
-                    searchInput.focus();
-                    // Switch to search tab
-                    const searchTab = document.querySelector('[data-tab="search"]');
-                    if (searchTab) {
-                        searchTab.click();
-                    }
-                }
-            });
         }
+        
+        // Quick search modal handlers
+        if (quickSearchTrigger && quickSearchModal) {
+            quickSearchTrigger.addEventListener('click', openQuickSearch);
+            quickSearchBackdrop?.addEventListener('click', closeQuickSearch);
+        }
+        
+        if (quickSearchInput) {
+            quickSearchInput.addEventListener('input', handleQuickSearchInput);
+        }
+        
+        // Keyboard shortcut (Cmd/Ctrl + K) - now opens quick search modal
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                openQuickSearch();
+            }
+            
+            // ESC to close quick search
+            if (e.key === 'Escape' && quickSearchModal?.classList.contains('open')) {
+                closeQuickSearch();
+            }
+        });
 
         filterCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 if (searchInput && searchInput.value) {
                     performSearch(searchInput.value);
                 }
+            });
+        });
+    }
+    
+    /**
+     * Open quick search modal
+     */
+    function openQuickSearch() {
+        const modal = document.getElementById('quickSearchModal');
+        const input = document.getElementById('quickSearchInput');
+        
+        if (modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        if (input) {
+            input.value = '';
+            input.focus();
+            renderQuickSearchPlaceholder();
+        }
+    }
+    
+    /**
+     * Close quick search modal
+     */
+    function closeQuickSearch() {
+        const modal = document.getElementById('quickSearchModal');
+        
+        if (modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    /**
+     * Handle quick search input
+     */
+    function handleQuickSearchInput(e) {
+        const query = e.target.value.trim();
+        
+        clearTimeout(searchTimeout);
+        
+        if (!query) {
+            renderQuickSearchPlaceholder();
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            const results = searchFiles(query);
+            renderQuickSearchResults(query, results);
+        }, DEBOUNCE_MS);
+    }
+    
+    /**
+     * Render quick search placeholder
+     */
+    function renderQuickSearchPlaceholder() {
+        const container = document.getElementById('quickSearchResults');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="quick-search-empty">
+                <span class="quick-search-empty-icon">🔍</span>
+                <p>Search across tasks, activity, memory & sessions</p>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render quick search results grouped by type
+     */
+    function renderQuickSearchResults(query, results) {
+        const container = document.getElementById('quickSearchResults');
+        if (!container) return;
+        
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="quick-search-empty">
+                    <span class="quick-search-empty-icon">😕</span>
+                    <p>No results for "<strong>${escapeHtml(query)}</strong>"</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Group results by category
+        const grouped = {};
+        results.forEach(result => {
+            const cat = result.category || 'other';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(result);
+        });
+        
+        const categoryLabels = {
+            memory: '🧠 Memory',
+            tasks: '✅ Tasks',
+            docs: '📚 Docs',
+            root: '📄 Files'
+        };
+        
+        let html = '';
+        Object.entries(grouped).forEach(([category, items]) => {
+            const label = categoryLabels[category] || category;
+            html += `
+                <div class="quick-search-group">
+                    <div class="quick-search-group-label">${label}</div>
+                    ${items.slice(0, 5).map(item => `
+                        <div class="quick-search-item" data-path="${escapeHtml(item.path)}">
+                            <span class="quick-search-item-icon">${getCategoryIcon(item.category)}</span>
+                            <div class="quick-search-item-content">
+                                <div class="quick-search-item-title">${escapeHtml(item.title || item.path.split('/').pop())}</div>
+                                <div class="quick-search-item-path">${escapeHtml(item.path)}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+        // Add click handlers
+        container.querySelectorAll('.quick-search-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const path = el.dataset.path;
+                closeQuickSearch();
+                showFileContent(path);
             });
         });
     }
@@ -353,7 +497,9 @@ const SearchModule = (function() {
         init,
         refresh,
         clear,
-        performSearch
+        performSearch,
+        openQuickSearch,
+        closeQuickSearch
     };
 })();
 
