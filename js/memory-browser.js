@@ -257,7 +257,7 @@ const MemoryBrowser = (function() {
                     <span class="fact-category" style="background: ${categoryColor}20; color: ${categoryColor}">
                         ${fact.category || 'general'}
                     </span>
-                    <span class="fact-text">${escapeHtml(fact.fact)}</span>
+                    <span class="fact-text">${Utils.escapeHtml(fact.fact)}</span>
                     <span class="fact-date">${fact.timestamp || ''}</span>
                 </div>
             `;
@@ -280,28 +280,67 @@ const MemoryBrowser = (function() {
     
     /**
      * Simple markdown renderer
+     * Processes text line-by-line for reliable list wrapping
      */
     function renderMarkdown(text) {
         if (!text) return '';
         
-        return text
+        const lines = text.split('\n');
+        const output = [];
+        let inList = false;
+        
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            
             // Headers
-            .replace(/^### (.+)$/gm, '<h4>$1</h4>')
-            .replace(/^## (.+)$/gm, '<h3>$1</h3>')
-            .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-            // Bold
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            // Italic
-            .replace(/\*(.+?)\*/g, '<em>$1</em>')
-            // Lists
-            .replace(/^- (.+)$/gm, '<li>$1</li>')
-            .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-            // Paragraphs
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/^(.+)$/gm, function(match) {
-                if (match.startsWith('<')) return match;
-                return match;
-            });
+            if (line.match(/^### (.+)$/)) {
+                if (inList) { output.push('</ul>'); inList = false; }
+                output.push(line.replace(/^### (.+)$/, '<h4>$1</h4>'));
+                continue;
+            }
+            if (line.match(/^## (.+)$/)) {
+                if (inList) { output.push('</ul>'); inList = false; }
+                output.push(line.replace(/^## (.+)$/, '<h3>$1</h3>'));
+                continue;
+            }
+            if (line.match(/^# (.+)$/)) {
+                if (inList) { output.push('</ul>'); inList = false; }
+                output.push(line.replace(/^# (.+)$/, '<h2>$1</h2>'));
+                continue;
+            }
+            
+            // List items (unordered: - or *)
+            const listMatch = line.match(/^[-*] (.+)$/);
+            if (listMatch) {
+                if (!inList) { output.push('<ul>'); inList = true; }
+                let content = listMatch[1];
+                // Inline formatting
+                content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                content = content.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                output.push('<li>' + content + '</li>');
+                continue;
+            }
+            
+            // Empty line ends list and creates paragraph break
+            if (line.trim() === '') {
+                if (inList) { output.push('</ul>'); inList = false; }
+                output.push('</p><p>');
+                continue;
+            }
+            
+            // Regular text line — close any open list first
+            if (inList) { output.push('</ul>'); inList = false; }
+            
+            // Inline formatting
+            line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            line = line.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            output.push(line);
+        }
+        
+        // Close any trailing open list
+        if (inList) { output.push('</ul>'); }
+        
+        return '<p>' + output.join('\n') + '</p>';
     }
     
     /**
@@ -359,15 +398,6 @@ const MemoryBrowser = (function() {
         if (!text) return '';
         if (text.length <= length) return text;
         return text.substring(0, length) + '...';
-    }
-    
-    /**
-     * Escape HTML
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
     
     /**

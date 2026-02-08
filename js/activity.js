@@ -198,9 +198,18 @@ const ActivityModule = (function() {
      */
     function playNotificationSound() {
         try {
-            const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + 'tvT18'.repeat(100));
-            audio.volume = 0.3;
-            audio.play().catch(() => {});
+            // Use Web Audio API for a short beep
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
+            oscillator.connect(gain);
+            gain.connect(ctx.destination);
+            oscillator.frequency.value = 880;
+            oscillator.type = 'sine';
+            gain.gain.value = 0.3;
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.15);
         } catch (e) {
             // Ignore audio errors
         }
@@ -474,7 +483,7 @@ const ActivityModule = (function() {
             <div class="activity-item ${isNew ? 'new-item' : ''}" data-type="${item.type}" data-id="${item.id}">
                 <div class="activity-icon ${item.type}">${icon}</div>
                 <div class="activity-content">
-                    <div class="activity-title">${escapeHtml(item.title)}</div>
+                    <div class="activity-title">${Utils.escapeHtml(item.title)}</div>
                     <div class="activity-meta">
                         <span class="activity-source">${getSourceLabel(item.source)}</span>
                         <span class="activity-time" title="${time}" data-timestamp="${item.timestamp}">${relativeTime}</span>
@@ -514,15 +523,6 @@ const ActivityModule = (function() {
                 <p>Try adjusting the date range or type filter.</p>
             </div>
         `;
-    }
-
-    /**
-     * Escape HTML to prevent XSS
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**

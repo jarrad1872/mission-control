@@ -305,6 +305,9 @@ function generateSearchIndex() {
     
     const files = [];
     
+    // Max content per file for search index (keeps index small, ~50KB vs 544KB)
+    const MAX_CONTENT_LENGTH = 500;
+    
     // Index memory files
     console.log('   - Indexing memory/*.md...');
     const memoryDir = path.join(CLAWD_ROOT, 'memory');
@@ -313,7 +316,7 @@ function generateSearchIndex() {
             .filter(f => f.endsWith('.md'))
             .forEach(filename => {
                 const filePath = path.join(memoryDir, filename);
-                const content = fs.readFileSync(filePath, 'utf8').slice(0, 50000);
+                const content = fs.readFileSync(filePath, 'utf8').substring(0, MAX_CONTENT_LENGTH);
                 files.push({
                     path: `memory/${filename}`,
                     title: filename.replace('.md', ''),
@@ -334,7 +337,7 @@ function generateSearchIndex() {
             .forEach(filename => {
                 const filePath = path.join(tasksDir, filename);
                 if (fs.statSync(filePath).isFile()) {
-                    const content = fs.readFileSync(filePath, 'utf8').slice(0, 50000);
+                    const content = fs.readFileSync(filePath, 'utf8').substring(0, MAX_CONTENT_LENGTH);
                     files.push({
                         path: `tasks/${filename}`,
                         title: filename.replace('.md', ''),
@@ -356,7 +359,7 @@ function generateSearchIndex() {
                 .filter(f => f.endsWith('.md'))
                 .forEach(filename => {
                     const filePath = path.join(completedDir, filename);
-                    const content = fs.readFileSync(filePath, 'utf8').slice(0, 50000);
+                    const content = fs.readFileSync(filePath, 'utf8').substring(0, MAX_CONTENT_LENGTH);
                     files.push({
                         path: `tasks/completed/${filename}`,
                         title: filename.replace('.md', ''),
@@ -379,7 +382,7 @@ function generateSearchIndex() {
                 .forEach(filename => {
                     const filePath = path.join(docsDir, filename);
                     if (fs.statSync(filePath).isFile()) {
-                        const content = fs.readFileSync(filePath, 'utf8').slice(0, 50000);
+                        const content = fs.readFileSync(filePath, 'utf8').substring(0, MAX_CONTENT_LENGTH);
                         files.push({
                             path: `docs/${filename}`,
                             title: filename.replace('.md', ''),
@@ -401,7 +404,7 @@ function generateSearchIndex() {
             .forEach(filename => {
                 const filePath = path.join(CLAWD_ROOT, filename);
                 if (fs.statSync(filePath).isFile()) {
-                    const content = fs.readFileSync(filePath, 'utf8').slice(0, 50000);
+                    const content = fs.readFileSync(filePath, 'utf8').substring(0, MAX_CONTENT_LENGTH);
                     files.push({
                         path: filename,
                         title: filename.replace('.md', ''),

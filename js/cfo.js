@@ -155,26 +155,6 @@ const CFOModule = (function() {
     }
     
     /**
-     * Get relative time string
-     */
-    function getRelativeTime(isoDate) {
-        if (!isoDate) return 'Never';
-        const date = new Date(isoDate);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMins / 60);
-        const diffDays = Math.floor(diffHours / 24);
-        
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
-        
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-    
-    /**
      * Render the CFO center
      */
     function render() {
@@ -192,9 +172,9 @@ const CFOModule = (function() {
                 <div class="cfo-header">
                     <div class="cfo-header-title">
                         <h2>💰 CFO Center</h2>
-                        <span class="cfo-updated">Updated: ${getRelativeTime(generated)}</span>
+                        <span class="cfo-updated">Updated: ${Utils.formatRelativeTime(generated)}</span>
                     </div>
-                    <button class="cfo-refresh-btn" onclick="CFOModule.refresh()" title="Refresh Data">
+                    <button class="cfo-refresh-btn" data-action="refresh" title="Refresh Data">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -220,11 +200,11 @@ const CFOModule = (function() {
                 <div class="cfo-section">
                     <h3 class="cfo-section-title">⚡ Quick Actions</h3>
                     <div class="cfo-actions">
-                        <button class="cfo-action-btn primary" onclick="CFOModule.triggerAction('cfo')">
+                        <button class="cfo-action-btn primary" data-cfo-action="cfo">
                             <span class="action-icon">📊</span>
                             <span class="action-label">Run CFO Analysis</span>
                         </button>
-                        <button class="cfo-action-btn" onclick="CFOModule.triggerAction('cfo dmi')">
+                        <button class="cfo-action-btn" data-cfo-action="cfo dmi">
                             <span class="action-icon">🔧</span>
                             <span class="action-label">DMI Deep Dive</span>
                         </button>
@@ -290,7 +270,7 @@ const CFOModule = (function() {
             <div class="cfo-company-card ${isExpanded ? 'expanded' : ''}" 
                  data-company-id="${company.id}"
                  style="--company-color: ${config.color}">
-                <div class="company-card-header" onclick="CFOModule.toggleCard('${company.id}')">
+                <div class="company-card-header" data-toggle-company="${company.id}">
                     <div class="company-identity">
                         <span class="company-icon">${config.icon}</span>
                         <div class="company-name-group">
@@ -352,7 +332,7 @@ const CFOModule = (function() {
                     <div class="expanded-section">
                         <h4>Key Facts</h4>
                         <ul class="key-facts-list">
-                            ${company.keyFacts.map(fact => `<li>${escapeHtml(fact)}</li>`).join('')}
+                            ${company.keyFacts.map(fact => `<li>${Utils.escapeHtml(fact)}</li>`).join('')}
                         </ul>
                     </div>
                 ` : ''}
@@ -362,7 +342,7 @@ const CFOModule = (function() {
                         <h4>⚠️ Alerts</h4>
                         <ul class="company-alerts-list">
                             ${company.alerts.map(alert => `
-                                <li class="alert-${alert.severity || 'info'}">${escapeHtml(alert.message)}</li>
+                                <li class="alert-${alert.severity || 'info'}">${Utils.escapeHtml(alert.message)}</li>
                             `).join('')}
                         </ul>
                     </div>
@@ -382,7 +362,7 @@ const CFOModule = (function() {
                     ${alerts.map(alert => `
                         <div class="cfo-alert alert-${alert.severity || 'warning'}">
                             <span class="alert-icon">${getAlertIcon(alert.severity)}</span>
-                            <span class="alert-message">${escapeHtml(alert.message)}</span>
+                            <span class="alert-message">${Utils.escapeHtml(alert.message)}</span>
                             ${alert.company ? `<span class="alert-company">${alert.company}</span>` : ''}
                         </div>
                     `).join('')}
@@ -419,29 +399,38 @@ const CFOModule = (function() {
      * Trigger a CFO action (shows message to user)
      */
     function triggerAction(command) {
-        // Try to use the existing notification system if available
-        if (window.showToast) {
-            window.showToast(`Send "${command}" in chat to run analysis`, 'info');
-        } else {
-            alert(`To run analysis, send "${command}" in your Telegram chat with Bob.`);
-        }
+        Utils.showToast(`Send "${command}" in chat to run analysis`, 'info');
     }
     
     /**
-     * Escape HTML
-     */
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    /**
-     * Bind event handlers
+     * Bind event handlers (event delegation on CFO tab)
      */
     function bindEvents() {
-        // Cards are handled via onclick attributes
+        const cfoTab = document.getElementById('cfo-tab');
+        if (!cfoTab) return;
+
+        cfoTab.addEventListener('click', (e) => {
+            // Refresh button
+            const refreshBtn = e.target.closest('[data-action="refresh"]');
+            if (refreshBtn) {
+                refresh();
+                return;
+            }
+
+            // CFO action buttons
+            const actionBtn = e.target.closest('[data-cfo-action]');
+            if (actionBtn) {
+                triggerAction(actionBtn.dataset.cfoAction);
+                return;
+            }
+
+            // Company card toggle
+            const cardHeader = e.target.closest('[data-toggle-company]');
+            if (cardHeader) {
+                toggleCard(cardHeader.dataset.toggleCompany);
+                return;
+            }
+        });
     }
     
     /**

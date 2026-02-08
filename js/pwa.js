@@ -78,7 +78,7 @@ const PWA = {
       this.isInstalled = true;
       this.deferredPrompt = null;
       this.hideInstallButton();
-      this.showToast('success', 'Mission Control installed! 🎯');
+      this.showToast('Mission Control installed! 🎯', 'success');
     });
   },
   
@@ -104,12 +104,12 @@ const PWA = {
       }
       
       if (!this.isOnline) {
-        this.showToast('warning', 'You\'re offline. Some features may be limited.');
+        this.showToast('You\'re offline. Some features may be limited.', 'warning');
       }
     };
     
     window.addEventListener('online', () => {
-      this.showToast('success', 'Back online! 🟢');
+      this.showToast('Back online! 🟢', 'success');
       updateStatus();
     });
     
@@ -222,21 +222,16 @@ const PWA = {
       message = 'Look for the install icon in your browser\'s address bar';
     }
     
-    this.showToast('info', message);
+    this.showToast(message, 'info');
   },
   
   /**
    * Show update available toast
    */
   showUpdateToast() {
-    // Use existing toast system if available
-    if (typeof showToast === 'function') {
-      showToast('info', 'Update available! <button onclick="PWA.applyUpdate()">Refresh</button>');
-    } else {
-      const update = confirm('A new version of Mission Control is available. Refresh now?');
-      if (update) {
-        this.applyUpdate();
-      }
+    const update = confirm('A new version of Mission Control is available. Refresh now?');
+    if (update) {
+      this.applyUpdate();
     }
   },
   
@@ -251,41 +246,10 @@ const PWA = {
   },
   
   /**
-   * Show toast notification
+   * Show toast notification (delegates to Utils)
    */
-  showToast(type, message) {
-    // Use existing toast system if available
-    if (typeof showToast === 'function') {
-      showToast(type, message);
-      return;
-    }
-    
-    // Fallback simple toast
-    const container = document.querySelector('.toast-container') || this.createToastContainer();
-    
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type} toast-visible`;
-    toast.innerHTML = `
-      <span class="toast-icon">${type === 'success' ? '✓' : type === 'warning' ? '⚠' : 'ℹ'}</span>
-      <span class="toast-message">${message}</span>
-    `;
-    
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.classList.add('toast-hiding');
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
-  },
-  
-  /**
-   * Create toast container if it doesn't exist
-   */
-  createToastContainer() {
-    const container = document.createElement('div');
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-    return container;
+  showToast(message, type) {
+    Utils.showToast(message, type);
   },
   
   /**
@@ -299,7 +263,7 @@ const PWA = {
     const cacheNames = await caches.keys();
     await Promise.all(cacheNames.map(name => caches.delete(name)));
     console.log('[PWA] All caches cleared');
-    this.showToast('success', 'Cache cleared');
+    this.showToast('Cache cleared', 'success');
   }
 };
 

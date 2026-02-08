@@ -144,7 +144,7 @@ const SearchModule = (function() {
             container.innerHTML = `
                 <div class="quick-search-empty">
                     <span class="quick-search-empty-icon">😕</span>
-                    <p>No results for "<strong>${escapeHtml(query)}</strong>"</p>
+                    <p>No results for "<strong>${Utils.escapeHtml(query)}</strong>"</p>
                 </div>
             `;
             return;
@@ -172,11 +172,11 @@ const SearchModule = (function() {
                 <div class="quick-search-group">
                     <div class="quick-search-group-label">${label}</div>
                     ${items.slice(0, 5).map(item => `
-                        <div class="quick-search-item" data-path="${escapeHtml(item.path)}">
+                        <div class="quick-search-item" data-path="${Utils.escapeHtml(item.path)}">
                             <span class="quick-search-item-icon">${getCategoryIcon(item.category)}</span>
                             <div class="quick-search-item-content">
-                                <div class="quick-search-item-title">${escapeHtml(item.title || item.path.split('/').pop())}</div>
-                                <div class="quick-search-item-path">${escapeHtml(item.path)}</div>
+                                <div class="quick-search-item-title">${Utils.escapeHtml(item.title || item.path.split('/').pop())}</div>
+                                <div class="quick-search-item-path">${Utils.escapeHtml(item.path)}</div>
                             </div>
                         </div>
                     `).join('')}
@@ -335,7 +335,7 @@ const SearchModule = (function() {
             container.innerHTML = `
                 <div class="no-results">
                     <div class="no-results-emoji">🔍</div>
-                    <p>No results found for "<strong>${escapeHtml(query)}</strong>"</p>
+                    <p>No results found for "<strong>${Utils.escapeHtml(query)}</strong>"</p>
                     <p>Try different keywords or check your filters</p>
                 </div>
             `;
@@ -346,7 +346,7 @@ const SearchModule = (function() {
 
         let html = `
             <div class="result-count">
-                Found <strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "<strong>${escapeHtml(query)}</strong>"
+                Found <strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "<strong>${Utils.escapeHtml(query)}</strong>"
             </div>
         `;
 
@@ -354,9 +354,9 @@ const SearchModule = (function() {
             const highlightedSnippet = highlightTerms(result.snippet, queryTerms);
             
             html += `
-                <div class="search-result" data-path="${escapeHtml(result.path)}">
+                <div class="search-result" data-path="${Utils.escapeHtml(result.path)}">
                     <div class="result-header">
-                        <span class="result-path">${escapeHtml(result.path)}</span>
+                        <span class="result-path">${Utils.escapeHtml(result.path)}</span>
                         <span class="result-score">${getCategoryIcon(result.category)} ${result.category}</span>
                     </div>
                     <div class="result-snippet">${highlightedSnippet}</div>
@@ -379,7 +379,7 @@ const SearchModule = (function() {
      * Highlight search terms in text
      */
     function highlightTerms(text, terms) {
-        let result = escapeHtml(text);
+        let result = Utils.escapeHtml(text);
         
         terms.forEach(term => {
             const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
@@ -458,15 +458,6 @@ const SearchModule = (function() {
                 <p class="placeholder-hint">Searches memory/, tasks/, docs/, and root markdown files</p>
             </div>
         `;
-    }
-
-    /**
-     * Escape HTML
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**

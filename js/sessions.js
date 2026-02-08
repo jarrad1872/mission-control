@@ -43,9 +43,25 @@ const SessionsModule = (function() {
         
         await refresh();
         setupEventListeners();
+        setupVisibilityHandler();
         startAutoRefresh();
         
         console.log('✅ Sessions Module ready');
+    }
+    
+    /**
+     * Pause/resume refresh when tab visibility changes
+     * (Follows pattern from ActivityModule)
+     */
+    function setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                refresh();
+                startAutoRefresh();
+            }
+        });
     }
     
     /**
@@ -194,7 +210,7 @@ const SessionsModule = (function() {
                     </div>
                     
                     <div class="session-tokens">
-                        <div class="tokens-value">${formatTokens(session.totalTokens)}</div>
+                        <div class="tokens-value">${Utils.formatTokens(session.totalTokens)}</div>
                         <div class="context-bar-small ${contextClass}">
                             <div class="context-fill-small" style="width: ${session.contextPercent}%"></div>
                         </div>
@@ -202,7 +218,7 @@ const SessionsModule = (function() {
                     </div>
                     
                     <div class="session-time">
-                        ${formatRelativeTime(session.lastMessageTime)}
+                        ${Utils.formatRelativeTime(session.lastMessageTime)}
                     </div>
                     
                     <div class="session-expand-icon">
@@ -259,7 +275,7 @@ const SessionsModule = (function() {
                         <span>Last Message</span>
                         <span class="last-message-time">${formatDateTime(session.lastMessageTime)}</span>
                     </div>
-                    <div class="last-message-content">${escapeHtml(session.lastMessage)}</div>
+                    <div class="last-message-content">${Utils.escapeHtml(session.lastMessage)}</div>
                 </div>
                 
                 <div class="session-actions">
@@ -321,45 +337,11 @@ const SessionsModule = (function() {
     async function copyKey(sessionKey) {
         try {
             await navigator.clipboard.writeText(sessionKey);
-            showToast('Session key copied!', 'success');
+            Utils.showToast('Session key copied!', 'success');
         } catch (e) {
             console.error('Failed to copy:', e);
-            showToast('Failed to copy key', 'error');
+            Utils.showToast('Failed to copy key', 'error');
         }
-    }
-    
-    /**
-     * Show toast notification
-     */
-    function showToast(message, type = 'info') {
-        // Use existing toast system if available
-        if (window.showToast) {
-            window.showToast(message, type);
-            return;
-        }
-        
-        // Fallback: create simple toast
-        const container = document.querySelector('.toast-container') || createToastContainer();
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type} toast-visible`;
-        toast.innerHTML = `
-            <span class="toast-icon">${type === 'success' ? '✅' : '⚠️'}</span>
-            <span class="toast-message">${message}</span>
-        `;
-        container.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.classList.remove('toast-visible');
-            toast.classList.add('toast-hiding');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-    
-    function createToastContainer() {
-        const container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-        return container;
     }
     
     /**
@@ -423,36 +405,6 @@ const SessionsModule = (function() {
     }
     
     /**
-     * Format token count
-     */
-    function formatTokens(count) {
-        if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
-        if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
-        return count.toString();
-    }
-    
-    /**
-     * Format relative time
-     */
-    function formatRelativeTime(timestamp) {
-        if (!timestamp) return 'Unknown';
-        
-        const now = new Date();
-        const then = new Date(timestamp);
-        const diffMs = now - then;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-        
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
-        
-        return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-    
-    /**
      * Format full date/time
      */
     function formatDateTime(timestamp) {
@@ -464,15 +416,6 @@ const SessionsModule = (function() {
             minute: '2-digit',
             hour12: true
         });
-    }
-    
-    /**
-     * Escape HTML
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
     
     /**

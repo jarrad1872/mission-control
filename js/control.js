@@ -4,9 +4,10 @@
 (function() {
     'use strict';
 
-    // Configuration
+    // Configuration — uses shared Gateway module (js/gateway.js)
+    // localStorage keys are shared: mc_gateway_token, mc_gateway_url
     const CONFIG = {
-        defaultGatewayUrl: 'http://localhost:18789',
+        defaultGatewayUrl: (typeof Gateway !== 'undefined' ? Gateway.DEFAULT_URL : 'http://100.72.187.117:18789'),
         storageKeys: {
             token: 'mc_gateway_token',
             gatewayUrl: 'mc_gateway_url'
@@ -571,12 +572,7 @@
     }
 
     function showToast(message, type = 'info') {
-        // Use QuickActions toast if available
-        if (window.QuickActions?.showToast) {
-            window.QuickActions.showToast(message, type);
-        } else {
-            console.log(`[${type.toUpperCase()}] ${message}`);
-        }
+        Utils.showToast(message, type);
     }
 
     function addToLog(type, message, data = null) {

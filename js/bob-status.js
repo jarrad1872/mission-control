@@ -20,10 +20,26 @@ const BobStatusModule = (function() {
         console.log('👥 Bob Status Module initializing...');
         
         setupModalHandlers();
+        setupVisibilityHandler();
         await refresh();
         startAutoRefresh();
         
         console.log('✅ Bob Status Module ready');
+    }
+    
+    /**
+     * Pause/resume refresh when tab visibility changes
+     * (Follows pattern from ActivityModule)
+     */
+    function setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                refresh();
+                startAutoRefresh();
+            }
+        });
     }
     
     /**
@@ -119,7 +135,7 @@ const BobStatusModule = (function() {
                     </div>
                     <div class="bob-metric-row">
                         <span class="bob-metric-label">Last Active</span>
-                        <span class="bob-metric-value">${formatRelativeTime(bob.lastActivity)}</span>
+                        <span class="bob-metric-value">${Utils.formatRelativeTime(bob.lastActivity)}</span>
                     </div>
                     ${bob.sessionId ? `
                         <div class="bob-metric-row">
@@ -211,7 +227,7 @@ const BobStatusModule = (function() {
                             <span class="bob-expanded-label">Context</span>
                             <span class="bob-expanded-value">${contextPercent}%</span>
                         </div>
-                        <div class="bob-last-message">${escapeHtml(truncatedMessage)}</div>
+                        <div class="bob-last-message">${Utils.escapeHtml(truncatedMessage)}</div>
                         <button class="bob-action-btn" data-action="message" data-bob="${bob.id}" onclick="event.stopPropagation();">
                             💬 Message
                         </button>
@@ -258,15 +274,6 @@ const BobStatusModule = (function() {
     }
     
     /**
-     * Escape HTML to prevent XSS
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    /**
      * Get shortened name for chip
      */
     function getShortName(name) {
@@ -303,27 +310,6 @@ const BobStatusModule = (function() {
             'offline': 'Offline'
         };
         return texts[status] || status;
-    }
-    
-    /**
-     * Format timestamp as relative time
-     */
-    function formatRelativeTime(timestamp) {
-        if (!timestamp) return 'Unknown';
-        
-        const now = new Date();
-        const then = new Date(timestamp);
-        const diffMs = now - then;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-        
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
-        
-        return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     
     /**

@@ -6,6 +6,8 @@
 const KanbanModule = (function() {
     'use strict';
 
+    const STORAGE_KEY = 'missionControl_kanbanMoves';
+    
     let tasksData = null;
     let currentDraggedCard = null;
 
@@ -23,7 +25,7 @@ const KanbanModule = (function() {
     }
 
     /**
-     * Load tasks data from JSON
+     * Load tasks data from JSON, then apply any saved moves from localStorage
      */
     async function loadTasksData() {
         try {
@@ -35,6 +37,67 @@ const KanbanModule = (function() {
         } catch (error) {
             console.error('Error loading tasks:', error);
             tasksData = { columns: { todo: [], inProgress: [], complete: [] }, generated: null };
+        }
+        
+        // Apply any saved column moves from localStorage
+        applySavedMoves();
+    }
+    
+    /**
+     * Get saved task moves from localStorage
+     * Format: { taskId: targetColumn, ... }
+     */
+    function getSavedMoves() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            return {};
+        }
+    }
+    
+    /**
+     * Save a task move to localStorage
+     */
+    function saveMoveToStorage(taskId, targetColumn) {
+        const moves = getSavedMoves();
+        moves[taskId] = targetColumn;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(moves));
+    }
+    
+    /**
+     * Apply saved column moves to the loaded data
+     * This replays any user drag-and-drop changes that aren't in the source data
+     */
+    function applySavedMoves() {
+        const moves = getSavedMoves();
+        if (!tasksData || Object.keys(moves).length === 0) return;
+        
+        const statusMap = {
+            todo: 'pending',
+            inProgress: 'in-progress',
+            complete: 'complete'
+        };
+        
+        for (const [taskId, targetColumn] of Object.entries(moves)) {
+            // Find the task in any column
+            let task = null;
+            let currentColumn = null;
+            
+            for (const [colName, tasks] of Object.entries(tasksData.columns)) {
+                const idx = tasks.findIndex(t => t.id === taskId);
+                if (idx !== -1) {
+                    task = tasks[idx];
+                    currentColumn = colName;
+                    break;
+                }
+            }
+            
+            // Move it if found and not already in target column
+            if (task && currentColumn && currentColumn !== targetColumn && tasksData.columns[targetColumn]) {
+                tasksData.columns[currentColumn] = tasksData.columns[currentColumn].filter(t => t.id !== taskId);
+                task.status = statusMap[targetColumn] || task.status;
+                tasksData.columns[targetColumn].push(task);
+            }
         }
     }
 
@@ -90,7 +153,7 @@ const KanbanModule = (function() {
                     <span class="drag-handle">⋮⋮</span>
                     <span class="card-priority-dot ${priorityClass}" title="${priorityLabel}"></span>
                 </div>
-                <div class="card-title">${escapeHtml(task.title)}</div>
+                <div class="card-title">${Utils.escapeHtml(task.title)}</div>
                 <div class="card-meta">
                     ${task.assignee ? `<span class="card-assignee" title="Assigned to ${task.assignee}">👤 ${task.assignee}</span>` : ''}
                     <span class="card-status ${statusClass}">${task.status}</span>
@@ -189,7 +252,7 @@ const KanbanModule = (function() {
     }
 
     /**
-     * Move task to new column (in-memory only)
+     * Move task to new column and persist to localStorage
      */
     function moveTask(taskId, newColumn) {
         // Find and remove task from current column
@@ -217,11 +280,14 @@ const KanbanModule = (function() {
             // Add to new column
             tasksData.columns[newColumn].push(task);
             
+            // Persist the move to localStorage
+            saveMoveToStorage(taskId, newColumn);
+            
             // Update column counts
             updateColumnCounts();
             
             // Show toast
-            showToast(`Moved "${task.title}" to ${getColumnTitle(newColumn)}`, 'success');
+            Utils.showToast(`Moved "${task.title}" to ${getColumnTitle(newColumn)}`, 'success');
         }
     }
 
@@ -273,7 +339,7 @@ const KanbanModule = (function() {
                 ${task.assignee ? `
                 <div class="detail-row">
                     <span class="detail-label">Assignee</span>
-                    <span class="detail-value">👤 ${escapeHtml(task.assignee)}</span>
+                    <span class="detail-value">👤 ${Utils.escapeHtml(task.assignee)}</span>
                 </div>
                 ` : ''}
                 ${task.due ? `
@@ -291,20 +357,20 @@ const KanbanModule = (function() {
                 ${task.file ? `
                 <div class="detail-row">
                     <span class="detail-label">Source</span>
-                    <span class="detail-value file-path">${escapeHtml(task.file)}</span>
+                    <span class="detail-value file-path">${Utils.escapeHtml(task.file)}</span>
                 </div>
                 ` : ''}
             </div>
             ${task.objective ? `
             <div class="detail-section">
                 <h4>Objective</h4>
-                <p>${escapeHtml(task.objective)}</p>
+                <p>${Utils.escapeHtml(task.objective)}</p>
             </div>
             ` : ''}
             ${task.notes ? `
             <div class="detail-section">
                 <h4>Notes</h4>
-                <p>${escapeHtml(task.notes)}</p>
+                <p>${Utils.escapeHtml(task.notes)}</p>
             </div>
             ` : ''}
         `;
@@ -413,27 +479,6 @@ const KanbanModule = (function() {
         } catch (e) {
             return dateStr;
         }
-    }
-
-    /**
-     * Show toast notification
-     */
-    function showToast(message, type = 'info') {
-        if (typeof window.showToast === 'function') {
-            window.showToast(message, type);
-        } else {
-            console.log(`[${type}] ${message}`);
-        }
-    }
-
-    /**
-     * Escape HTML for safe rendering
-     */
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**

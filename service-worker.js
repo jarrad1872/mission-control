@@ -3,7 +3,7 @@
  * Provides offline support and caching for PWA
  */
 
-const CACHE_NAME = 'mission-control-v8';
+const CACHE_NAME = 'mission-control-v9';
 const BASE_PATH = '/mission-control';
 const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 
@@ -13,8 +13,11 @@ const PRECACHE_ASSETS = [
   `${BASE_PATH}/index.html`,
   `${BASE_PATH}/offline.html`,
   `${BASE_PATH}/css/style.css`,
-  `${BASE_PATH}/js/main.js`,
+  `${BASE_PATH}/css/pwa.css`,
+  `${BASE_PATH}/js/utils.js`,
+  `${BASE_PATH}/js/gateway.js`,
   `${BASE_PATH}/js/data.js`,
+  `${BASE_PATH}/js/theme.js`,
   `${BASE_PATH}/js/bob-status.js`,
   `${BASE_PATH}/js/costs.js`,
   `${BASE_PATH}/js/activity.js`,
@@ -22,6 +25,15 @@ const PRECACHE_ASSETS = [
   `${BASE_PATH}/js/search.js`,
   `${BASE_PATH}/js/voice.js`,
   `${BASE_PATH}/js/quick-actions.js`,
+  `${BASE_PATH}/js/analytics.js`,
+  `${BASE_PATH}/js/sessions.js`,
+  `${BASE_PATH}/js/memory-browser.js`,
+  `${BASE_PATH}/js/kanban.js`,
+  `${BASE_PATH}/js/control.js`,
+  `${BASE_PATH}/js/cfo.js`,
+  `${BASE_PATH}/js/pull-refresh.js`,
+  `${BASE_PATH}/js/main.js`,
+  `${BASE_PATH}/js/pwa.js`,
   `${BASE_PATH}/manifest.json`,
   `${BASE_PATH}/icons/icon-192.png`,
   `${BASE_PATH}/icons/icon-512.png`

@@ -4,17 +4,19 @@
 
 const CalendarModule = (function() {
     let events = [];
-    let currentWeekStart = getStartOfWeek(new Date());
+    let currentWeekStart = getStartOfWeekUTC(new Date());
 
     /**
-     * Get the Monday of the week containing the given date
+     * Get the Monday of the week containing the given date (UTC-based)
+     * Uses UTC methods throughout to match event dates from calendar.json
      */
-    function getStartOfWeek(date) {
+    function getStartOfWeekUTC(date) {
         const d = new Date(date);
-        const day = d.getDay();
-        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
-        d.setDate(diff);
-        d.setHours(0, 0, 0, 0);
+        // Use UTC day to avoid timezone drift
+        const day = d.getUTCDay();
+        const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1); // Monday
+        d.setUTCDate(diff);
+        d.setUTCHours(0, 0, 0, 0);
         return d;
     }
 
@@ -55,7 +57,7 @@ const CalendarModule = (function() {
      */
     function navigateWeek(direction) {
         const newDate = new Date(currentWeekStart);
-        newDate.setDate(newDate.getDate() + (direction * 7));
+        newDate.setUTCDate(newDate.getUTCDate() + (direction * 7));
         currentWeekStart = newDate;
         render();
     }
@@ -71,24 +73,24 @@ const CalendarModule = (function() {
 
         // Update week label
         const weekEnd = new Date(currentWeekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
+        weekEnd.setUTCDate(weekEnd.getUTCDate() + 6);
         
         if (weekLabel) {
-            const options = { month: 'short', day: 'numeric' };
-            weekLabel.textContent = `${currentWeekStart.toLocaleDateString('en-US', options)} — ${weekEnd.toLocaleDateString('en-US', options)}, ${weekEnd.getFullYear()}`;
+            const options = { month: 'short', day: 'numeric', timeZone: 'UTC' };
+            weekLabel.textContent = `${currentWeekStart.toLocaleDateString('en-US', options)} — ${weekEnd.toLocaleDateString('en-US', options)}, ${weekEnd.getUTCFullYear()}`;
         }
 
         // Generate days
         const days = [];
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toISOString().split('T')[0]; // UTC date string for comparison
 
         for (let i = 0; i < 7; i++) {
             const date = new Date(currentWeekStart);
-            date.setDate(date.getDate() + i);
+            date.setUTCDate(date.getUTCDate() + i);
             
             const dayEvents = getEventsForDate(date);
-            const isToday = date.getTime() === today.getTime();
+            const isToday = formatDateKey(date) === todayStr;
             
             days.push(renderDay(date, dayEvents, isToday));
         }
@@ -109,7 +111,7 @@ const CalendarModule = (function() {
      */
     function getEventsForDate(date) {
         const dateStr = formatDateKey(date);
-        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const dayOfWeek = date.getUTCDay(); // 0 = Sunday, 1 = Monday, etc. (UTC)
         
         return events.filter(event => {
             // Exact date match
@@ -153,8 +155,8 @@ const CalendarModule = (function() {
      */
     function renderDay(date, dayEvents, isToday) {
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const dayName = dayNames[date.getDay()];
-        const dayNum = date.getDate();
+        const dayName = dayNames[date.getUTCDay()];
+        const dayNum = date.getUTCDate();
 
         let eventsHtml = '';
         if (dayEvents.length === 0) {
@@ -186,7 +188,7 @@ const CalendarModule = (function() {
         return `
             <div class="calendar-event ${typeClass} ${recurringClass}" data-event-id="${event.id}">
                 ${event.time ? `<div class="event-time">${event.time}</div>` : ''}
-                <div class="event-title">${escapeHtml(event.title)}</div>
+                <div class="event-title">${Utils.escapeHtml(event.title)}</div>
             </div>
         `;
     }
@@ -220,7 +222,7 @@ const CalendarModule = (function() {
             details += `<p><strong>Source:</strong> ${event.source}</p>`;
         }
         if (event.description) {
-            details += `<p><strong>Description:</strong></p><p>${escapeHtml(event.description)}</p>`;
+            details += `<p><strong>Description:</strong></p><p>${Utils.escapeHtml(event.description)}</p>`;
         }
 
         content.innerHTML = details || '<p class="placeholder-text">No additional details available.</p>';
@@ -235,15 +237,6 @@ const CalendarModule = (function() {
         if (panel) {
             panel.classList.remove('open');
         }
-    }
-
-    /**
-     * Escape HTML
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**
@@ -274,7 +267,7 @@ const CalendarModule = (function() {
      * Go to today's week
      */
     function goToToday() {
-        currentWeekStart = getStartOfWeek(new Date());
+        currentWeekStart = getStartOfWeekUTC(new Date());
         render();
     }
 

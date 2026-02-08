@@ -110,18 +110,6 @@ const CostsModule = (function() {
     }
     
     /**
-     * Format token count (e.g., 50000 -> 50K, 1500000 -> 1.5M)
-     */
-    function formatTokens(count) {
-        if (count >= 1000000) {
-            return (count / 1000000).toFixed(1) + 'M';
-        } else if (count >= 1000) {
-            return (count / 1000).toFixed(1) + 'K';
-        }
-        return count.toString();
-    }
-    
-    /**
      * Get data freshness info
      */
     function getDataFreshness(lastUpdate) {
@@ -180,12 +168,12 @@ const CostsModule = (function() {
             <div class="cost-summary">
                 <div class="cost-card">
                     <div class="cost-label">Today</div>
-                    <div class="cost-amount">${formatTokens(todayTokens)}</div>
+                    <div class="cost-amount">${Utils.formatTokens(todayTokens)}</div>
                     <div class="cost-tokens">${todaySessions} session${todaySessions !== 1 ? 's' : ''}</div>
                 </div>
                 <div class="cost-card">
                     <div class="cost-label">This Week</div>
-                    <div class="cost-amount">${formatTokens(weekTokens)}</div>
+                    <div class="cost-amount">${Utils.formatTokens(weekTokens)}</div>
                     <div class="cost-tokens">${weekSessions} session${weekSessions !== 1 ? 's' : ''}</div>
                 </div>
             </div>
@@ -193,15 +181,15 @@ const CostsModule = (function() {
             <div class="token-breakdown">
                 <div class="token-item">
                     <span class="token-label">Input</span>
-                    <span class="token-value">${formatTokens(tokens.input)}</span>
+                    <span class="token-value">${Utils.formatTokens(tokens.input)}</span>
                 </div>
                 <div class="token-item">
                     <span class="token-label">Output</span>
-                    <span class="token-value">${formatTokens(tokens.output)}</span>
+                    <span class="token-value">${Utils.formatTokens(tokens.output)}</span>
                 </div>
                 <div class="token-item">
                     <span class="token-label">Cache</span>
-                    <span class="token-value">${formatTokens(tokens.cacheRead || 0)}</span>
+                    <span class="token-value">${Utils.formatTokens(tokens.cacheRead || 0)}</span>
                 </div>
             </div>
             
@@ -237,7 +225,7 @@ const CostsModule = (function() {
                 <div class="model-bar-container">
                     <div class="model-bar-header">
                         <span class="model-name">${displayName}</span>
-                        <span class="model-cost">${formatTokens(tokens)}</span>
+                        <span class="model-cost">${Utils.formatTokens(tokens)}</span>
                     </div>
                     <div class="model-bar-track">
                         <div class="model-bar-fill" style="width: ${percentage}%; background: ${color}"></div>
@@ -268,12 +256,12 @@ const CostsModule = (function() {
                     const isToday = day.date === new Date().toISOString().split('T')[0];
                     
                     return `
-                        <div class="chart-bar ${isToday ? 'today' : ''}" title="${day.date}: ${formatTokens(totalTokens)}">
+                        <div class="chart-bar ${isToday ? 'today' : ''}" title="${day.date}: ${Utils.formatTokens(totalTokens)}">
                             <div class="chart-bar-label">${dayName}</div>
                             <div class="chart-bar-track">
                                 <div class="chart-bar-fill" style="width: ${percentage}%"></div>
                             </div>
-                            <div class="chart-bar-value">${formatTokens(totalTokens)}</div>
+                            <div class="chart-bar-value">${Utils.formatTokens(totalTokens)}</div>
                         </div>
                     `;
                 }).join('')}
