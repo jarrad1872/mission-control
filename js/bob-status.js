@@ -262,15 +262,139 @@ const BobStatusModule = (function() {
         });
     }
     
+    // Telegram topic IDs for each Bob
+    const BOB_TOPIC_MAP = {
+        'main': 1,
+        'standup': 1,
+        'kcc': 4,
+        'personal': 5,
+        'dmi': 6,
+        'sawdot': 7,
+        'mrbex': 8
+    };
+
+    // Session keys for each Bob
+    const BOB_SESSION_KEYS = {
+        'main': 'agent:main:telegram:group:-1003765361939:topic:1',
+        'standup': 'agent:main:telegram:group:-1003765361939:topic:1',
+        'kcc': 'agent:main:telegram:group:-1003765361939:topic:4',
+        'personal': 'agent:main:telegram:group:-1003765361939:topic:5',
+        'dmi': 'agent:main:telegram:group:-1003765361939:topic:6',
+        'sawdot': 'agent:main:telegram:group:-1003765361939:topic:7',
+        'mrbex': 'agent:main:telegram:group:-1003765361939:topic:8'
+    };
+
     /**
-     * Handle message bob action
+     * Handle message bob action — opens a send-message modal
      */
     function handleMessageBob(bobId) {
         const bob = statusData?.bobs?.find(b => b.id === bobId);
         if (!bob) return;
-        
-        // Open the full detail modal with message capabilities
-        openDetailModal(bobId);
+
+        const sessionKey = BOB_SESSION_KEYS[bobId] || '';
+        const topicId = BOB_TOPIC_MAP[bobId];
+
+        // Create or reuse message modal
+        let modal = document.getElementById('bobMessageModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'bobMessageModal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-backdrop"></div>
+                <div class="modal-content modal-bottom-sheet">
+                    <div class="modal-header">
+                        <h3 id="bobMessageTitle">Message Bob</h3>
+                        <button class="close-btn" id="closeBobMessage">×</button>
+                    </div>
+                    <div class="modal-body" id="bobMessageBody"></div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Close handlers
+            modal.querySelector('#closeBobMessage').addEventListener('click', () => {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+            modal.querySelector('.modal-backdrop').addEventListener('click', () => {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        }
+
+        const title = modal.querySelector('#bobMessageTitle');
+        const body = modal.querySelector('#bobMessageBody');
+        title.textContent = `💬 Message ${bob.name}`;
+
+        body.innerHTML = `
+            <div class="bob-message-form">
+                <textarea id="bobMessageInput" class="bob-message-textarea" rows="4"
+                    placeholder="Type a message to ${bob.name}..."></textarea>
+                <div class="bob-message-actions">
+                    <button class="bob-msg-send-btn" id="bobMsgSendBtn">
+                        📤 Send via Gateway
+                    </button>
+                    ${topicId ? `
+                    <a class="bob-msg-tg-link" href="https://t.me/c/3765361939/${topicId}" target="_blank" rel="noopener">
+                        📱 Open in Telegram
+                    </a>` : ''}
+                </div>
+                <div class="bob-message-status" id="bobMsgStatus"></div>
+            </div>
+        `;
+
+        // Send button handler
+        const sendBtn = body.querySelector('#bobMsgSendBtn');
+        const input = body.querySelector('#bobMessageInput');
+        const statusEl = body.querySelector('#bobMsgStatus');
+
+        sendBtn.addEventListener('click', async () => {
+            const message = input.value.trim();
+            if (!message) {
+                statusEl.textContent = '⚠️ Please type a message';
+                statusEl.className = 'bob-message-status error';
+                return;
+            }
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ Sending...';
+            statusEl.textContent = '';
+
+            try {
+                if (typeof Gateway !== 'undefined' && Gateway.hasToken()) {
+                    await Gateway.sendMessage(sessionKey, message);
+                    statusEl.textContent = '✅ Message sent!';
+                    statusEl.className = 'bob-message-status success';
+                    input.value = '';
+                    setTimeout(() => {
+                        modal.classList.remove('open');
+                        document.body.style.overflow = '';
+                    }, 1200);
+                } else {
+                    statusEl.textContent = '⚠️ Gateway not configured. Use Settings to connect.';
+                    statusEl.className = 'bob-message-status error';
+                }
+            } catch (err) {
+                console.error('Send message error:', err);
+                statusEl.textContent = `❌ ${err.message || 'Send failed'}`;
+                statusEl.className = 'bob-message-status error';
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '📤 Send via Gateway';
+            }
+        });
+
+        // Enter to send (Ctrl/Cmd+Enter)
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                sendBtn.click();
+            }
+        });
+
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => input.focus(), 100);
     }
     
     /**

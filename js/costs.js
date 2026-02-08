@@ -10,24 +10,28 @@ const CostsModule = (function() {
     
     // Model display names
     const MODEL_NAMES = {
+        'claude-opus-4-6': 'Claude Opus 4.6',
         'claude-opus-4-5': 'Claude Opus 4.5',
         'claude-sonnet-4-5': 'Claude Sonnet 4.5',
         'claude-3-5-sonnet': 'Claude 3.5 Sonnet',
         'claude-3-5-haiku': 'Claude 3.5 Haiku',
         'kimi-k2.5': 'Kimi K2.5',
         'gpt-4o': 'GPT-4o',
-        'gemini-2.0-flash': 'Gemini 2.0 Flash'
+        'gemini-2.0-flash': 'Gemini 2.0 Flash',
+        'delivery-mirror': 'Delivery Mirror'
     };
     
     // Model colors
     const MODEL_COLORS = {
+        'claude-opus-4-6': '#d63384',
         'claude-opus-4-5': '#e94560',
         'claude-sonnet-4-5': '#ff6b8a',
         'claude-3-5-sonnet': '#ff8fa3',
         'claude-3-5-haiku': '#ffb3c1',
         'kimi-k2.5': '#4ecdc4',
         'gpt-4o': '#10a37f',
-        'gemini-2.0-flash': '#8e44ef'
+        'gemini-2.0-flash': '#8e44ef',
+        'delivery-mirror': '#6c757d'
     };
     
     /**

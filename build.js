@@ -434,7 +434,7 @@ function generateSearchIndex() {
 /**
  * Clawdbot session data paths
  */
-const CLAWDBOT_HOME = process.env.CLAWDBOT_HOME || '/home/node/.clawdbot';
+const CLAWDBOT_HOME = process.env.CLAWDBOT_HOME || '/home/node/.openclaw';
 const SESSIONS_DIR = path.join(CLAWDBOT_HOME, 'agents', 'main', 'sessions');
 const SESSIONS_JSON = path.join(SESSIONS_DIR, 'sessions.json');
 
@@ -1392,6 +1392,116 @@ function generateCFODataFallback() {
     return data;
 }
 
+/**
+ * Generate sessions.json from REAL session data
+ */
+function generateSessions() {
+    console.log('📡 Generating sessions data...');
+    
+    const sessions = [];
+    
+    try {
+        if (!fs.existsSync(SESSIONS_JSON)) {
+            console.error('   ⚠️ Sessions file not found:', SESSIONS_JSON);
+            return;
+        }
+        
+        const sessionsData = JSON.parse(fs.readFileSync(SESSIONS_JSON, 'utf8'));
+        
+        Object.entries(sessionsData).forEach(([key, session]) => {
+            const totalTokens = session.totalTokens || 0;
+            const contextTokens = session.contextTokens || 200000;
+            const contextPercent = Math.min(Math.round((totalTokens / contextTokens) * 100), 100);
+            const updatedAt = session.updatedAt || 0;
+            
+            // Determine session kind
+            let kind = 'main';
+            if (key.includes('subagent')) kind = 'subagent';
+            else if (key.includes('cron:')) kind = 'cron';
+            else if (key.includes('group')) kind = 'group';
+            
+            // Determine channel
+            let channel = 'internal';
+            if (key.includes('telegram')) channel = 'telegram';
+            else if (key.includes('whatsapp')) channel = 'whatsapp';
+            else if (key.includes('discord')) channel = 'discord';
+            
+            // Get label from BOB_CONFIG
+            const bobConfig = BOB_CONFIG[key];
+            const label = bobConfig ? bobConfig.name : (session.label || '');
+            
+            // Read last message from JSONL if available
+            let lastMessage = '';
+            let messageCount = 0;
+            const jsonlPath = path.join(SESSIONS_DIR, `${session.sessionId}.jsonl`);
+            try {
+                if (session.sessionId && fs.existsSync(jsonlPath)) {
+                    const content = fs.readFileSync(jsonlPath, 'utf8');
+                    const lines = content.trim().split('\n');
+                    messageCount = lines.length;
+                    // Get last meaningful message
+                    for (let i = lines.length - 1; i >= Math.max(0, lines.length - 5); i--) {
+                        try {
+                            const entry = JSON.parse(lines[i]);
+                            if (entry.type === 'message' && entry.message?.content) {
+                                const content = entry.message.content;
+                                if (typeof content === 'string') {
+                                    lastMessage = content.slice(0, 200);
+                                } else if (Array.isArray(content)) {
+                                    const textPart = content.find(p => p.type === 'text');
+                                    if (textPart) lastMessage = textPart.text.slice(0, 200);
+                                }
+                                break;
+                            }
+                        } catch(e) {}
+                    }
+                }
+            } catch(e) {}
+            
+            sessions.push({
+                key,
+                kind,
+                channel,
+                label,
+                model: session.model || 'unknown',
+                totalTokens,
+                contextTokens,
+                contextPercent,
+                messageCount,
+                lastMessage,
+                lastMessageTime: updatedAt ? new Date(updatedAt).toISOString() : null,
+                sessionId: session.sessionId || '',
+                parentSession: session.parentSession || null,
+                schedule: session.schedule || null
+            });
+        });
+        
+        // Sort by last activity (most recent first)
+        sessions.sort((a, b) => {
+            const aTime = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
+            const bTime = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
+            return bTime - aTime;
+        });
+        
+    } catch (e) {
+        console.error('   ⚠️ Error generating sessions:', e.message);
+    }
+    
+    const data = {
+        lastUpdate: GENERATED,
+        source: 'real',
+        sessions
+    };
+    
+    fs.writeFileSync(
+        path.join(DATA_DIR, 'sessions.json'),
+        JSON.stringify(data, null, 2)
+    );
+    
+    console.log(`   ✅ sessions.json generated (${sessions.length} sessions from real data)`);
+    return data;
+}
+
 // Run all generators
 console.log('');
 generateBobStatus();
@@ -1401,6 +1511,8 @@ console.log('');
 generateCalendar();
 console.log('');
 generateCosts();
+console.log('');
+generateSessions();
 console.log('');
 generateTasksBoard();
 console.log('');

@@ -2194,6 +2194,96 @@ html, body {
     background: var(--accent-hover);
 }
 
+/* ===== BOB MESSAGE MODAL ===== */
+.bob-message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 4px 0;
+}
+
+.bob-message-textarea {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.bob-message-textarea:focus {
+    border-color: var(--accent);
+}
+
+.bob-message-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.bob-msg-send-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 40px;
+}
+
+.bob-msg-send-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.bob-msg-send-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.bob-msg-tg-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background: #0088cc;
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    min-height: 40px;
+}
+
+.bob-msg-tg-link:hover {
+    background: #006699;
+}
+
+.bob-message-status {
+    font-size: 0.85rem;
+    min-height: 20px;
+    text-align: center;
+}
+
+.bob-message-status.success {
+    color: #00ff88;
+}
+
+.bob-message-status.error {
+    color: #e94560;
+}
+
 /* ===== QUICK SEARCH MODAL ===== */
 .search-trigger {
     display: flex;
