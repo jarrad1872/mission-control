@@ -228,7 +228,7 @@ const BobStatusModule = (function() {
                             <span class="bob-expanded-value">${contextPercent}%</span>
                         </div>
                         <div class="bob-last-message">${Utils.escapeHtml(truncatedMessage)}</div>
-                        <button class="bob-action-btn" data-action="message" data-bob="${bob.id}" onclick="event.stopPropagation();">
+                        <button class="bob-action-btn" data-action="message" data-bob="${bob.id}">
                             💬 Message
                         </button>
                     </div>
@@ -239,12 +239,8 @@ const BobStatusModule = (function() {
         // Add click handlers for chip expansion
         container.querySelectorAll('.bob-chip').forEach(chip => {
             chip.addEventListener('click', (e) => {
-                // Don't expand if clicking the message button
-                if (e.target.closest('.bob-action-btn')) {
-                    const bobId = e.target.dataset.bob;
-                    handleMessageBob(bobId);
-                    return;
-                }
+                // Don't expand/collapse if clicking the message button
+                if (e.target.closest('.bob-action-btn')) return;
                 
                 // Toggle expansion
                 const wasExpanded = chip.classList.contains('expanded');
@@ -258,6 +254,15 @@ const BobStatusModule = (function() {
                 if (!wasExpanded) {
                     chip.classList.add('expanded');
                 }
+            });
+        });
+
+        // Direct click handlers on message buttons (separate from chip toggle)
+        container.querySelectorAll('.bob-action-btn[data-action="message"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const bobId = btn.dataset.bob;
+                if (bobId) handleMessageBob(bobId);
             });
         });
     }

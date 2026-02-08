@@ -1,7 +1,9 @@
 /**
  * Gateway Client Module — Shared gateway connection for Mission Control
  * Provides authenticated API access to the OpenClaw gateway.
- * Used by quick-actions.js and control.js.
+ *
+ * Uses HTTP hooks API (POST /hooks/wake, POST /hooks/agent) for control operations.
+ * Uses /v1/chat/completions for LLM calls (Bob Chat voice).
  */
 
 (function() {
@@ -142,19 +144,43 @@
     }
 
     // ========================================
-    // API Methods (real OpenClaw endpoints)
+    // API Methods — HTTP Hooks
+    // The gateway control API is WebSocket-only.
+    // For HTTP access, we use the hooks system:
+    //   POST /hooks/wake   — trigger heartbeat/wake
+    //   POST /hooks/agent  — send message to a session
     // ========================================
 
     /**
-     * Test connection / get gateway status
-     * GET /api/status
+     * Test connection by hitting the root URL (should return 200 or 404)
+     * Any non-network-error response means the gateway is reachable.
      */
     async function testConnection() {
         try {
-            const data = await request('/api/status');
+            const url = getUrl();
+            const token = getToken();
+            // Use a lightweight POST to /hooks/wake with a no-op as connectivity check
+            const response = await fetch(`${url}/hooks/wake`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ text: 'connectivity check', mode: 'next-heartbeat' })
+            });
+            if (response.ok) {
+                _setStatus('connected');
+                _lastCheck = Date.now();
+                return { success: true, data: await response.json().catch(() => ({})) };
+            }
+            if (response.status === 401) {
+                _setStatus('error');
+                return { success: false, error: 'Authentication failed — check your token' };
+            }
+            // Gateway responded but endpoint issue — still reachable
             _setStatus('connected');
             _lastCheck = Date.now();
-            return { success: true, data };
+            return { success: true, data: {} };
         } catch (error) {
             if (error.message && error.message.includes('Failed to fetch')) {
                 _setStatus('disconnected');
@@ -166,43 +192,58 @@
     }
 
     /**
-     * Spawn a sub-agent
-     * POST /api/sessions/spawn
-     * @param {string} task - Task description for the agent
-     * @param {string} [model] - Model to use (e.g. 'sonnet', 'opus', 'haiku')
-     * @param {string} [label] - Label for the session
+     * Send a message to a Bob session via hooks/agent
+     * This dispatches an agent run in the specified session.
+     * @param {string} sessionKey - Session key to send to
+     * @param {string} message - Message content
+     * @param {object} [opts] - Optional: channel, deliver, model
      */
-    async function spawnAgent(task, model, label) {
-        const body = { task };
-        if (model) body.model = model;
-        if (label) body.label = label;
+    async function sendMessage(sessionKey, message, opts = {}) {
+        const body = {
+            message,
+            sessionKey,
+            name: opts.name || 'Mission Control',
+            channel: opts.channel || 'telegram',
+            deliver: opts.deliver !== undefined ? opts.deliver : true,
+            wakeMode: 'now'
+        };
+        if (opts.model) body.model = opts.model;
 
-        return request('/api/sessions/spawn', {
+        return request('/hooks/agent', {
             method: 'POST',
             body: JSON.stringify(body)
         });
     }
 
     /**
-     * Send a message to a session
-     * POST /api/sessions/send
-     * @param {string} sessionKey - Session key to send to
-     * @param {string} message - Message content
+     * Spawn a sub-agent via hooks/agent (creates a new session)
+     * @param {string} task - Task description
+     * @param {string} [model] - Model to use
+     * @param {string} [label] - Session label
      */
-    async function sendMessage(sessionKey, message) {
-        return request('/api/sessions/send', {
+    async function spawnAgent(task, model, label) {
+        const body = {
+            message: task,
+            name: label || 'Mission Control Spawn',
+            wakeMode: 'now',
+            channel: 'telegram',
+            deliver: true
+        };
+        if (model) body.model = model;
+
+        return request('/hooks/agent', {
             method: 'POST',
-            body: JSON.stringify({ sessionKey, message })
+            body: JSON.stringify(body)
         });
     }
 
     /**
      * Trigger a heartbeat / cron wake
-     * POST /api/cron/wake
+     * POST /hooks/wake
      * @param {string} [text] - Wake text
      */
     async function triggerHeartbeat(text) {
-        return request('/api/cron/wake', {
+        return request('/hooks/wake', {
             method: 'POST',
             body: JSON.stringify({
                 text: text || 'Manual heartbeat triggered from Mission Control',
@@ -212,11 +253,10 @@
     }
 
     /**
-     * Get gateway status info
-     * GET /api/status
+     * Get gateway status — uses testConnection since no REST status endpoint exists
      */
     async function getGatewayStatus() {
-        return request('/api/status');
+        return testConnection();
     }
 
     // ========================================
@@ -225,18 +265,15 @@
 
     function autoCheck() {
         if (hasToken()) {
-            // Silently test connection on load
             testConnection().catch(() => {});
         } else {
             _setStatus('disconnected');
         }
     }
 
-    // Run auto-check when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', autoCheck);
     } else {
-        // Small delay to let other modules init first
         setTimeout(autoCheck, 500);
     }
 
