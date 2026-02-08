@@ -56,9 +56,28 @@
     <script>
     // Auth: SHA-256 hash of access code "bob2026"
     const MC_HASH='e333eb06c49c0b6f28c672357d4154657e3afbcec8d4d4e76482e40e7e7c6b7f';
-    async function mcSha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+    // Fallback: base64-encoded code for non-secure contexts (HTTP)
+    const MC_FB=atob('Ym9iMjAyNg==');
+    async function mcSha(s){
+        if(window.crypto&&crypto.subtle){
+            const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+            return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+        }
+        return null;
+    }
     function mcUnlock(){document.getElementById('authGate').style.display='none'}
-    async function mcAuth(e){e.preventDefault();if(await mcSha(document.getElementById('mcPin').value)===MC_HASH){sessionStorage.setItem('mc_auth','1');mcUnlock()}else{document.getElementById('mcErr').textContent='Invalid access code';document.getElementById('mcPin').value='';document.getElementById('mcPin').focus()}return false}
+    async function mcAuth(e){
+        e.preventDefault();
+        const v=document.getElementById('mcPin').value;
+        const h=await mcSha(v);
+        if((h&&h===MC_HASH)||v===MC_FB){
+            sessionStorage.setItem('mc_auth','1');mcUnlock();
+        }else{
+            document.getElementById('mcErr').textContent='Invalid access code';
+            document.getElementById('mcPin').value='';document.getElementById('mcPin').focus();
+        }
+        return false;
+    }
     if(sessionStorage.getItem('mc_auth')==='1')mcUnlock();
     </script>
 
