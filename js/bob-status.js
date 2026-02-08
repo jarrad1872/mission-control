@@ -220,6 +220,17 @@ const BobStatusModule = (function() {
         try {
             const url = getDataUrl();
             const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
+            
+            // If live API fails, try static fallback
+            if (!response.ok && url !== STATIC_DATA_URL) {
+                console.warn('Live bob-status failed, trying static fallback...');
+                const fallback = await fetch(STATIC_DATA_URL + '?t=' + Date.now());
+                if (fallback.ok) {
+                    statusData = await fallback.json();
+                    renderChips();
+                    return;
+                }
+            }
             if (!response.ok) throw new Error('Failed to fetch bob status');
             
             statusData = await response.json();

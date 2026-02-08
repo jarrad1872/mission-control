@@ -405,10 +405,25 @@ const CFOModule = (function() {
     }
     
     /**
-     * Trigger a CFO action (shows message to user)
+     * Trigger a CFO action via Gateway
      */
-    function triggerAction(command) {
-        Utils.showToast(`Send "${command}" in chat to run analysis`, 'info');
+    async function triggerAction(command) {
+        if (typeof Gateway === 'undefined' || !Gateway.hasToken()) {
+            Utils.showToast('Gateway not configured. Go to Settings.', 'error');
+            return;
+        }
+        
+        Utils.showToast('Sending to Bob...', 'info');
+        
+        try {
+            // Send command to the main Telegram session (Topic 1)
+            const sessionKey = 'agent:main:telegram:group:-1003765361939:topic:1';
+            await Gateway.sendMessage(sessionKey, command);
+            Utils.showToast('✅ Sent! Bob is working on it.', 'success');
+        } catch (err) {
+            console.error('CFO action error:', err);
+            Utils.showToast('❌ Failed: ' + (err.message || 'Unknown error'), 'error');
+        }
     }
     
     /**
