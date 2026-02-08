@@ -21,6 +21,14 @@
             'mc_openai_key':    atob(_oaiB64)
         };
 
+        // Force-update gateway URL if it still points to an old tunnel
+        // (Cloudflare quick tunnels get new URLs on restart)
+        const currentGw = localStorage.getItem('mc_gateway_url') || '';
+        if (currentGw.includes('trycloudflare.com') && currentGw !== defaults.mc_gateway_url) {
+            localStorage.setItem('mc_gateway_url', defaults.mc_gateway_url);
+            console.log('🔄 Updated gateway URL to new tunnel');
+        }
+
         Object.entries(defaults).forEach(([key, value]) => {
             if (!localStorage.getItem(key)) {
                 localStorage.setItem(key, value);
