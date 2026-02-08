@@ -1,5 +1,6 @@
 {
-  "generated": "2026-02-08T21:33:19.689Z",
+  "generated": "2026-02-08T22:30:00.000Z",
+  "source": "QuickBooks Online (live pull)",
   "portfolio": {
     "health": "watch",
     "totalRevenue": 7946000,
@@ -16,14 +17,66 @@
       "grossMargin": 35,
       "cashStatus": "Healthy",
       "employees": 35,
-      "summary": "Concrete cutting and coring. Jarrad's primary cash cow.",
+      "summary": "Concrete cutting and coring. $3.5M highway pipeline starts March. Winter burn phase — cash reserves strong at $882K.",
       "name": "kippen-concrete",
       "keyFacts": [
-        "2026 highway pipeline worth $3.5M starting March",
-        "Approximately 30-35 employees",
-        "Gross revenue approximately $5M"
+        "YTD Income (Jan 1–Feb 8): $202,689",
+        "YTD Net Income: -$429,538 (seasonal — pre-highway season)",
+        "Cash Balance: $882,625 (Zions Sweep $849K + operating accounts)",
+        "A/R Unpaid: $113,842 (15 overdue invoices)",
+        "Payroll Leasing: $275K/mo for 30-35 employees",
+        "Subcontractors YTD: $219,356",
+        "AMEX Delta balance: $40,455",
+        "2026 highway pipeline: $3.5M starting March",
+        "Professional Fees YTD: $39,480 — unusually high"
       ],
-      "alerts": []
+      "qbo": {
+        "asOf": "2026-02-08",
+        "period": "Jan 1 – Feb 8, 2026",
+        "basis": "Accrual",
+        "income": 202689,
+        "cogs": 235783,
+        "grossProfit": -33094,
+        "totalExpenses": 392525,
+        "netOperatingIncome": -425619,
+        "netIncome": -429538,
+        "cashBalance": 882625,
+        "arUnpaid": 113842,
+        "bankAccounts": {
+          "Zions Sweep 9137": 849471,
+          "Central Bank 5720": 32107,
+          "Zions Operating 0259": 451,
+          "Zions Savings 2119": 596,
+          "Zions Control KCC 098": 3663,
+          "AMEX Delta (owed)": -40455
+        },
+        "topExpenses": {
+          "Payroll Leasing": 275031,
+          "Subcontractors": 219356,
+          "Professional Fees": 39480,
+          "Rent": 15560,
+          "Fuel": 12068,
+          "Blades": 7695
+        }
+      },
+      "alerts": [
+        {
+          "severity": "warning",
+          "message": "YTD net loss -$430K (seasonal burn before March highway work)"
+        },
+        {
+          "severity": "warning",
+          "message": "$39,480 Professional Fees YTD — verify what this covers"
+        },
+        {
+          "severity": "info",
+          "message": "$30K+ in Uncategorized Expenses — needs cleanup"
+        },
+        {
+          "severity": "info",
+          "message": "Zions Sweep: $562K discrepancy between bank ($849K) and QBO ($288K)"
+        }
+      ]
     },
     {
       "id": "kippen-excavation",
@@ -32,15 +85,57 @@
       "grossMargin": 28,
       "cashStatus": "OK",
       "employees": 8,
-      "summary": "Excavation services, smaller but profitable.",
+      "summary": "Excavation services. IOS yard #1 closing end of Feb. Winter slow season — payroll outpacing revenue.",
       "name": "kippen-excavation",
       "keyFacts": [
-        "First IOS yard under contract: West Haven, UT @ $280K, closing end of Feb 2026",
-        "IOS yard partnership: 50/50 property with Shane, 53/47 business (Jarrad majority)",
-        "Approximately 8 employees",
-        "Gross revenue approximately $2M"
+        "YTD Income (Jan 1–Feb 8): $45,490",
+        "January Net Income: -$63,373 (down 143% from prior month)",
+        "Cash Balance: ~$149,048 (Central Bank $139K + Zions $8K + MM $2K)",
+        "Capital One CC: $19,721 owed",
+        "IOS Yard #1: Under contract at $280K, closing end of Feb 2026",
+        "IOS Yard ownership: 50/50 property (Jarrad/Shane), 53/47 business",
+        "Shane putting ~$50K down (50% of ~$100K down payment)",
+        "All income booked as Uncategorized — needs job-level categorization",
+        "BRRRR strategy: 5 yards Weber County, 10 in N. Utah over 3-4 yrs"
       ],
-      "alerts": []
+      "qbo": {
+        "asOf": "2026-02-08",
+        "period": "Jan 1 – Feb 8, 2026",
+        "basis": "Accrual",
+        "income": 45490,
+        "cogs": 4563,
+        "grossProfit": 40927,
+        "totalExpenses": 63873,
+        "netIncome": -63373,
+        "cashBalance": 149048,
+        "bankAccounts": {
+          "Central Bank Checking 8607": 139014,
+          "Zions Inspire Checking 4113": 8061,
+          "Central Bank Money Market 5555": 1973,
+          "Bill.com Clearing": 9057,
+          "Capital One CC (owed)": -19721
+        },
+        "topExpenses": {
+          "Payroll": 39839,
+          "Vehicle": 10437,
+          "Utilities": 4299,
+          "Accounting Fees": 2170
+        }
+      },
+      "alerts": [
+        {
+          "severity": "warning",
+          "message": "January net loss -$63K (winter slow season)"
+        },
+        {
+          "severity": "info",
+          "message": "All income as 'Uncategorized' — needs proper job categorization"
+        },
+        {
+          "severity": "info",
+          "message": "IOS Yard #1 closing end of Feb — $280K"
+        }
+      ]
     },
     {
       "id": "dmi-tools",
@@ -81,8 +176,7 @@
         "Roc Diamond LLC is Jarrad's personal holding company for debt from original diamond tool business",
         "Holds ~$1.2M in debt: EIDL loan + Zions Bank equipment loan",
         "DMI Tools Corp services this debt via lease payments to Roc Diamond",
-        "Will persist as debt-holding entity after DMI restructuring (DMI Tools LLC dissolved, ops move to DMI Tools Corp)",
-        "CRITICAL: Must combine ROC Diamond + DMI Tools financials to get true picture of DMI business health"
+        "CRITICAL: Must combine ROC Diamond + DMI Tools financials to get true picture"
       ],
       "alerts": [
         {
@@ -111,12 +205,23 @@
       "keyFacts": [
         "FSM software for concrete cutters, in development",
         "2 developers working on it",
-        "Also building B2B marketplace for concrete cutters"
+        "Target: 100+ customers in 24 months (20% of ~500 market)",
+        "Must-have: certified payroll (prevailing wage)"
       ],
       "alerts": []
     }
   ],
   "alerts": [
+    {
+      "severity": "warning",
+      "message": "Both Kippen companies running negative YTD — seasonal burn before March highway season",
+      "company": "Portfolio"
+    },
+    {
+      "severity": "info",
+      "message": "Combined cash reserves $1M+ — healthy buffer through winter",
+      "company": "Portfolio"
+    },
     {
       "severity": "warning",
       "message": "DMI $1.2M debt — partners must cover",
@@ -129,13 +234,13 @@
     },
     {
       "severity": "info",
-      "message": "IOS yard under contract, closing Feb",
+      "message": "IOS yard #1 closing end of Feb — $280K",
       "company": "Kippen Excavation"
     },
     {
-      "severity": "info",
-      "message": "Saw.City FSM in development — certified payroll next",
-      "company": "SawDot City"
+      "severity": "warning",
+      "message": "KCC: $39K Professional Fees + $30K Uncategorized — needs review",
+      "company": "Kippen Concrete"
     }
   ]
 }
