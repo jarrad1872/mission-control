@@ -7,6 +7,14 @@ const CFOModule = (function() {
     let cfoData = null;
     let expandedCards = new Set();
     
+    const STATIC_DATA_URL = 'data/cfo.json';
+    
+    function getDataUrl() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/cfo';
+        return STATIC_DATA_URL;
+    }
+    
     // Company configuration with icons and colors
     const COMPANY_CONFIG = {
         'kippen-concrete': { 
@@ -123,7 +131,8 @@ const CFOModule = (function() {
      */
     async function loadCFOData() {
         try {
-            const response = await fetch('data/cfo.json?t=' + Date.now());
+            const url = getDataUrl();
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) throw new Error('Failed to load CFO data');
             cfoData = await response.json();
         } catch (error) {

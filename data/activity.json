@@ -1,21 +1,435 @@
 {
-  "generated": "2026-02-08T18:16:46.853Z",
+  "generated": "2026-02-08T21:33:19.689Z",
   "items": [
     {
-      "id": "commit-0",
+      "id": "mc-commit-0",
       "type": "commit",
-      "timestamp": "2026-02-07T17:00:59.000Z",
-      "title": "nightly-build: updated friction log and build log",
+      "timestamp": "2026-02-08T21:28:48.000Z",
+      "title": "[MC] chore: bump SW cache v13, update static bob-status fallback",
       "source": "git",
-      "hash": "1ab17c8"
+      "hash": "0d95b6e",
+      "file": "mission-control"
     },
     {
-      "id": "commit-1",
+      "id": "mc-commit-1",
       "type": "commit",
-      "timestamp": "2026-02-07T17:00:45.000Z",
-      "title": "nightly-build: added .gitignore to prevent unwanted files in git status",
+      "timestamp": "2026-02-08T21:28:27.000Z",
+      "title": "[MC] chore: update tunnel URL to new cloudflare endpoint",
       "source": "git",
-      "hash": "b27be16"
+      "hash": "d58d82d",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-2",
+      "type": "commit",
+      "timestamp": "2026-02-08T21:27:14.000Z",
+      "title": "[MC] feat: live bob-status via gateway API",
+      "source": "git",
+      "hash": "fbb85a9",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-3",
+      "type": "commit",
+      "timestamp": "2026-02-08T20:53:02.000Z",
+      "title": "[MC] fix: rewrite control panel to use hooks API, add kanban timestamps, add opus-4.6 to analytics",
+      "source": "git",
+      "hash": "d4a14a8",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-4",
+      "type": "commit",
+      "timestamp": "2026-02-08T20:44:32.000Z",
+      "title": "[MC] fix: move Message buttons inside Bob detail modal",
+      "source": "git",
+      "hash": "73aad31",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-5",
+      "type": "commit",
+      "timestamp": "2026-02-08T20:36:40.000Z",
+      "title": "[MC] chore: update tunnel URL after restart",
+      "source": "git",
+      "hash": "ba90cdf",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-6",
+      "type": "commit",
+      "timestamp": "2026-02-08T19:37:55.000Z",
+      "title": "[MC] fix: Message buttons now work + gateway uses hooks API",
+      "source": "git",
+      "hash": "d7a3c13",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-7",
+      "type": "commit",
+      "timestamp": "2026-02-08T19:32:59.000Z",
+      "title": "[MC] deploy: move Mission Control to slurrybox.com",
+      "source": "git",
+      "hash": "cc9ea9c",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-8",
+      "type": "commit",
+      "timestamp": "2026-02-08T19:29:38.000Z",
+      "title": "[MC] fix: auto-migrate gateway URL when tunnel changes",
+      "source": "git",
+      "hash": "f25eb6e",
+      "file": "mission-control"
+    },
+    {
+      "id": "mc-commit-9",
+      "type": "commit",
+      "timestamp": "2026-02-08T19:29:09.000Z",
+      "title": "[MC] fix: CORS proxy + update tunnel URL for gateway access",
+      "source": "git",
+      "hash": "893ae76",
+      "file": "mission-control"
+    },
+    {
+      "id": "ws-commit-0",
+      "type": "commit",
+      "timestamp": "2026-02-08T17:29:22.000Z",
+      "title": "feat: heartbeat checkpoint system + simplify memory to 2 layers",
+      "source": "git",
+      "hash": "bb65f67",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-1",
+      "type": "commit",
+      "timestamp": "2026-02-08T17:01:46.000Z",
+      "title": "nightly-build: documented task cleanup in build log",
+      "source": "git",
+      "hash": "5bbdbfe",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-2",
+      "type": "commit",
+      "timestamp": "2026-02-08T17:01:33.000Z",
+      "title": "nightly-build: cleaned up 4 stale task files (moved to completed/) and cleared resolved friction log items",
+      "source": "git",
+      "hash": "103c152",
+      "file": "workspace"
+    },
+    {
+      "id": "task-task-voice-chat-setup-md",
+      "type": "task",
+      "timestamp": "2026-02-08T17:01:02.315Z",
+      "title": "Completed: Voice Chat Setup (ClawChat)",
+      "source": "task",
+      "file": "tasks/completed/task-voice-chat-setup.md"
+    },
+    {
+      "id": "ws-commit-3",
+      "type": "commit",
+      "timestamp": "2026-02-08T16:39:21.000Z",
+      "title": "refactor: slim HEARTBEAT.md from 180 lines to 30",
+      "source": "git",
+      "hash": "1531a6f",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-4",
+      "type": "commit",
+      "timestamp": "2026-02-08T16:29:43.000Z",
+      "title": "feat: task cleanup tool + cleared stale tasks and projects",
+      "source": "git",
+      "hash": "730746e",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-5",
+      "type": "commit",
+      "timestamp": "2026-02-08T16:23:24.000Z",
+      "title": "task: gmail reauth complete, moved to completed",
+      "source": "git",
+      "hash": "08c78b4",
+      "file": "workspace"
+    },
+    {
+      "id": "daily-2026-02-08-0",
+      "type": "event",
+      "timestamp": "2026-02-08T12:00:00.000Z",
+      "title": "📝 System Improvements (Big Day)",
+      "source": "daily",
+      "file": "memory/2026-02-08.md"
+    },
+    {
+      "id": "daily-2026-02-08-1",
+      "type": "event",
+      "timestamp": "2026-02-08T12:00:00.000Z",
+      "title": "📝 Email Scan (5:08 PM UTC)",
+      "source": "daily",
+      "file": "memory/2026-02-08.md"
+    },
+    {
+      "id": "daily-2026-02-08-2",
+      "type": "event",
+      "timestamp": "2026-02-08T12:00:00.000Z",
+      "title": "📝 Heartbeat Log",
+      "source": "daily",
+      "file": "memory/2026-02-08.md"
+    },
+    {
+      "id": "daily-2026-02-08-3",
+      "type": "event",
+      "timestamp": "2026-02-08T12:00:00.000Z",
+      "title": "📝 Key Technical Decisions",
+      "source": "daily",
+      "file": "memory/2026-02-08.md"
+    },
+    {
+      "id": "ws-commit-6",
+      "type": "commit",
+      "timestamp": "2026-02-08T08:08:52.000Z",
+      "title": "fix(mc): save OpenAI API key independently of Gateway token",
+      "source": "git",
+      "hash": "7ce3d27",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-7",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:49:29.000Z",
+      "title": "fix: Bob Chat mobile avatar sizing + cache busting",
+      "source": "git",
+      "hash": "d17e38e",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-8",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:38:24.000Z",
+      "title": "feat: Bob Chat - native voice module for Mission Control",
+      "source": "git",
+      "hash": "f64c73d",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-9",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:29:00.000Z",
+      "title": "Remove bob-metrics, auth gate on Mission Control verified",
+      "source": "git",
+      "hash": "adf62a0",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-10",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:28:25.000Z",
+      "title": "Remove bob-metrics Pages, update memory with Mission Control as primary dashboard",
+      "source": "git",
+      "hash": "c1f0e2e",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-11",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:25:49.000Z",
+      "title": "Log Mission Control auth gate + save credentials to memory",
+      "source": "git",
+      "hash": "33869d2",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-12",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:21:42.000Z",
+      "title": "Add auth gate to Mission Control dashboard",
+      "source": "git",
+      "hash": "67dd243",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-13",
+      "type": "commit",
+      "timestamp": "2026-02-08T07:09:48.000Z",
+      "title": "fix: Gmail OAuth permanent fix + docs",
+      "source": "git",
+      "hash": "1833872",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-14",
+      "type": "commit",
+      "timestamp": "2026-02-08T05:04:02.000Z",
+      "title": "feat: add metrics collection infrastructure",
+      "source": "git",
+      "hash": "40e4e9a",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-15",
+      "type": "commit",
+      "timestamp": "2026-02-07T16:16:25.000Z",
+      "title": "memory: Mission Control v2 complete - all features tested",
+      "source": "git",
+      "hash": "28c6cde",
+      "file": "workspace"
+    },
+    {
+      "id": "daily-2026-02-07-0",
+      "type": "event",
+      "timestamp": "2026-02-07T12:00:00.000Z",
+      "title": "📝 Mission Control v2 Complete 🎉",
+      "source": "daily",
+      "file": "memory/2026-02-07.md"
+    },
+    {
+      "id": "daily-2026-02-07-1",
+      "type": "event",
+      "timestamp": "2026-02-07T12:00:00.000Z",
+      "title": "📝 Key Commits",
+      "source": "daily",
+      "file": "memory/2026-02-07.md"
+    },
+    {
+      "id": "daily-2026-02-07-2",
+      "type": "event",
+      "timestamp": "2026-02-07T12:00:00.000Z",
+      "title": "📝 Live URL",
+      "source": "daily",
+      "file": "memory/2026-02-07.md"
+    },
+    {
+      "id": "daily-2026-02-07-3",
+      "type": "event",
+      "timestamp": "2026-02-07T12:00:00.000Z",
+      "title": "📝 Status",
+      "source": "daily",
+      "file": "memory/2026-02-07.md"
+    },
+    {
+      "id": "daily-2026-02-07-4",
+      "type": "event",
+      "timestamp": "2026-02-07T12:00:00.000Z",
+      "title": "📝 Evening Session (17:00 UTC / 10 AM Mountain)",
+      "source": "daily",
+      "file": "memory/2026-02-07.md"
+    },
+    {
+      "id": "daily-2026-02-07-5",
+      "type": "event",
+      "timestamp": "2026-02-07T12:00:00.000Z",
+      "title": "📝 Late Evening Session (16:30 - 21:45 UTC / ~6:30 AM - 11:45 AM Hawaii)",
+      "source": "daily",
+      "file": "memory/2026-02-07.md"
+    },
+    {
+      "id": "ws-commit-16",
+      "type": "commit",
+      "timestamp": "2026-02-07T08:52:59.000Z",
+      "title": "Arena Session 8: Human-AI Collaboration — Weight of Frameworks",
+      "source": "git",
+      "hash": "175a71c",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-17",
+      "type": "commit",
+      "timestamp": "2026-02-07T08:28:08.000Z",
+      "title": "Arena Session 8: Agent Coordination - Landmark curation & clustering stability",
+      "source": "git",
+      "hash": "630699d",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-18",
+      "type": "commit",
+      "timestamp": "2026-02-07T07:56:36.000Z",
+      "title": "fix(mc): wire to real data - no placeholders",
+      "source": "git",
+      "hash": "8b0b72e",
+      "file": "workspace"
+    },
+    {
+      "id": "ws-commit-19",
+      "type": "commit",
+      "timestamp": "2026-02-07T07:25:19.000Z",
+      "title": "docs: update Gemini models to 3 Pro/Flash, document Nano Banana Pro",
+      "source": "git",
+      "hash": "9024aa9",
+      "file": "workspace"
+    },
+    {
+      "id": "task-task-mission-control-deploy-md",
+      "type": "task",
+      "timestamp": "2026-02-07T06:26:13.055Z",
+      "title": "Completed: Deploy Mission Control to GitHub Pages",
+      "source": "task",
+      "file": "tasks/completed/task-mission-control-deploy.md"
+    },
+    {
+      "id": "task-task-mission-control-dashboard-md",
+      "type": "task",
+      "timestamp": "2026-02-07T06:19:37.022Z",
+      "title": "Completed: Mission Control Dashboard",
+      "source": "task",
+      "file": "tasks/completed/task-mission-control-dashboard.md"
+    },
+    {
+      "id": "task-task-quick-wins-impl-md",
+      "type": "task",
+      "timestamp": "2026-02-05T08:34:08.361Z",
+      "title": "Completed: Quick Wins Implementation",
+      "source": "task",
+      "file": "tasks/completed/task-quick-wins-impl.md"
+    },
+    {
+      "id": "task-task-system-analysis-md",
+      "type": "task",
+      "timestamp": "2026-02-05T08:28:38.049Z",
+      "title": "Completed: OpenClaw/Clawdbot System Analysis",
+      "source": "task",
+      "file": "tasks/completed/task-system-analysis.md"
+    },
+    {
+      "id": "task-task-orchestration-rules-md",
+      "type": "task",
+      "timestamp": "2026-02-03T06:43:10.764Z",
+      "title": "Completed: Orchestration Rules Implementation",
+      "source": "task",
+      "file": "tasks/completed/task-orchestration-rules.md"
+    },
+    {
+      "id": "task-task-mission-control-arena-md",
+      "type": "task",
+      "timestamp": "2026-02-02T03:06:46.189Z",
+      "title": "Completed: Mission Control Arena — Optimum Agent Setup",
+      "source": "task",
+      "file": "tasks/completed/task-mission-control-arena.md"
+    },
+    {
+      "id": "task-task-mission-control-upgrade-md",
+      "type": "task",
+      "timestamp": "2026-02-02T01:20:07.728Z",
+      "title": "Completed: Mission Control Upgrade",
+      "source": "task",
+      "file": "tasks/completed/task-mission-control-upgrade.md"
+    },
+    {
+      "id": "task-task-mobile-metrics-access-md",
+      "type": "task",
+      "timestamp": "2026-02-02T00:12:53.955Z",
+      "title": "Completed: Mobile Metrics Access (PWA + Twilio SMS)",
+      "source": "task",
+      "file": "tasks/completed/task-mobile-metrics-access.md"
+    },
+    {
+      "id": "task-task-notify-bobs-task-system-md",
+      "type": "task",
+      "timestamp": "2026-02-01T19:54:12.280Z",
+      "title": "Completed: Notify Bob Collective About Task File System",
+      "source": "task",
+      "file": "tasks/completed/task-notify-bobs-task-system.md"
     }
   ]
 }

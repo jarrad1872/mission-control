@@ -8,7 +8,24 @@ const DataModule = (function() {
     let lastUpdated = null;
 
     /**
-     * Load JSON data from a file
+     * Get gateway base URL if configured
+     */
+    function getGatewayBase() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        return gwUrl ? gwUrl.replace(/\/$/, '') : null;
+    }
+
+    /**
+     * Map filenames to API endpoints
+     */
+    const API_MAP = {
+        'activity.json': '/api/activity',
+        'search-index.json': '/api/search',
+        'calendar.json': null, // no API endpoint yet
+    };
+
+    /**
+     * Load JSON data from a file (or gateway API)
      */
     async function loadJSON(filename) {
         if (cache[filename]) {
@@ -16,7 +33,17 @@ const DataModule = (function() {
         }
 
         try {
-            const response = await fetch(`${DATA_PATH}${filename}?t=${Date.now()}`);
+            // Try gateway API first
+            const gw = getGatewayBase();
+            const apiPath = API_MAP[filename];
+            let url;
+            if (gw && apiPath) {
+                url = gw + apiPath;
+            } else {
+                url = DATA_PATH + filename;
+            }
+            
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) {
                 throw new Error(`Failed to load ${filename}: ${response.status}`);
             }

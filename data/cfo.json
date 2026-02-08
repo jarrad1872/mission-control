@@ -1,19 +1,141 @@
 {
-  "generated": "2026-02-08T18:16:46.853Z",
+  "generated": "2026-02-08T21:33:19.689Z",
   "portfolio": {
-    "health": "unknown",
-    "totalRevenue": 0,
-    "totalDebt": 0,
-    "profitable": 0,
-    "needsAttention": 0,
-    "companyCount": 0
+    "health": "watch",
+    "totalRevenue": 7946000,
+    "totalDebt": 2400000,
+    "profitable": 2,
+    "needsAttention": 2,
+    "companyCount": 6
   },
-  "companies": [],
+  "companies": [
+    {
+      "id": "kippen-concrete",
+      "status": "profitable",
+      "revenue": 5000000,
+      "grossMargin": 35,
+      "cashStatus": "Healthy",
+      "employees": 35,
+      "summary": "Concrete cutting and coring. Jarrad's primary cash cow.",
+      "name": "kippen-concrete",
+      "keyFacts": [
+        "2026 highway pipeline worth $3.5M starting March",
+        "Approximately 30-35 employees",
+        "Gross revenue approximately $5M"
+      ],
+      "alerts": []
+    },
+    {
+      "id": "kippen-excavation",
+      "status": "profitable",
+      "revenue": 2000000,
+      "grossMargin": 28,
+      "cashStatus": "OK",
+      "employees": 8,
+      "summary": "Excavation services, smaller but profitable.",
+      "name": "kippen-excavation",
+      "keyFacts": [
+        "First IOS yard under contract: West Haven, UT @ $280K, closing end of Feb 2026",
+        "IOS yard partnership: 50/50 property with Shane, 53/47 business (Jarrad majority)",
+        "Approximately 8 employees",
+        "Gross revenue approximately $2M"
+      ],
+      "alerts": []
+    },
+    {
+      "id": "dmi-tools",
+      "status": "losing",
+      "revenue": 946000,
+      "grossMargin": -7.6,
+      "debt": 1200000,
+      "cashStatus": "Low",
+      "employees": 5,
+      "summary": "Diamond tool distribution. 3 new partners. Must service $1.2M debt.",
+      "name": "dmi-tools",
+      "keyFacts": [
+        "True 2025 revenue: $946K (not $1.5M — $570K was intercompany transfers double-counted)",
+        "Real 2025 margin: -7.6% (losing money)",
+        "3 new partners: Ian (Oregon), Mr. Wu (Chinese), Swedish engineer",
+        "Sales Maker live at dmisalesweb-production.up.railway.app, Steven Lin developing",
+        "World of Concrete 2026 booth investment ~$40-50K"
+      ],
+      "alerts": [
+        {
+          "severity": "warning",
+          "message": "$1.2M debt outstanding"
+        },
+        {
+          "severity": "critical",
+          "message": "Negative margin: -7.6%"
+        }
+      ]
+    },
+    {
+      "id": "roc-diamond",
+      "status": "debt-holder",
+      "revenue": 0,
+      "debt": 1200000,
+      "summary": "Holds $1.2M DMI debt. Not an operating company.",
+      "name": "roc-diamond",
+      "keyFacts": [
+        "Roc Diamond LLC is Jarrad's personal holding company for debt from original diamond tool business",
+        "Holds ~$1.2M in debt: EIDL loan + Zions Bank equipment loan",
+        "DMI Tools Corp services this debt via lease payments to Roc Diamond",
+        "Will persist as debt-holding entity after DMI restructuring (DMI Tools LLC dissolved, ops move to DMI Tools Corp)",
+        "CRITICAL: Must combine ROC Diamond + DMI Tools financials to get true picture of DMI business health"
+      ],
+      "alerts": [
+        {
+          "severity": "warning",
+          "message": "$1.2M debt outstanding"
+        }
+      ]
+    },
+    {
+      "id": "kippen-leasing",
+      "status": "inactive",
+      "revenue": 0,
+      "summary": "Equipment leasing entity.",
+      "name": "kippen-leasing",
+      "keyFacts": [
+        "Leasing entity in Jarrad's business portfolio"
+      ],
+      "alerts": []
+    },
+    {
+      "id": "sawdot-city",
+      "status": "software",
+      "revenue": 0,
+      "summary": "FSM software for concrete cutting. In development.",
+      "name": "sawdot-city",
+      "keyFacts": [
+        "FSM software for concrete cutters, in development",
+        "2 developers working on it",
+        "Also building B2B marketplace for concrete cutters"
+      ],
+      "alerts": []
+    }
+  ],
   "alerts": [
     {
       "severity": "warning",
-      "message": "Could not load company data",
-      "company": null
+      "message": "DMI $1.2M debt — partners must cover",
+      "company": "DMI Tools"
+    },
+    {
+      "severity": "info",
+      "message": "KCC $3.5M highway pipeline starting March",
+      "company": "Kippen Concrete"
+    },
+    {
+      "severity": "info",
+      "message": "IOS yard under contract, closing Feb",
+      "company": "Kippen Excavation"
+    },
+    {
+      "severity": "info",
+      "message": "Saw.City FSM in development — certified payroll next",
+      "company": "SawDot City"
     }
   ]
 }

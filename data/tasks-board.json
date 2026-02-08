@@ -1,14 +1,146 @@
 {
-  "generated": "2026-02-08T18:16:46.853Z",
+  "generated": "2026-02-08T21:33:19.689Z",
   "columns": {
-    "todo": [],
+    "todo": [
+      {
+        "id": "task-mc-data-gen",
+        "title": "Mission Control Live Data Generator",
+        "status": "pending",
+        "priority": "medium",
+        "file": "tasks/task-mc-data-gen.md",
+        "objective": "Build a Node.js script that generates ALL Mission Control data files from real workspace data, then wire it into the CORS proxy as live API endpoints (same pattern as bob-status).",
+        "created": "2026-02-08T21:30:55.077Z",
+        "progress": null
+      }
+    ],
     "inProgress": [],
-    "complete": []
+    "complete": [
+      {
+        "id": "task-mc-live-test",
+        "title": "Mission Control Live Test — Full Functionality Audit",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mc-live-test.md",
+        "created": "2026-02-08T20:48:06.867Z"
+      },
+      {
+        "id": "task-mc-overnight-polish",
+        "title": "Mission Control Overnight Polish",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mc-overnight-polish.md",
+        "created": "2026-02-07T08:21:34.415Z"
+      },
+      {
+        "id": "task-mc-v2-master",
+        "title": "Mission Control v2 — Master Tracker",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mc-v2-master.md",
+        "created": "2026-02-07T07:03:27.852Z"
+      },
+      {
+        "id": "task-measurement-infrastructure",
+        "title": "Build Measurement Infrastructure",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-measurement-infrastructure.md",
+        "created": "2026-02-01T23:00:33.430Z"
+      },
+      {
+        "id": "task-metrics-infra",
+        "title": "Build Metrics Infrastructure",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-metrics-infra.md",
+        "created": "2026-02-08T05:02:02.659Z"
+      },
+      {
+        "id": "task-mission-control-arena",
+        "title": "Mission Control Arena — Optimum Agent Setup",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mission-control-arena.md",
+        "created": "2026-02-02T03:02:54.902Z"
+      },
+      {
+        "id": "task-mission-control-dashboard",
+        "title": "Mission Control Dashboard",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mission-control-dashboard.md",
+        "created": "2026-02-07T06:11:48.252Z"
+      },
+      {
+        "id": "task-mission-control-deploy",
+        "title": "Deploy Mission Control to GitHub Pages",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mission-control-deploy.md",
+        "created": "2026-02-07T06:25:11.496Z"
+      },
+      {
+        "id": "task-mission-control-upgrade",
+        "title": "Mission Control Upgrade",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mission-control-upgrade.md",
+        "created": "2026-02-02T01:18:39.363Z"
+      },
+      {
+        "id": "task-mobile-metrics-access",
+        "title": "Mobile Metrics Access (PWA + Twilio SMS)",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-mobile-metrics-access.md",
+        "created": "2026-02-01T23:10:05.586Z"
+      },
+      {
+        "id": "task-notify-bobs-task-system",
+        "title": "Notify Bob Collective About Task File System",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-notify-bobs-task-system.md",
+        "created": "2026-02-01T19:53:07.966Z"
+      },
+      {
+        "id": "task-orchestration-rules",
+        "title": "Orchestration Rules Implementation",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-orchestration-rules.md",
+        "created": "2026-02-03T06:41:52.744Z"
+      },
+      {
+        "id": "task-quick-wins-impl",
+        "title": "Quick Wins Implementation",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-quick-wins-impl.md",
+        "created": "2026-02-05T08:32:45.309Z"
+      },
+      {
+        "id": "task-system-analysis",
+        "title": "OpenClaw/Clawdbot System Analysis",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-system-analysis.md",
+        "created": "2026-02-05T08:23:37.314Z"
+      },
+      {
+        "id": "task-voice-chat-setup",
+        "title": "Voice Chat Setup (ClawChat)",
+        "status": "complete",
+        "priority": "low",
+        "file": "tasks/completed/task-voice-chat-setup.md",
+        "created": "2026-02-02T07:44:42.998Z"
+      }
+    ]
   },
   "stats": {
-    "todo": 0,
+    "todo": 1,
     "inProgress": 0,
-    "complete": 0,
-    "total": 0
+    "complete": 15,
+    "total": 16
   }
 }

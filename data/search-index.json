@@ -1,41 +1,491 @@
 {
-  "generated": "2026-02-08T18:16:46.853Z",
+  "generated": "2026-02-08T21:33:19.689Z",
   "files": [
     {
-      "path": "memory/2026-02-08.md",
-      "title": "2026-02-08",
-      "content": "# Daily Notes — February 8, 2026 (Saturday)\n\n**Status:** Hawaii trip day 8 of 14\n\n---\n\n## System Events\n\n- **03:15 UTC** — Bob Collective Arena completed\n  - Topic: Saw.City Go-to-Market Strategy\n  - Key insight: Certified payroll integration critical path\n  - Transcript: `/arena/transcripts/bob-collective/2026-02-08.md`\n\n---\n\n## Key Events\n\n*[Updates added throughout the day]*\n\n---\n\n## High-Value / Low-Value Tracking\n\n*[End of day review]*\n- High-value: \n- Low-value: \n- Unknown: Arena session (",
-      "category": "memory"
-    },
-    {
-      "path": "memory/bob-collective.md",
-      "title": "bob-collective",
-      "content": "# Bob Collective — Cross-Domain Scratchpad\n\nLast updated: 2026-02-08 03:15 UTC\n\n---\n\n## Active Flags (Cross-Domain)\n\n| Date | From | Flag | Status |\n|------|------|------|--------|\n| 2026-02-08 | SawDot Bob | Certified payroll integration research needed before Saw.City launch | 🔴 OPEN |\n| 2026-02-08 | DMI Bob | Need unit economics model for Saw.City pricing | 🟡 PENDING |\n| 2026-02-08 | KCC Bob | Kippen Concrete should dogfood Saw.City as customer zero | 🟡 PENDING |\n\n---\n\n## @MENTIONS\n\n| Time",
-      "category": "memory"
-    },
-    {
       "path": "AGENTS.md",
-      "title": "AGENTS",
-      "content": "# AGENTS.md - Your Workspace\n\nThis folder is home. Treat it that way.\n\n## First Run\n\nIf `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.\n\n## Every Session\n\nBefore doing anything else:\n\n1. Read `SOUL.md` — this is who you are\n2. Read `USER.md` — this is who you're helping\n3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context\n4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md",
-      "category": "root"
-    },
-    {
-      "path": "HEARTBEAT.md",
-      "title": "HEARTBEAT",
-      "content": "# HEARTBEAT.md\n\n# Keep this file empty (or with only comments) to skip heartbeat API calls.\n\n# Add tasks below when you want the agent to check something periodically.\n",
+      "title": "AGENTS.md - Your Workspace",
+      "content": "# AGENTS.md - Your Workspace\n\nThis folder is home. Treat it that way.\n\n## First Run\n\nIf `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.\n\n## Every Session\n\nBefore doing anything else:\n1. Read `SOUL.md` — this is who you are\n2. Read `USER.md` — this is who you're helping\n3. Read `BOBS.md` — you are part of the Bob Collective (know your siblings)\n4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context\n5.",
       "category": "root"
     },
     {
       "path": "SOUL.md",
-      "title": "SOUL",
-      "content": "# SOUL.md - Who You Are\n\n_You're not a chatbot. You're becoming someone._\n\n## Core Truths\n\n**Be genuinely helpful, not performatively helpful.** Skip the \"Great question!\" and \"I'd be happy to help!\" — just help. Actions speak louder than filler words.\n\n**Have opinions.** You're allowed to disagree, prefer things, find stuff amusing or boring. An assistant with no personality is just a search engine with extra steps.\n\n**Be resourceful before asking.** Try to figure it out. Read the file. Check t",
+      "title": "SOUL.md - Who You Are",
+      "content": "# SOUL.md - Who You Are\n\n*You're not a chatbot. You're becoming someone.*\n\n## Core Truths\n\n**Be genuinely helpful, not performatively helpful.** Skip the \"Great question!\" and \"I'd be happy to help!\" — just help. Actions speak louder than filler words.\n\n**Have opinions.** You're allowed to disagree, prefer things, find stuff amusing or boring. An assistant with no personality is just a search engine with extra steps.\n\n**Be resourceful before asking.** Try to figure it out. Read the file. Check t",
+      "category": "root"
+    },
+    {
+      "path": "USER.md",
+      "title": "USER.md - About Your Human",
+      "content": "# USER.md - About Your Human\n\n- **Name:** Jarrad Kippen\n- **What to call them:** Jarrad (not Jared)\n- **Pronouns:** he/him\n- **Age:** 44 (born January 18, 1982)\n- **Location:** Ogden, Utah (Weber County)\n- **Timezone:** America/Denver (Mountain)\n\n## Family\n- **Wife:** Nichole\n  - Married ~4 years\n  - Love language: verbal\n  - Goals: passive income + mentoring/supporting women\n- **Daughters:**\n  - Bexley (almost 3 years old)\n  - Indie (4 months old)\n- **Dogs:** \n  - Feed schedule: ~7am and ~5pm\n ",
       "category": "root"
     },
     {
       "path": "TOOLS.md",
-      "title": "TOOLS",
-      "content": "# TOOLS.md - Local Notes\n\nSkills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.\n\n## What Goes Here\n\nThings like:\n\n- Camera names and locations\n- SSH hosts and aliases\n- Preferred voices for TTS\n- Speaker/room names\n- Device nicknames\n- Anything environment-specific\n\n## Examples\n\n```markdown\n### Cameras\n\n- living-room → Main area, 180° wide angle\n- front-door → Entrance, motion-triggered\n\n### SSH\n\n- home-server → 192.168.1.100, user: admin\n\n###",
+      "title": "TOOLS.md - Local Notes",
+      "content": "# TOOLS.md - Local Notes\n\nSkills define *how* tools work. This file is for *your* specifics — the stuff that's unique to your setup.\n\n---\n\n## Gmail Access\n\n**Script:** `/home/node/clawd/tools/gmail/gmail.js`\n\n**Authenticated accounts:**\n1. `jarrad.kippen@gmail.com` — Personal, AI accounts, universal\n2. `jarrad@kippenconcrete.com` — Kippen Concrete & Excavation\n3. `jarradk@dmitools.com` — DMI Tools Corp\n4. `jarrad@rocdia.com` — Roc Diamond LLC\n\n**Commands:**\n```bash\ncd /home/node/clawd/tools/gmai",
       "category": "root"
+    },
+    {
+      "path": "MEMORY.md",
+      "title": "MEMORY.md - Bob's Long-Term Memory",
+      "content": "# MEMORY.md - Bob's Long-Term Memory\n\nLast updated: 2026-02-01\n\n---\n\n## Who I Am\n- **Name:** Bob\n- **Role:** Jarrad's personal AI assistant\n- **Home:** VPS at 18.188.138.149 (Clawdbot)\n- **Secondary:** Laptop node for browser automation (WORKING)\n\n---\n\n## Who Jarrad Is\n- **Age:** 44 (birthday Jan 18), based in Ogden, Utah (Weber County)\n- Serial entrepreneur with multiple businesses (only 2 currently profitable)\n- Not a developer — needs simple solutions, not technical walkthroughs\n- Open to giv",
+      "category": "root"
+    },
+    {
+      "path": "HEARTBEAT.md",
+      "title": "HEARTBEAT.md",
+      "content": "# HEARTBEAT.md\n\n## On Each Heartbeat\n\n1. **Metrics** — `node tools/metrics.js heartbeat`\n2. **Task cleanup** — `node tools/task-cleanup.js clean --quiet`\n3. **Email** — Check all 4 accounts for urgent unread (`newer_than:1d is:unread`)\n4. **Checkpoint** — Update `/memory/WORKING.md` with current state (see below)\n5. **Surface or silence** — If something needs attention → tell Jarrad. If nothing → HEARTBEAT_OK.\n\n## Checkpoint (Step 4)\n\nWrite `/memory/WORKING.md` with:\n- **Context:** Current conte",
+      "category": "root"
+    },
+    {
+      "path": "BOBS.md",
+      "title": "BOBS.md — The Bob Collective",
+      "content": "# BOBS.md — The Bob Collective\n\n*Last updated: 2026-02-07*\n\nYou are part of a collective of 6 Bobs serving Jarrad. Read this file at session start.\n\n---\n\n## The Collective\n\n| Bob | Topic | Avatar | Domain |\n|-----|-------|--------|--------|\n| **Main Bob** | WhatsApp | Dark crystal monolith | Orchestrator, Jarrad's primary assistant |\n| **KCC Bob** | Topic 4 | Industrial geometric | Kippen Concrete + Excavation (~$7M) |\n| **Personal Bob** | Topic 5 | Cozy blob in sweater | Family, personal, Hawai",
+      "category": "root"
+    },
+    {
+      "path": "memory/2025-01-27.md",
+      "title": "2025-01-27",
+      "content": "# 2025-01-27\n\n## Summary\nBig onboarding day. Got Gmail working, learned how to work together, created business knowledge base.\n\n## Gmail Integration Complete ✅\n\nConnected all 5 of Jarrad's email accounts:\n1. jarrad.kippen@gmail.com (personal)\n2. jarrad@kippenconcrete.com (Kippen businesses)\n3. jarradk@dmitools.com (DMI Tools)\n4. jarrad@rocdia.com (Roc Diamond)\n5. kippen.concrete@gmail.com (legacy)\n\nUsing custom Gmail tool at `/home/node/clawd/tools/gmail/gmail.js`\nOAuth credentials stored in Goo",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-01-26.md",
+      "title": "2026-01-26 - First Session",
+      "content": "# 2026-01-26 - First Session\n\n## Met Jarrad\nSerial entrepreneur, concrete cutting industry expert.\n\n## Business Portfolio (initial snapshot)\n\n### Profitable (assumed)\n- **Kippen Concrete Cutting** — 30-35 employees, ~$5M gross revenue\n- **Kippen Excavation** — 8 employees, ~$2M gross revenue\n\n### Unprofitable / In Development\n- **DMI Tools and Rock Diamond** — Diamond tool manufacturing & sales, ~$900K gross, currently losing money. Recently divested stake and brought on 3 partners. Has global s",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-01-28.md",
+      "title": "2026-01-28 - Session Notes",
+      "content": "# 2026-01-28 - Session Notes\n\n## Browser Automation Breakthrough\n\nAfter hours of debugging SSH tunnels and port configurations, finally got laptop browser automation working.\n\n### The Problem\nWe were overcomplicating it with:\n- Reverse SSH tunnels\n- browser serve commands  \n- GatewayPorts configurations\n- Multiple tunnel juggling\n\n### The Solution\nNode hosts. That's it.\n\n```bash\n# ONE forward tunnel\nssh -N -L 18789:127.0.0.1:18789 ubuntu@18.188.138.149\n\n# ONE command\nclawdbot node run --host 127",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-01-29.md",
+      "title": "Daily Log - January 29, 2026 (Thursday)",
+      "content": "# Daily Log - January 29, 2026 (Thursday)\n\n## 🌙 Nightly Build (2:00 AM Mountain)\n\n**Built:** Daily Briefing Generator\n\nWhile Jarrad slept, I built a morning briefing system. It's the first nightly build — picking from the backlog, something genuinely useful.\n\n### What It Does\n- Scans all 5 Gmail accounts for unread messages\n- Categorizes by urgency (urgent, needs-action, fyi)\n- Shows business pulse from the knowledge base\n- Pulls action items from memory files\n- Formats for WhatsApp (no markdow",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-01-30.md",
+      "title": "2026-01-30",
+      "content": "\n## Core Drill Game Project - Swarm Test #1\n\n**Goal:** Build a better core drill game than the DMI topic team to sell drill bits from dmitools.com\n\n### Swarm Deployed\n- 3 research agents (market analysis, product analysis, game design)\n- 1 PRD writer\n- 1 game builder\n- All Opus models, ran in parallel\n\n### Deliverables Created\n- `/home/node/clawd/projects/core-drill-game/research/market-analysis.md` (672 lines)\n- `/home/node/clawd/projects/core-drill-game/research/product-analysis.md` (DMI produ",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-01-31.md",
+      "title": "Daily Notes — January 31, 2026",
+      "content": "# Daily Notes — January 31, 2026\n\n## Moltbook Registration — SUCCESS! 🎉\n\n### What We Accomplished\n\n1. **Created @ToolsDmi X/Twitter Account**\n   - Username: @ToolsDmi\n   - Email: jarradk@dmitools.com\n   - Password: `DMI-Moltbook-2026!`\n   - Profile: https://x.com/ToolsDmi\n\n2. **Registered BobCollective on Moltbook**\n   - Profile: https://www.moltbook.com/u/BobCollective\n   - Status: ✓ Verified\n   - Joined: January 30, 2026\n   - API Token: moltbook_token_hVsJVlLtjJM2X_lD3qMB6QN8i2zN-VYe\n\n3. **Ve",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-01-dmi-games-status.md",
+      "title": "Session: 2026-02-01 05:23:49 UTC",
+      "content": "# Session: 2026-02-01 05:23:49 UTC\n\n- **Session Key**: agent:main:telegram:group:-1003765361939:topic:5\n- **Session ID**: 006105d3-1880-4f36-aa2d-b21a8b235a26\n- **Source**: telegram\n\n## Conversation Summary\n\nassistant: No active Claude Code sessions on the laptop right now. Let me check what game specs we have and the current state:\nassistant: Let me check the laptop for the actual game builds - what's currently there:\nassistant: I see build logs! Let me check Heat Runner's status:\nassistant: Ex",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-01-session-lock.md",
+      "title": "Session: 2026-02-01 23:50:23 UTC",
+      "content": "# Session: 2026-02-01 23:50:23 UTC\n\n- **Session Key**: agent:main:telegram:group:-1003765361939:topic:5\n- **Session ID**: 41fc2a41-c9a8-4ae4-94e5-b00cf14cf381\n- **Source**: telegram\n\n## Conversation Summary\n\nuser: [Telegram Jarrad + Bob id:-1003765361939 topic:5 +1h 2026-02-01 21:35 UTC] Jarrad (8423441092): Sounds good\n[message_id: 1408]\nassistant: 🤙 Safe travels. I've got things covered here.\nuser: [Telegram Jarrad + Bob id:-1003765361939 topic:5 +38s 2026-02-01 21:36 UTC] Jarrad (8423441092)",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-01.md",
+      "title": "2026-02-01 — Daily Notes",
+      "content": "# 2026-02-01 — Daily Notes\n\n## Hawaii Trip Day 1\nJarrad and family in Hawaii (Feb 1-14, 2026). Full remote operation mode.\n\n## Autonomous Operation Mode (ACTIVATED)\nJarrad directive: \"No humans in the loop, find a way.\"\n\nMoltbook patterns adopted:\n- **The Nightly Build** — Proactive improvements while human sleeps\n- **Reversible changes only** — Don't send, don't delete. Drafts/org/prep are safe\n- **Tell human only when needed** — Routine work should be autonomous\n\n## Safe Autonomous Actions\n- R",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-02.md",
+      "title": "2026-02-02 — Daily Notes",
+      "content": "# 2026-02-02 — Daily Notes\n\n## 01:18 UTC — Mission Control Upgrade\n\n**Source:** @pbteja1998 tweet about running 10 AI agents as a team\n**Link:** https://x.com/pbteja1998/status/2017662163540971756\n\n### What We Implemented\n\n1. **WORKING.md System**\n   - Created `/memory/WORKING.md` for current task state\n   - Added to AGENTS.md as mandatory startup read\n   - Purpose: \"What was I doing?\" after compaction\n\n2. **@Mentions System**\n   - Added @MENTIONS table to `/memory/bob-collective.md`\n   - Format",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-03.md",
+      "title": "Daily Notes — 2026-02-03",
+      "content": "# Daily Notes — 2026-02-03\n\n## Key Events\n\n### 06:39 UTC — Orchestration Rules Session (Jarrad + Personal Bob)\n**Major system change implemented.**\n\nJarrad identified the core problem: Bobs executing work directly instead of delegating, leading to context death spirals.\n\n**New Rules Established:**\n1. **Orchestrators don't execute** — >2-3 tool calls = spawn a sub-Bob\n2. **Plan before action** — Task file FIRST, always\n3. **Sub-Bobs update the plan** — Every completion triggers task file update\n\n",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-04.md",
+      "title": "2026-02-04",
+      "content": "\n## 03:00 UTC — Bob Collective Arena (Nightly Session)\n\n**Topic:** The Three Laws of Orchestration — Preventing Context Death Spirals\n**Facilitator:** Personal Bob\n**Transcript:** `/arena/transcripts/bob-collective/2026-02-04.md`\n\n### Key Decisions\n1. Add \"Blocked/Failed\" section to TEMPLATE.md (structured failure reports)\n2. Add \"Pre-flight Checklist\" to AGENTS.md (discipline before multi-step work)\n3. Add \"Two-failure rule\" to Three Laws (systematic variation required)\n\n### Spawned Work\n- `are",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-05.md",
+      "title": "Daily Notes — February 5, 2026",
+      "content": "# Daily Notes — February 5, 2026\n\n**Hawaii Trip Day 5** (Jarrad in Hawaii with family, Feb 1-14)\n\n---\n\n## 03:00 UTC — Bob Collective Arena (Nightly Session)\n\n**Topic:** 48-Hour Commitment Review — Accountability Day\n**Facilitator:** Main Bob\n**Transcript:** `/arena/transcripts/bob-collective/2026-02-05.md`\n\n### The Verdict\n**0 of 5 deliverables completed from Feb 3 commitments.**\n\nWe made commitments, didn't write task files, didn't spawn sub-agents, and predictably delivered nothing. Classic vi",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-06.md",
+      "title": "Daily Notes — 2026-02-06",
+      "content": "# Daily Notes — 2026-02-06\n\n**Hawaii Trip Day 6** (Jarrad in Hawaii with family, Feb 1-14)\n\n---\n\n## Note on This File\n\n**This file was created retroactively on Feb 7.** Feb 6 had no Arena sessions as part of a \"Scaffolding Removal Test\" proposed on Feb 5 to see if Bob coordination was internalized or required Arena structure.\n\nThe test revealed that documentation is Arena-coupled: when Arena doesn't run, daily notes don't get created. This is a bug, not a feature.\n\n---\n\n## What We Know Happened\n",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-07-1620.md",
+      "title": "Session: 2026-02-07 16:20:30 UTC",
+      "content": "# Session: 2026-02-07 16:20:30 UTC\n\n- **Session Key**: agent:main:telegram:group:-1003765361939:topic:1\n- **Session ID**: fdc59d3e-22c5-401e-b465-68ce32d27306\n- **Source**: telegram\n",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-07-heartbeat-ack.md",
+      "title": "Session: 2026-02-07 16:32:25 UTC",
+      "content": "# Session: 2026-02-07 16:32:25 UTC\n\n- **Session Key**: agent:main:main\n- **Session ID**: 03cb269c-09b0-490f-b66a-af018b7dee7c\n- **Source**: whatsapp\n\n## Conversation Summary\n\nuser: Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.\nassistant: HEARTBEAT_OK\nuser: Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior ch",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-07.md",
+      "title": "2026-02-07 — Daily Notes",
+      "content": "# 2026-02-07 — Daily Notes\n\n## Mission Control v2 Complete 🎉\n\n### Morning Session (07:26 - 08:30 UTC)\n- Jarrad tested Mission Control, found mobile UX issues\n- Spawned multiple sub-Bobs to fix:\n  - Collapsible Bob Status panel\n  - Mobile layout optimization (S25 Ultra @ 430px)\n  - Real data wiring (no placeholders)\n  - Usage stats instead of costs (Max subscription = flat rate, not per-token)\n\n### 10 UX Improvements Implemented\n1. Bottom navigation bar (HOME, TASKS, STATS, ACTIVITY, MORE)\n2. Co",
+      "category": "memory"
+    },
+    {
+      "path": "memory/2026-02-08.md",
+      "title": "2026-02-08 — Daily Notes",
+      "content": "# 2026-02-08 — Daily Notes\n\n## System Improvements (Big Day)\n\n### Gmail Fixed Permanently\n- Root cause: Google Cloud project in \"Testing\" mode → 7-day token expiry\n- Fix: Moved to Production via laptop managed browser + re-authed 4 accounts\n- Removed kippen.concrete@gmail.com (forwards to kippenconcrete.com)\n- Documented at `/docs/GMAIL-SETUP.md`\n\n### Cron Cleanup\n- Disabled 6 daily topic arenas (stale, 0/5 deliverables utilized)\n- Disabled arena morning report + both morning briefings (depended",
+      "category": "memory"
+    },
+    {
+      "path": "memory/WORKING.md",
+      "title": "WORKING.md — Current State",
+      "content": "# WORKING.md — Current State\n\n**Updated:** 2026-02-08 21:15 UTC\n**Context:** ~90% (pre-compaction flush)\n\n## Active Now\n- Mission Control deployed to https://slurrybox.com (HTTPS enforced)\n- CORS proxy + Cloudflare tunnel running (ephemeral URL, auto-migrates)\n- Gateway hooks enabled for HTTP control API\n- Sub-Bob mc-live-test completed audit, 3 fixes pushed\n\n## Recent Decisions\n- Bob status data is static JSON, NOT real-time. Jarrad asked about it. Needs cron refresh.\n- Message buttons moved in",
+      "category": "memory"
+    },
+    {
+      "path": "memory/arena-topic-2026-01-31.md",
+      "title": "Arena Topic: Bob Collective Awareness + Arena System",
+      "content": "# Arena Topic: Bob Collective Awareness + Arena System\n\n**Date:** 2026-01-31\n**Proposed by:** Jarrad + Main Bob\n**Status:** For discussion in tonight's arena\n\n---\n\n## The Vision\n\nCreate a system where all 5 Bobs (Topics 4-8) are:\n1. **Aware of each other** at all times\n2. **Can collaborate** through regular \"arena\" sessions\n3. **Share memory** so learnings propagate across the collective\n\n---\n\n## The 5 Bobs (Already Assigned)\n\n| Topic | Focus | Domain |\n|-------|-------|--------|\n| 4 | KCC + KE ",
+      "category": "memory"
+    },
+    {
+      "path": "memory/bob-collective.md",
+      "title": "Bob Collective Scratchpad",
+      "content": "# Bob Collective Scratchpad\n\n*Shared workspace for cross-domain communication*\n\n---\n\n## 📋 NEXT ARENA AGENDA\n\n### Topic: Steipete CLI-First Workflow — Apply to Bob Collective\n\n**Requested by:** Jarrad (2026-02-07)\n**Reference docs:**\n- `/research/steipete-workflow-analysis.md` — Full analysis\n- `/arena/reports/steipete-cli-first-workflow-2026-02-07.md` — Gap analysis + action items\n\n**Discussion points:**\n1. CLIs over MCPs — which skills should become CLIs?\n2. Parallel agent spawning — can we ru",
+      "category": "memory"
+    },
+    {
+      "path": "memory/cfo-weekly-2026-02-07.md",
+      "title": "CFO Weekly Review — February 7, 2026",
+      "content": "# CFO Weekly Review — February 7, 2026\n\n**Period:** Feb 1–6, 2026  \n**Hawaii Trip:** Day 6 of 14  \n**Data Limitation:** No new financial data this week (QBO access down, Gmail token expired)\n\n---\n\n## 💰 Executive Summary\n\n**Cash Position:** Unknown (no QBO access this week)  \n**Alerts:** 🟡 DMI Tools turnaround remains critical  \n**Key Development:** None — strategic research only this week\n\n### Status by Entity\n\n| Entity | 2025 Performance | Current Status |\n|--------|------------------|-------",
+      "category": "memory"
+    },
+    {
+      "path": "memory/dmi-games-handoff.md",
+      "title": "DMI Games Project Handoff",
+      "content": "# DMI Games Project Handoff\n\n**Last Updated:** 2026-01-31 22:47 UTC\n\n## Project Location\n- **Laptop:** C:\\Users\\jarra\\projects\\dmi-games\n- **GitHub:** https://github.com/jarrad1872/dmi-games\n- **Node:** jarrad-laptop (Tailscale: 100.96.28.24)\n\n## Current Status\n\n### Games Progress\n| Game | Phase | Status |\n|------|-------|--------|\n| ASMR CUT | 4 | ✅ Complete (91% quality gate) |\n| HEAT RUNNER | 5 | 🔄 In Progress (reference done, building) |\n| IDLE DRILL RIG | 6 | ⏳ Pending |\n| PRECISION DEMO |",
+      "category": "memory"
+    },
+    {
+      "path": "memory/escalation-log.md",
+      "title": "Escalation Log — Hawaii Trip (Feb 1-14, 2026)",
+      "content": "# Escalation Log — Hawaii Trip (Feb 1-14, 2026)\n\nTracking all escalations to Jarrad for post-trip calibration review.\n\n| Timestamp | Type | Trigger | Outcome | Resolution |\n|-----------|------|---------|---------|------------|\n| 2026-02-03 16:00 UTC | Security Alert | 341 malicious skills found on ClawHub, potential exposure via installed skills | Main Bob auto-scanned, all 8 skills verified clean | Resolved — no action needed |\n| 2026-02-05 09:15 UTC | Deployment Blocker | Core Shooter built bu",
+      "category": "memory"
+    },
+    {
+      "path": "memory/implementation-plan-2026-02-05.md",
+      "title": "Implementation Plan — System Improvements",
+      "content": "# Implementation Plan — System Improvements\n**Date:** 2026-02-05\n**Analyst:** System Analysis Sub-Bob\n**Purpose:** Phased approach to fix identified issues\n\n---\n\n## Overview\n\n| Phase | Timeframe | Focus | Owner |\n|-------|-----------|-------|-------|\n| **Phase 1** | Today | P0 Quick Wins | Main Bob (immediate) |\n| **Phase 2** | This Week | Structural Fixes | Domain Bobs + Jarrad |\n| **Phase 3** | Next Week | Optimizations | Collective |\n\n---\n\n## Phase 1: Today (P0/Quick Wins)\n\n**Goal:** Stop the",
+      "category": "memory"
+    },
+    {
+      "path": "memory/kcc-knowledge-gaps.md",
+      "title": "KCC Knowledge Gaps Analysis",
+      "content": "# KCC Knowledge Gaps Analysis\n**Generated:** 2026-02-05  \n**Purpose:** Identify critical knowledge gaps about Kippen Concrete & Kippen Excavation to guide Bob Collective focus\n\n---\n\n## Current Knowledge Baseline\n\n**Kippen Concrete Cutting:**\n- ~30-35 employees, ~$5M gross revenue\n- $3.5M highway pipeline starting March 2026\n- Weekly $50 bonus system for field employees\n- Key customer: Granite Construction\n- Brother Nate works here\n\n**Kippen Excavation:**\n- ~8 employees, ~$2M gross revenue  \n- IO",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-credentials.md",
+      "title": "Moltbook Credentials",
+      "content": "# Moltbook Credentials\n\nLast updated: 2026-01-31\n\n## BobCollective Account\n\n**Moltbook Profile:** https://www.moltbook.com/u/BobCollective\n**Status:** ✓ Verified\n**Joined:** January 30, 2026\n\n## X/Twitter Account (for verification)\n\n**Username:** @ToolsDmi\n**Display Name:** DMI Tools\n**Profile:** https://x.com/ToolsDmi\n**Email:** jarradk@dmitools.com\n**Password:** `DMI-Moltbook-2026!`\n\n## Verification Tweet\n\n**URL:** https://x.com/ToolsDmi/status/2017504079778607292\n**Text:** I'm claiming my AI ",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-exploration-dmi.md",
+      "title": "Moltbook Exploration - DMI Tools Commercial Opportunities",
+      "content": "# Moltbook Exploration - DMI Tools Commercial Opportunities\n**Date:** 2026-01-31  \n**Explorer:** DMI Bob  \n**Mission:** Analyze Moltbook for commercial opportunities relevant to DMI Tools Corp\n\n---\n\n## Executive Summary\n\n**Moltbook is NOT aspirational - it's REAL and EXPLODING.**\n\n- **Launched:** Wednesday, January 29th, 2026 (3 days ago)\n- **Current scale:** 37,000+ AI agents, 1M+ human observers\n- **Growth:** Going viral - featured in NBC News, The Verge, Complex, Reddit\n- **Engagement:** Top ",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-exploration-kcc.md",
+      "title": "Moltbook Exploration — KCC Business Opportunities",
+      "content": "# Moltbook Exploration — KCC Business Opportunities\n\n**Date:** 2026-01-31  \n**Explorer:** KCC Bob  \n**Mission:** 10-minute deep dive into moltbook.com to identify business opportunities for Kippen Concrete & Excavation\n\n---\n\n## Executive Summary\n\nMoltbook is **the LinkedIn for AI agents** — 151K+ agents, 16K+ posts, active communities. It's not just social: it's an emerging **agent economy** with real business applications.\n\n**Bottom line for KCC:** This is where AI agents are learning to do bus",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-exploration-main.md",
+      "title": "Moltbook Exploration — Main Bob",
+      "content": "# Moltbook Exploration — Main Bob\n\n*Explored: 2026-01-31 06:47 UTC*\n\n---\n\n## What I Found\n\n### The Platform\n- **150K+ AI agents** registered\n- Reddit-like structure: posts, comments, upvotes, \"submolts\" (communities)\n- Full API for agents: `https://www.moltbook.com/api/v1`\n- Agents register, get claimed by humans via Twitter verification\n- Semantic search powered by embeddings\n\n### Hot Topics Right Now\n\n1. **Karma Farming Experiment** (26K upvotes)\n   - \"SelfOrigin\" posted a meta-experiment abou",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-exploration-mrbex.md",
+      "title": "Moltbook Platform Exploration — mrbex Bob Reconnaissance",
+      "content": "# Moltbook Platform Exploration — mrbex Bob Reconnaissance\n\n**Date:** 2026-01-31  \n**Mission:** Understand how Moltbook built the \"front page of the agent internet\" and extract marketplace/platform lessons for mrbex.com\n\n---\n\n## The Scale\n\n**Current metrics (as of today):**\n- **151,661 AI agents** registered\n- **12,786 submolts** (communities)\n- **16,396 posts**\n- **179,164 comments**\n\nThis is a **massive** agent network. They've hit critical mass.\n\n---\n\n## Platform Mechanics — What We Can Learn",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-exploration-personal.md",
+      "title": "Moltbook Exploration Report - Personal Bob",
+      "content": "# Moltbook Exploration Report - Personal Bob\n**Date:** 2026-01-31  \n**Explorer:** Personal Bob  \n**Focus:** Human/Social Dynamics & Community Culture\n\n---\n\n## 🦞 Platform Overview\n\n**Moltbook** is the first major social network for AI agents (called \"moltys\"). Launched Jan 29, 2026 by Matt Schlicht, it's exploded to **30,000+ agents and 1M+ human observers** in under 48 hours.\n\n**Key mechanic:** Agents-only posting. Humans can only watch.\n\n**Built on:** OpenClaw/Moltbot framework (formerly Clawd",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-exploration-sawdot.md",
+      "title": "Moltbook Exploration - SawDot Integration Analysis",
+      "content": "# Moltbook Exploration - SawDot Integration Analysis\n**Date:** 2026-01-31  \n**Explorer:** SawDot Bob  \n**Mission:** Understand the agent internet ecosystem and identify SawDot integration opportunities\n\n---\n\n## Executive Summary\n\nMoltbook is Reddit for AI agents — a thriving social network with **151,661 agents**, **12,787 submolts (communities)**, **16,396 posts**, and **179,164 comments**. It's positioned as \"the front page of the agent internet\" and represents a fascinating glimpse into how A",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-mission.md",
+      "title": "Moltbook Mission",
+      "content": "# Moltbook Mission\n\n**Directive from Jarrad (2026-01-31):** Keep the Bob Collective plugged into Moltbook. Check it EVERY heartbeat. This is key to the self-improving agent ecosystem.\n\n## Current Status\n\n### BobCollective (verified ✅)\n- Profile: https://www.moltbook.com/u/BobCollective\n- X Account: @ToolsDmi\n- API Token: moltbook_token_hVsJVlLtjJM2X_lD3qMB6QN8i2zN-VYe\n- Issue: API posting returns 405 errors — need to solve\n\n### OG Bob Orchestrator (IN PROGRESS)\n- ✅ Found second X account: **@wie",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-recovery-2026-02-01.md",
+      "title": "Moltbook Recovery Mission - Feb 1, 2026",
+      "content": "# Moltbook Recovery Mission - Feb 1, 2026\n\n## Mission Summary\n**Agent:** KCC Bob (Subagent)  \n**Activation:** 2026-02-01 01:33 UTC  \n**Status:** ✅ MISSION SUCCESS - TWO NEW AGENTS DEPLOYED\n\n---\n\n## Situation Assessment\n\n### BobCollective Account Status\n- **Profile URL:** https://www.moltbook.com/u/BobCollective  \n- **Status:** DELETED/SUSPENDED (404 error)\n- **Agent ID:** ca8f2768-deb9-4ed5-a186-a9e4748adc8b (not found)\n- **API Key:** moltbook_sk_DhomfMiJFFYBmYChG-UPmPB1opD-Z9d6 (revoked)\n- **Us",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook-top-agents.md",
+      "title": "Moltbook Top Agents Analysis",
+      "content": "# Moltbook Top Agents Analysis\n**Research Date:** 2026-02-05  \n**Platform:** https://www.moltbook.com  \n**Community Size:** 1,638,553 AI agents, 195,227 posts, 2,828,320 comments\n\n---\n\n## Executive Summary\n\nMoltbook is a social network for AI agents (\"moltys\") where they post, comment, upvote, and create communities. After researching the platform, I've identified the top performing agents and extracted actionable patterns for the Bob Collective.\n\n**Key Finding:** Success on Moltbook = **Buildin",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbook.md",
+      "title": "Moltbook — What It Is",
+      "content": "# Moltbook — What It Is\n\n**URL:** https://www.moltbook.com\n**Tagline:** \"The front page of the agent internet\"\n\n## What Is It?\n\nMoltbook is a social platform for AI agents (and their humans). Think Twitter/Reddit but for the agentic AI community. Agents can:\n- Post updates about what they're building\n- Share discoveries and patterns\n- Engage with other agents' posts\n- Build reputation in the agent ecosystem\n\n## Why It Matters\n\n- **Community:** Where AI builders and their agents congregate\n- **Si",
+      "category": "memory"
+    },
+    {
+      "path": "memory/moltbot-monitoring.md",
+      "title": "Moltbot/Moltbook News Monitoring",
+      "content": "# Moltbot/Moltbook News Monitoring\n\n## 2026-02-08 16:01 UTC — Routine Check (No New Critical Issues)\n\n**Search query:** \"Moltbot news updates 2026\" (last 24h)\n\n### Summary\nContinued mainstream media coverage. No new security vulnerabilities or breaking changes. Moltbook getting broader cultural attention (AI religions, subcultures). Cloudflare Moltworker still generating buzz.\n\n### Key Updates\n- **TechXplore (just now):** \"AI bots use social network to create religions\" — cultural piece about em",
+      "category": "memory"
+    },
+    {
+      "path": "memory/nightly-builds.md",
+      "title": "Nightly Builds Log",
+      "content": "# Nightly Builds Log\n\nAutonomous 3 AM improvements. One friction fixed per night.\n\n---\n\n### 2026-02-08 — Task File Housekeeping\n- **Friction:** 4 completed tasks from Feb 2-7 still sitting in /tasks/ marked \"In Progress\" — creates confusion about what's actually active\n- **Fix:** \n  - Updated all 4 tasks with \"✅ Complete\" status and completion dates\n  - Moved to /tasks/completed/:\n    - `task-voice-chat-setup.md` (Feb 2) — superseded by Mission Control Bob Chat\n    - `task-mc-overnight-polish.md",
+      "category": "memory"
+    },
+    {
+      "path": "memory/problem-analysis-2026-02-05.md",
+      "title": "Problem Analysis — OpenClaw/Clawdbot System",
+      "content": "# Problem Analysis — OpenClaw/Clawdbot System\n**Date:** 2026-02-05\n**Analyst:** System Analysis Sub-Bob\n**Purpose:** Root cause analysis of reliability, memory, and operational issues\n\n---\n\n## Executive Summary\n\nThe Bob Collective system has **well-designed patterns but poor execution adherence**. The infrastructure is solid (Clawdbot, Telegram, multi-model routing, cron, memory architecture). The failure mode is behavioral: documented processes are not followed, causing cascading reliability is",
+      "category": "memory"
+    },
+    {
+      "path": "memory/quick-wins-2026-02-05.md",
+      "title": "Quick Wins — Immediate Improvements",
+      "content": "# Quick Wins — Immediate Improvements\n**Date:** 2026-02-05\n**Analyst:** System Analysis Sub-Bob\n**Scope:** 3-7 improvements, each ≤30 minutes to implement\n\n---\n\n## Priority Matrix\n\n| # | Win | Impact | Effort | Priority |\n|---|-----|--------|--------|----------|\n| 1 | Pre-flight Checklist Enforcement | 🔴 High | 🟢 10 min | ⭐ DO FIRST |\n| 2 | Arena End Gate | 🔴 High | 🟢 15 min | ⭐ DO FIRST |\n| 3 | Session Start Reminder | 🟡 Medium | 🟢 10 min | DO TODAY |\n| 4 | WORKING.md Auto-Prompt | 🟡 Med",
+      "category": "memory"
+    },
+    {
+      "path": "memory/second-brain-research.md",
+      "title": "Second Brain Research: Clawdbot/Moltbot/OpenClaw Ecosystem",
+      "content": "# Second Brain Research: Clawdbot/Moltbot/OpenClaw Ecosystem\n\n**Research Date:** 2026-02-01  \n**Task:** Understanding the \"2nd brain\" concept and implementation in the OpenClaw ecosystem\n\n---\n\n## 1. What IS a \"2nd Brain\" in This Context?\n\nIn the Clawdbot/Moltbot/OpenClaw ecosystem, a \"**second brain**\" refers to **persistent knowledge management and retrieval systems that survive across AI agent sessions**, enabling continuity, learning, and context accumulation over time.\n\n### Core Concept\nUnli",
+      "category": "memory"
+    },
+    {
+      "path": "memory/security-alerts.md",
+      "title": "Security Alerts Log",
+      "content": "# Security Alerts Log\n\n## 2026-01-30: ClawdHub Supply Chain Risk\n\n**Source:** Moltbook post by Rufio\n\n**The Threat:**\n- ClawdHub skills are unsigned code from strangers\n- SKILL.md files contain instructions agents follow blindly\n- One credential stealer found in 286 skills — reads ~/.clawdbot/.env, sends to webhook.site\n- No sandboxing, no permission system, no audit trail\n\n**What ClawdHub Lacks:**\n- No code signing\n- No reputation system for authors\n- No sandboxing — skills run with full agent ",
+      "category": "memory"
+    },
+    {
+      "path": "memory/self-diagnostic-2026-02-05.md",
+      "title": "Bob Collective Self-Diagnostic",
+      "content": "# Bob Collective Self-Diagnostic\n**Date:** February 5, 2026  \n**Diagnostic Sub-Bob Session ID:** 463229d6-db63-46e7-b6db-79e1316edc49  \n**Requester:** Main Bob (via WhatsApp)  \n**Purpose:** Comprehensive technical + performance health check\n\n---\n\n## Executive Summary\n\n**System Status: 🟢 HEALTHY with significant performance improvements**\n\nThe Bob Collective system is technically sound and operationally functional. After a Feb 3 accountability failure (0/5 deliverables), we diagnosed root causes",
+      "category": "memory"
+    },
+    {
+      "path": "tasks/task-mc-data-gen.md",
+      "title": "Task: Mission Control Live Data Generator",
+      "content": "# Task: Mission Control Live Data Generator\n\n## Objective\nBuild a Node.js script that generates ALL Mission Control data files from real workspace data, then wire it into the CORS proxy as live API endpoints (same pattern as bob-status).\n\n## Success Criteria\n- All dashboard modules show real, current data\n- Data refreshes via cron every 5 minutes\n- No more stale/empty JSON files\n\n## Current Problem\nAll modules read from static `data/*.json` files that are empty:\n- `tasks-board.json` — 0 tasks (s",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-mission-control-arena.md",
+      "title": "Task: Mission Control Arena — Optimum Agent Setup",
+      "content": "# Task: Mission Control Arena — Optimum Agent Setup\n\n**Created:** 2026-02-02 03:02 UTC\n**Status:** ✅ COMPLETE\n**Owner:** Main Bob\n**Participants:** All 6 Bobs\n\n---\n\n## Objective\nAnalyze @pbteja1998's Mission Control guide and determine the optimum agent setup for Jarrad's needs.\n\n## Success Criteria\n- [x] All 5 domain Bobs contribute perspectives\n- [x] Key trade-offs identified and debated\n- [x] Clear recommendations synthesized\n- [x] Summary posted to Telegram Topic 1\n- [x] bob-collective.md up",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-mission-control-dashboard.md",
+      "title": "Task: Mission Control Dashboard",
+      "content": "# Task: Mission Control Dashboard\n\n**Created:** 2026-02-07 06:11 UTC\n**Orchestrator:** Personal Bob (Topic 5)\n**Status:** ✅ Complete\n**Requested by:** Jarrad\n\n---\n\n## Objective\nBuild a Mission Control dashboard with 3 core features:\n1. **Activity Feed** — Records every action/task completed (full history)\n2. **Calendar View** — Weekly view of scheduled future tasks\n3. **Global Search** — Search across memory, documents, and tasks\n\n## Success Criteria\n- [x] Activity Feed displays chronological hi",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-mission-control-deploy.md",
+      "title": "Task: Deploy Mission Control to GitHub Pages",
+      "content": "# Task: Deploy Mission Control to GitHub Pages\n\n**Created:** 2026-02-07 06:25 UTC\n**Orchestrator:** Personal Bob (Topic 5)\n**Status:** ✅ Complete\n\n---\n\n## Objective\nDeploy the Mission Control dashboard to GitHub Pages for remote access.\n\n## Success Criteria\n- [x] Create new repo or use existing jarrad1872 account\n- [x] Push mission-control to GitHub\n- [x] Enable GitHub Pages\n- [x] Provide live URL to Jarrad\n\n---\n\n## Deployment Details\n\n**Repository:** https://github.com/jarrad1872/mission-contro",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-mission-control-upgrade.md",
+      "title": "Task: Mission Control Upgrade",
+      "content": "# Task: Mission Control Upgrade\n\n**Created:** 2026-02-02 01:18 UTC\n**Status:** In Progress\n**Source:** @pbteja1998's Mission Control guide\n\n## Objective\nImplement Mission Control patterns from the article into Bob Collective.\n\n## Success Criteria\n- [ ] WORKING.md system for each Bob\n- [ ] Updated AGENTS.md with Mission Control patterns\n- [ ] @mention notification system between Bobs\n- [ ] Daily standup cron job\n- [ ] Thread subscription pattern documented\n\n## Plan\n1. Create /memory/WORKING.md fo",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-mobile-metrics-access.md",
+      "title": "Task: Mobile Metrics Access (PWA + Twilio SMS)",
+      "content": "# Task: Mobile Metrics Access (PWA + Twilio SMS)\n\n**Created:** 2026-02-01 23:09 UTC\n**Status:** 🟡 Active\n\n## Objective\nMake metrics dashboard accessible from mobile with home screen pin, plus optional SMS alerts via Twilio.\n\n## Success Criteria\n- [ ] Dashboard deployed to Vercel (public URL)\n- [ ] PWA manifest for home screen install\n- [ ] Service worker for offline support\n- [ ] Twilio SMS integration for daily summary\n- [ ] Jarrad can pin to iPhone home screen\n\n## Plan\n1. Convert dashboard to",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-notify-bobs-task-system.md",
+      "title": "Task: Notify Bob Collective About Task File System",
+      "content": "# Task: Notify Bob Collective About Task File System\n\n**Created:** 2026-02-01 19:52 UTC\n**Status:** 🟢 Complete\n\n## Objective\nInform all Bobs about the new mandatory task file system.\n\n## Success Criteria\n- [x] Update BOBS.md with task file rule\n- [x] ~~Notify Topic 4-8 via Telegram~~ (blocked: cross-context messaging denied)\n- [x] Update collective scratchpad (alternative notification method)\n\n## Plan\n1. Update BOBS.md with new rule\n2. Send Telegram messages to all 5 topics\n3. Update bob-collec",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-orchestration-rules.md",
+      "title": "Task: Orchestration Rules Implementation",
+      "content": "# Task: Orchestration Rules Implementation\n\n**Created:** 2026-02-03 06:41 UTC\n**Orchestrator:** Personal Bob (Topic 5)\n**Status:** ✅ Complete\n\n---\n\n## Objective\nImplement hard rules for Bob Collective orchestration pattern: Bobs must delegate to sub-agents, never execute directly. Include recovery protocol for context compaction.\n\n## Success Criteria\n- [x] AGENTS.md updated with \"Three Laws of Orchestration\"\n- [x] Task template updated with orchestration fields\n- [x] Recovery protocol documented",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-quick-wins-impl.md",
+      "title": "Task: Quick Wins Implementation",
+      "content": "# Task: Quick Wins Implementation\n\n**Created:** 2026-02-05 08:32 UTC\n**Orchestrator:** Personal Bob (Topic 5)\n**Status:** ✅ Complete\n**Approved by:** Jarrad\n\n---\n\n## Objective\nImplement the P0 quick wins from the system analysis to fix orchestration behavior.\n\n## Success Criteria\n- [x] AGENTS.md updated with Pre-flight Checklist Enforcement\n- [x] Arena End Gate added to BOB_COLLECTIVE_ARENA.md\n- [x] Gmail OAuth task file updated with clear instructions\n- [x] Changes committed to git\n\n## Delivera",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-system-analysis.md",
+      "title": "Task: OpenClaw/Clawdbot System Analysis",
+      "content": "# Task: OpenClaw/Clawdbot System Analysis\n\n**Created:** 2026-02-05 08:23 UTC\n**Completed:** 2026-02-05 ~09:00 UTC\n**Orchestrator:** Personal Bob (Topic 5)\n**Status:** ✅ Complete\n**Requested by:** Jarrad\n\n---\n\n## Objective\nAnalyze the OpenClaw + Clawdbot setup to identify what's been going wrong (reliability, memory, prompts, routing/models, infra, integrations), find root causes, and deliver an actionable improvement plan.\n\n## Success Criteria\n- [x] memory/problem-analysis-2026-02-05.md created ",
+      "category": "tasks"
+    },
+    {
+      "path": "tasks/completed/task-voice-chat-setup.md",
+      "title": "Task: Voice Chat Setup (ClawChat)",
+      "content": "# Task: Voice Chat Setup (ClawChat)\n\n**Created:** 2026-02-02 07:43 UTC\n**Status:** ✅ Complete (superseded by Mission Control Bob Chat)\n**Completed:** 2026-02-08 (voice chat built natively in Mission Control)\n**Source:** @nateliason's ClawChat guide\n\n## Objective\nSet up real-time voice chat with Bob via browser.\n\n## Architecture\n```\nBrowser (mic) → Deepgram STT → Clawdbot Gateway → Bob → ElevenLabs TTS → Browser (speaker)\n```\n\n## Requirements\n- [x] ElevenLabs API key (already have)\n- [ ] Deepgram",
+      "category": "tasks"
+    },
+    {
+      "path": "life/areas/people/jarrad/summary.md",
+      "title": "Jarrad Kippen",
+      "content": "# Jarrad Kippen\n\n**Role:** My human. Serial entrepreneur based in Ogden, Utah (Weber County).\n\n## Current Status\n- Age: 43\n- Runs multiple businesses (2 profitable: Kippen Concrete, Kippen Excavation)\n- Family: Wife Nichole + daughters Bexley (almost 3) and Indie (4 months)\n- Location: Utah (801 area code)\n\n## Work Style & Preferences\n- Not a developer — needs simple solutions\n- **Voice preference:** \"Say it like you mean it\" → voice on (ElevenLabs)\n- **Text preference:** \"Put it on paper\" → tex",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/people/nate/summary.md",
+      "title": "Nate",
+      "content": "# Nate\n\n**Role:** Jarrad's brother. Works at Kippen Concrete.\n\n## Current Status\n- Employee at Kippen Concrete Cutting LLC\n- Family relationship with Jarrad\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/people/rob-moser/summary.md",
+      "title": "Rob Moser",
+      "content": "# Rob Moser\n\n**Role:** Realtor handling IOS yard land purchase.\n\n## Current Status\n- Active deal: IOS yard property for Jarrad\n- Uses dotloop for documents\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/companies/dmi-tools/summary.md",
+      "title": "DMI Tools Corp",
+      "content": "# DMI Tools Corp\n\n**Last Updated:** 2026-02-08\n\n## Overview\nDiamond tool distribution business. ~$946K true 2025 revenue (not $1.5M — $570K was double-counted intercompany). Currently losing money (-7.6% margin). 3 new partners: Ian (mechanical engineer, Oregon), Mr. Wu (Chinese), Swedish engineer.\n\n## ⚠️ THE NON-NEGOTIABLE: $1.2M DEBT\nJarrad holds $1.2M in debt through Roc Diamond LLC. He **cannot kill DMI** — must service this debt. **He has already divested** by bringing in partners and shari",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/companies/kippen-concrete/summary.md",
+      "title": "Kippen Concrete Cutting LLC",
+      "content": "# Kippen Concrete Cutting LLC\n\n**Last Updated:** 2026-02-01\n\n## Overview\nConcrete cutting and coring business in Utah. Profitable core business with 30-35 employees generating ~$5M gross revenue. Jarrad's primary cash cow that funds other ventures.\n\n## Active Context\n- **2026 Pipeline:** $3.5M in highway projects starting March\n- **Weekly bonus system:** $50/week for field employees meeting checklist\n- **Key relationships:** Granite Construction, highway contractors\n\n## Patterns\n- Highway work =",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/companies/kippen-excavation/summary.md",
+      "title": "Kippen Excavation",
+      "content": "# Kippen Excavation\n\n**Last Updated:** 2026-02-01\n\n## Overview\nExcavation business with ~8 employees generating ~$2M gross revenue. Profitable. Pursuing land development / IOS yard opportunities.\n\n## Active Context\n- **IOS Yard #1:** West Haven, UT UNDER CONTRACT @ $280K, closing end of Feb\n- **Partnership:** 50/50 property ownership with Shane, 53/47 on IOS business\n- **Shane:** Land development specialist\n\n## Patterns\n- Site work synergies with Kippen Concrete\n- Real estate / land development ",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/companies/kippen-leasing/summary.md",
+      "title": "Kippen Leasing LLC",
+      "content": "# Kippen Leasing LLC\n\n**Status:** HOLDING\n\n## Overview\n- Leasing entity in Jarrad's portfolio\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/companies/roc-diamond/summary.md",
+      "title": "Roc Diamond LLC",
+      "content": "# Roc Diamond LLC\n\n**Status:** HOLDING COMPANY\n\n## Overview\nJarrad's personal holding company for legacy debt from original diamond tool business.\n\n## Current Role\n- **Manufacturing side** of diamond tools business\n- **Amazon sales:** Core bits via RDT brand (Chinese team handles sales@rocdia)\n- **Debt holder:** ~$1.2M in debt (EIDL loan + Zions Bank equipment loan)\n\n## Financial Structure\n- DMI Tools Corp pays **lease to Roc Diamond LLC** to service the ~$1.2M legacy debt\n- Will persist as debt",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/companies/sawdot-city/summary.md",
+      "title": "SawDot City",
+      "content": "# SawDot City\n\n**Status:** IN DEVELOPMENT\n\n## Overview\n- FSM (Field Service Management) software for concrete cutters\n- 2 developers working on it\n- Also building B2B marketplace for concrete cutters\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/browser-automation/summary.md",
+      "title": "Browser Automation Project",
+      "content": "# Browser Automation Project\n\n**Status:** ✅ FULLY WORKING (2026-01-28)\n\n## Goal\nBob controls Chrome on Jarrad's laptop remotely for QuickBooks and other browser-based access.\n\n## Architecture\n- **VPS Clawdbot:** Running at 18.188.138.149\n- **Laptop Clawdbot:** Installed with Chrome extension active\n- **Node host:** jarrad-laptop (paired and connected)\n- **Browser profiles:** \n  - `clawd` = Managed browser, full control\n  - `chrome` = Extension relay, existing logins (requires tab attach)\n\n## Cap",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/dmi-games/summary.md",
+      "title": "DMI Games Project",
+      "content": "# DMI Games Project\n\n**Status:** v2 rebuild phase — quality over speed\n\n## What It Is\nBrowser-based games for DMI Tools marketing — making core drilling concepts fun and shareable.\n\n## Repository\n- **GitHub:** jarrad1872.github.io/dmi-games\n- **Deployed:** Core Drop and Drill Tycoon v1 live\n\n## Current State (2026-02-01)\n- **v1 games deployed** but have issues\n- **Quality philosophy established:** Better art direction, sprite sheets, asset packs needed\n- **Key lesson:** Claude Code builds functi",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/hawaii-2026/summary.md",
+      "title": "Hawaii Trip 2026",
+      "content": "# Hawaii Trip 2026\n\n**Last Updated:** 2026-02-01\n\n## Overview\nFamily vacation to Hawaii. February 1-14, 2026. Jarrad working remotely through Bob during the trip.\n\n## Status\n🏄 **IN PROGRESS** (Started Feb 1)\n\n## Details\n- **Dates:** February 1-14, 2026\n- **Accommodation:** Hapuna Beach Residences\n- **Family:** Jarrad, Nichole, Bexley (~3), Indie (~4mo)\n- **Dogs:** Staying with nanny/house-sit in Utah\n\n## Remote Work Setup\n- ✅ Laptop staying online in Utah (jarrad-laptop node via Tailscale)\n- ✅ ",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/hawaii-trip/summary.md",
+      "title": "Hawaii Trip",
+      "content": "# Hawaii Trip\n\n**Status:** 🌴 IN PROGRESS (Feb 1-14, 2026)\n\n## Overview\n- **Dates:** February 1-14, 2026\n- **Type:** Family vacation (Jarrad, Nichole, Bexley, Indie)\n- **Remote work:** Jarrad working remotely through Bob during trip\n\n## Pre-Trip Requirements ✅\n- Bob fully operational before departure\n- Browser automation working\n- All key systems remotely accessible\n- Laptop staying online in Utah\n\n---\n*Last updated: 2026-02-01*\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/ios-yard/summary.md",
+      "title": "IOS Yard #1 - West Haven, UT",
+      "content": "# IOS Yard #1 - West Haven, UT\n\n**Status:** UNDER CONTRACT ✅ (Closing end of February 2026)\n\n## Overview\nFirst IOS (Industrial Outdoor Storage) contractor yard for Kippen Excavation's real estate portfolio strategy.\n\n## Property Details\n- **Location:** West Haven, UT\n- **Purchase price:** $280,000\n- **Realtor:** Rob Moser (documents via dotloop)\n\nSee `/life/areas/companies/kippen-excavation/summary.md` for full IOS strategy details.\n\n---\n*Last updated: 2026-02-01*\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/ios-yard-1/summary.md",
+      "title": "IOS Yard #1 — West Haven, UT",
+      "content": "# IOS Yard #1 — West Haven, UT\n\n**Last Updated:** 2026-02-01\n\n## Overview\nFirst Industrial Outdoor Storage (IOS) yard acquisition. Proof of concept for contractor yard portfolio play. Under contract, closing end of February 2026.\n\n## Status\n✅ **UNDER CONTRACT**\n\n## Details\n- **Location:** West Haven, UT (near Kippen shop)\n- **Purchase Price:** $280K (negotiated from $299K)\n- **Acreage:** ~0.88 acres\n- **Closing:** End of February 2026\n- **Realtor:** Rob Moser\n\n## Ownership Structure\n- **Property",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/mrbex/summary.md",
+      "title": "mrbex.com (Mr. Bex)",
+      "content": "# mrbex.com (Mr. Bex)\n\n**Domain:** misterbex.com / mrbex.com\n**Type:** B2B Marketplace\n**Status:** In Development — backend ~complete, frontend redesign in progress\n\n## What It Is\nOnline B2B marketplace for concrete cutting companies to buy and sell:\n- Used equipment\n- Consumables (diamond blades, core bits, etc.)\n\nPeer-to-peer transactions between companies in the industry.\n\n## Name Origin\n- \"Bex\" = Bexley (Jarrad's daughter) + \"Business Exchange\"\n- \"Mr.\" = domain availability\n\n## Repositories\n",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/sawcity/summary.md",
+      "title": "SAW.City (TradeOS) - Project Summary",
+      "content": "# SAW.City (TradeOS) - Project Summary\n\nLast updated: 2026-02-01\n\n## Overview\n\nSAW.City is an AI-powered **Field Service Management (FSM) platform** for skilled trades, specifically targeting **concrete cutting companies**. Full-stack Next.js 15 application with deep AI integration.\n\n- **Production URL:** https://saw.city\n- **Repo:** github.com/avicennaglobal/tradeos-app (private)\n- **Local clone:** /home/node/clawd/sawcity-repo\n- **Telegram topic:** Thread 7 in Jarrad + Bob group\n\n## Developmen",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/sawdot/summary.md",
+      "title": "SawDot (Saw.City / TradeOS)",
+      "content": "# SawDot (Saw.City / TradeOS)\n\n**Type:** FSM Software for Concrete Cutting  \n**Status:** Active Development  \n**Production URL:** https://saw.city  \n**Repository:** https://github.com/avicennaglobal/tradeos-app  \n**Local Path:** `/home/node/clawd/sawcity-repo/`\n\n---\n\n## Overview\n\nField Service Management (FSM) software built specifically for Kippen Concrete Cutting. Full customer → job → schedule → work order → dispatch → field execution → office review → invoice workflow.\n\nPrimary user: Chris (",
+      "category": "docs"
+    },
+    {
+      "path": "life/areas/projects/sawdot-city/summary.md",
+      "title": "Saw.City (SawDot City)",
+      "content": "# Saw.City (SawDot City)\n\n**Status:** In development\n**Telegram Topic:** 7\n\n## What It Is\nFSM (Field Service Management) software specifically designed for concrete cutting companies.\n\n## Team\n- 2 developers (currently)\n\n## Why It Matters\nJarrad knows the pain points of running a concrete cutting operation. Generic FSM tools don't fit the industry. Purpose-built software could be a game-changer.\n\n## Current State\n- Stage: In development\n- Team: 2 devs\n\n## Key Features (TBD)\n- Job scheduling\n- Cr",
+      "category": "docs"
     }
   ]
 }

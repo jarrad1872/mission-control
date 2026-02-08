@@ -1688,18 +1688,29 @@ html, body {
 /* ===== KANBAN BOARD ===== */
 .kanban-board {
     display: flex;
+    flex-direction: column;
     gap: 12px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     padding-bottom: 8px;
 }
 
 .kanban-column {
-    min-width: 280px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 12px;
+}
+
+/* On wider screens, show horizontal columns */
+@media (min-width: 768px) {
+    .kanban-board {
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .kanban-column {
+        min-width: 280px;
+        flex: 1;
+    }
 }
 
 /* ===== COST TRACKER ===== */

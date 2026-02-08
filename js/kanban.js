@@ -7,6 +7,13 @@ const KanbanModule = (function() {
     'use strict';
 
     const STORAGE_KEY = 'missionControl_kanbanMoves';
+    const STATIC_DATA_URL = 'data/tasks-board.json';
+    
+    function getDataUrl() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/tasks';
+        return STATIC_DATA_URL;
+    }
     
     let tasksData = null;
     let currentDraggedCard = null;
@@ -44,7 +51,8 @@ const KanbanModule = (function() {
      */
     async function loadTasksData() {
         try {
-            const response = await fetch(`data/tasks-board.json?t=${Date.now()}`);
+            const url = getDataUrl();
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) {
                 throw new Error(`Failed to load tasks: ${response.status}`);
             }

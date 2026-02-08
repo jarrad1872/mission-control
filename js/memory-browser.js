@@ -8,6 +8,14 @@ const MemoryBrowser = (function() {
     let selectedEntity = null;
     let searchQuery = '';
     
+    const STATIC_DATA_URL = 'data/memory-tree.json';
+    
+    function getDataUrl() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/memory';
+        return STATIC_DATA_URL;
+    }
+    
     // Category icons and colors
     const CATEGORY_CONFIG = {
         people: { icon: '👤', color: '#e94560', label: 'People' },
@@ -33,7 +41,8 @@ const MemoryBrowser = (function() {
      */
     async function loadMemoryData() {
         try {
-            const response = await fetch('data/memory-tree.json?t=' + Date.now());
+            const url = getDataUrl();
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) throw new Error('Failed to load memory data');
             memoryData = await response.json();
         } catch (error) {
