@@ -3,8 +3,8 @@
  * Provides offline support and caching for PWA
  */
 
-const CACHE_NAME = 'mission-control-v11';
-const BASE_PATH = '/mission-control';
+const CACHE_NAME = 'mission-control-v12';
+const BASE_PATH = '';
 const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 
 // Assets to cache immediately on install
