@@ -16,7 +16,7 @@
         const _oaiB64 = 'c2stcHJvai0yQVVHXy1QSGplTWllamxaN0hYVWxvNGtybDFqcGxiRjg3THNRZi1aNml3UzJhRFExZ2JjZVZ3U0VxUWJMVXhsTTlEcU42U2lFdVQzQmxia0ZKT2UtbG1xUjdRa25iSWc1MHAwam92VFY5NUd2cmxVNEkxLV9kRGZzT0taVjRySkdDTXJWdnBwMDdrMXNkU05aeXcwMVpwSEExTUE=';
 
         const defaults = {
-            'mc_gateway_url':   'http://100.72.187.117:18789',
+            'mc_gateway_url':   'https://raid-circles-thee-competitors.trycloudflare.com',
             'mc_gateway_token': 'dcc3f1b418346afbaa3870d46c10e0111db809109402a437',
             'mc_openai_key':    atob(_oaiB64)
         };
