@@ -651,22 +651,7 @@
         e.preventDefault();
         const form = e.target;
 
-        const url = form.gatewayUrl.value.trim();
-        const token = form.token.value.trim();
-
-        if (!url) {
-            showToast('Please enter a gateway URL', 'warning');
-            return;
-        }
-        if (!token) {
-            showToast('Please enter an auth token', 'warning');
-            return;
-        }
-
-        Gateway.setUrl(url);
-        Gateway.setToken(token);
-
-        // Save OpenAI key (optional)
+        // Always save OpenAI key first (independent of Gateway)
         const openaiKey = (document.getElementById('settingsOpenAIKey')?.value || '').trim();
         if (openaiKey) {
             localStorage.setItem('mc_openai_key', openaiKey);
@@ -677,6 +662,21 @@
         if (window.BobChat?.updateApiNotice) {
             window.BobChat.updateApiNotice();
         }
+
+        const url = form.gatewayUrl.value.trim();
+        const token = form.token.value.trim();
+
+        if (!url) {
+            showToast('OpenAI key saved. Please enter a gateway URL for full setup.', 'warning');
+            return;
+        }
+        if (!token) {
+            showToast('OpenAI key saved. Please enter an auth token for full setup.', 'warning');
+            return;
+        }
+
+        Gateway.setUrl(url);
+        Gateway.setToken(token);
 
         showToast('Settings saved!', 'success');
 
