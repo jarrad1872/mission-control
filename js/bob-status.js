@@ -170,9 +170,13 @@ const BobStatusModule = (function() {
                     <button class="bob-action-btn" data-action="message" data-bob="${bob.id}">
                         💬 Message ${bob.name}
                     </button>
+                    ${bob.channel === 'whatsapp' ? `
+                    <a class="bob-action-btn bob-wa-link" href="https://wa.me/18014301004" target="_blank" rel="noopener">
+                        📱 Open in WhatsApp
+                    </a>` : ''}
                     ${BOB_TOPIC_MAP[bob.id] ? `
                     <a class="bob-action-btn bob-tg-link" href="https://t.me/c/3765361939/${BOB_TOPIC_MAP[bob.id]}" target="_blank" rel="noopener">
-                        📱 Open in Telegram
+                        💬 Open in Telegram
                     </a>` : ''}
                 </div>
             </div>
