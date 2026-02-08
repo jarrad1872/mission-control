@@ -262,20 +262,31 @@
                 </div>
             </section>
 
-            <!-- More: Voice Tab -->
+            <!-- More: Bob Chat Tab -->
             <section class="tab-content" id="voice-tab">
-                <div class="voice-container">
-                    <div class="voice-loading">
-                        <div class="spinner"></div>
-                        <span>Loading ClawChat...</span>
+                <div class="bob-chat">
+                    <div class="bob-chat-header">
+                        <select class="bob-chat-selector" id="bobChatSelector">
+                            <option value="main">🎯 Main Bob</option>
+                            <option value="kcc">🏗️ KCC Bob</option>
+                            <option value="dmi">🔧 DMI Bob</option>
+                            <option value="sawdot">🪚 SawDot Bob</option>
+                            <option value="mrbex">🎬 mrbex Bob</option>
+                            <option value="personal">🏠 Personal Bob</option>
+                        </select>
                     </div>
-                    <div class="voice-iframe-wrapper">
-                        <!-- Iframe lazy-loaded by voice.js -->
+                    <div class="bob-chat-avatar" id="bobChatAvatar">
+                        <img id="bobChatAvatarImg" src="avatars/main.png" alt="Bob" />
                     </div>
-                    <div class="voice-fallback">
-                        <a href="#" target="_blank" class="voice-fallback-link">
-                            Open ClawChat →
-                        </a>
+                    <div class="bob-chat-status" id="bobChatStatus">Ready</div>
+                    <button class="bob-chat-audio-unlock" id="bobChatAudioUnlock">🔊 Tap to Enable Audio</button>
+                    <div class="bob-chat-messages" id="bobChatMessages"></div>
+                    <div class="bob-chat-controls">
+                        <button class="bob-chat-mic" id="bobChatMic">🎤</button>
+                        <button class="bob-chat-clear" id="bobChatClear">🗑️ Clear</button>
+                    </div>
+                    <div class="bob-chat-api-notice" id="bobChatApiNotice">
+                        <p>OpenAI API key required for voice. <button id="bobChatSetKey">Configure →</button></p>
                     </div>
                 </div>
             </section>
@@ -389,7 +400,7 @@
                     </button>
                     <button class="more-item" data-tab="voice">
                         <span class="more-icon">🎙️</span>
-                        <span class="more-label">Voice</span>
+                        <span class="more-label">Bob Chat</span>
                     </button>
                     <button class="more-item" data-tab="memory">
                         <span class="more-icon">🧠</span>

@@ -32,12 +32,13 @@
                 ActivityModule.init(),
                 CalendarModule.init(),
                 SearchModule.init(),
-                VoiceModule.init(),
+                BobChat.init(),
                 SessionsModule.init(),
                 KanbanModule.init(),
                 MemoryBrowser.init(),
                 CFOModule?.init?.(),
-                ControlModule?.init?.()
+                ControlModule?.init?.(),
+                Analytics?.init?.()
             ]);
             
             // Update status indicator
@@ -109,7 +110,7 @@
         }
         
         // Update nav active state (for tabs opened from More drawer)
-        const mainTabs = ['dashboard', 'tasks', 'stats', 'activity'];
+        const mainTabs = ['dashboard', 'tasks', 'cfo', 'activity'];
         if (!mainTabs.includes(tabId)) {
             // It's a secondary tab from More drawer
             navItems.forEach(nav => nav.classList.remove('active'));
@@ -263,12 +264,10 @@
     }
 
     /**
-     * Show toast notification (uses QuickActions if available)
+     * Show toast notification (delegates to Utils)
      */
     function showToast(message, type = 'info') {
-        if (window.QuickActions?.showToast) {
-            window.QuickActions.showToast(message, type);
-        }
+        Utils.showToast(message, type);
     }
 
     // Initialize when DOM is ready
@@ -289,7 +288,7 @@
         ActivityModule,
         CalendarModule,
         SearchModule,
-        VoiceModule,
+        BobChat,
         DataModule,
         KanbanModule,
         MemoryBrowser,
