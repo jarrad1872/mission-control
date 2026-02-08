@@ -218,10 +218,12 @@ const Analytics = (function() {
 
     const total = models.reduce((sum, [_, tokens]) => sum + tokens, 0);
     const colors = {
+      'claude-opus-4-6': '#d63384',
       'claude-opus-4-5': '#FF6B6B',
       'claude-sonnet-4-5': '#4ECDC4',
       'kimi-k2.5': '#45B7D1',
-      'gemini-2.0-flash': '#96CEB4'
+      'gemini-2.0-flash': '#96CEB4',
+      'delivery-mirror': '#888'
     };
 
     return `
@@ -289,10 +291,12 @@ const Analytics = (function() {
    */
   function formatModelName(model) {
     const names = {
+      'claude-opus-4-6': 'Claude Opus 4.6',
       'claude-opus-4-5': 'Claude Opus 4.5',
       'claude-sonnet-4-5': 'Claude Sonnet 4.5',
       'kimi-k2.5': 'Kimi K2.5',
-      'gemini-2.0-flash': 'Gemini 2.0 Flash'
+      'gemini-2.0-flash': 'Gemini 2.0 Flash',
+      'delivery-mirror': 'Delivery Mirror'
     };
     return names[model] || model;
   }

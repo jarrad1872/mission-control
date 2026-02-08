@@ -1,149 +1,29 @@
 // Two-Way Control Panel — Mission Control v2
-// Send commands, messages, and trigger actions via Gateway API
+// Send commands, messages, and trigger actions via Gateway hooks API
 
 (function() {
     'use strict';
 
-    // Configuration — uses shared Gateway module (js/gateway.js)
-    // localStorage keys are shared: mc_gateway_token, mc_gateway_url
-    const CONFIG = {
-        defaultGatewayUrl: (typeof Gateway !== 'undefined' ? Gateway.DEFAULT_URL : 'http://100.72.187.117:18789'),
-        storageKeys: {
-            token: 'mc_gateway_token',
-            gatewayUrl: 'mc_gateway_url'
-        }
-    };
-
-    // Bob definitions (aligned with BOBS.md)
+    // Bob definitions with session keys for hooks/agent targeting
     const BOBS = [
-        { id: 'personal', name: 'Personal Bob', emoji: '👤', channel: 'telegram' },
-        { id: 'kcc', name: 'KCC Bob', emoji: '🏗️', channel: 'telegram' },
-        { id: 'dmi', name: 'DMI Bob', emoji: '🔧', channel: 'telegram' },
-        { id: 'rocdia', name: 'Roc Diamond Bob', emoji: '💎', channel: 'telegram' },
-        { id: 'discord', name: 'Discord Bob', emoji: '💬', channel: 'discord' },
-        { id: 'whatsapp', name: 'WhatsApp Bob', emoji: '📱', channel: 'whatsapp' }
+        { id: 'main', name: 'Main Bob', emoji: '🎯', channel: 'telegram', sessionKey: 'agent:main:telegram:group:-1003765361939:topic:1' },
+        { id: 'kcc', name: 'KCC Bob', emoji: '🏗️', channel: 'telegram', sessionKey: 'agent:main:telegram:group:-1003765361939:topic:4' },
+        { id: 'personal', name: 'Personal Bob', emoji: '🏠', channel: 'telegram', sessionKey: 'agent:main:telegram:group:-1003765361939:topic:5' },
+        { id: 'dmi', name: 'DMI Bob', emoji: '🔧', channel: 'telegram', sessionKey: 'agent:main:telegram:group:-1003765361939:topic:6' },
+        { id: 'sawdot', name: 'SawDot Bob', emoji: '🪚', channel: 'telegram', sessionKey: 'agent:main:telegram:group:-1003765361939:topic:7' },
+        { id: 'mrbex', name: 'MrBex Bob', emoji: '🎬', channel: 'telegram', sessionKey: 'agent:main:telegram:group:-1003765361939:topic:8' }
     ];
 
-    // Cron job definitions
-    const CRON_JOBS = [
-        { id: 'heartbeat', name: 'Heartbeat Poll', emoji: '💓', description: 'Trigger main heartbeat check' },
-        { id: 'email-check', name: 'Email Check', emoji: '📧', description: 'Check all email accounts' },
-        { id: 'daily-standup', name: 'Daily Standup', emoji: '📊', description: 'Generate daily standup report' },
-        { id: 'memory-flush', name: 'Memory Flush', emoji: '🧠', description: 'Flush session memory to files' }
+    // Quick action definitions (use hooks API)
+    const QUICK_ACTIONS = [
+        { id: 'heartbeat', name: 'Heartbeat Poll', emoji: '💓', description: 'Trigger main heartbeat check', type: 'wake' },
+        { id: 'email-check', name: 'Email Check', emoji: '📧', description: 'Spawn agent to check all email', type: 'spawn', task: 'Check all email accounts for urgent unread messages. Report back with a summary.' },
+        { id: 'daily-standup', name: 'Daily Standup', emoji: '📊', description: 'Generate daily standup report', type: 'spawn', task: 'Generate a daily standup report. Summarize completed work, in-progress tasks, and blockers.' },
+        { id: 'memory-flush', name: 'Memory Flush', emoji: '🧠', description: 'Flush session memory to files', type: 'wake', text: 'Flush all important session context to memory files immediately.' }
     ];
 
     // State
-    let connectionStatus = 'disconnected'; // disconnected, connecting, connected, error
-
-    // ========================================
-    // Gateway API Client
-    // ========================================
-
-    class GatewayClient {
-        constructor() {
-            this.baseUrl = this.getGatewayUrl();
-            this.token = this.getToken();
-        }
-
-        getGatewayUrl() {
-            return localStorage.getItem(CONFIG.storageKeys.gatewayUrl) || CONFIG.defaultGatewayUrl;
-        }
-
-        setGatewayUrl(url) {
-            localStorage.setItem(CONFIG.storageKeys.gatewayUrl, url);
-            this.baseUrl = url;
-        }
-
-        getToken() {
-            return localStorage.getItem(CONFIG.storageKeys.token) || '';
-        }
-
-        setToken(token) {
-            if (token) {
-                localStorage.setItem(CONFIG.storageKeys.token, token);
-            } else {
-                localStorage.removeItem(CONFIG.storageKeys.token);
-            }
-            this.token = token;
-        }
-
-        hasToken() {
-            return !!this.token;
-        }
-
-        async request(endpoint, options = {}) {
-            const url = `${this.baseUrl}${endpoint}`;
-            const headers = {
-                'Content-Type': 'application/json',
-                ...options.headers
-            };
-
-            if (this.token) {
-                headers['Authorization'] = `Bearer ${this.token}`;
-            }
-
-            const response = await fetch(url, {
-                ...options,
-                headers
-            });
-
-            if (!response.ok) {
-                const error = await response.text().catch(() => 'Unknown error');
-                throw new Error(`API Error ${response.status}: ${error}`);
-            }
-
-            return response.json().catch(() => ({}));
-        }
-
-        // Test connection to gateway
-        async testConnection() {
-            try {
-                const response = await this.request('/health');
-                return { success: true, data: response };
-            } catch (error) {
-                return { success: false, error: error.message };
-            }
-        }
-
-        // Send chat message to a specific Bob/channel
-        async sendMessage(target, message) {
-            return this.request('/chat', {
-                method: 'POST',
-                body: JSON.stringify({
-                    target,
-                    message
-                })
-            });
-        }
-
-        // Create a new task
-        async createTask(taskData) {
-            return this.request('/tasks', {
-                method: 'POST',
-                body: JSON.stringify(taskData)
-            });
-        }
-
-        // Trigger a cron job
-        async triggerCron(cronId) {
-            return this.request(`/cron/run`, {
-                method: 'POST',
-                body: JSON.stringify({ job: cronId })
-            });
-        }
-
-        // Get list of active sessions
-        async getSessions() {
-            return this.request('/sessions');
-        }
-
-        // Get cron job status
-        async getCronStatus() {
-            return this.request('/cron/status');
-        }
-    }
-
-    const gateway = new GatewayClient();
+    let connectionStatus = 'disconnected';
 
     // ========================================
     // UI Rendering
@@ -160,7 +40,7 @@
                     <h3>🔌 Gateway Connection</h3>
                     <span class="connection-status" id="connection-status">
                         <span class="status-dot"></span>
-                        <span class="status-text">Disconnected</span>
+                        <span class="status-text">Checking...</span>
                     </span>
                 </div>
                 <div class="control-section-body">
@@ -168,14 +48,14 @@
                         <div class="form-group flex-2">
                             <label for="gateway-url">Gateway URL</label>
                             <input type="url" id="gateway-url" 
-                                   value="${gateway.getGatewayUrl()}" 
-                                   placeholder="http://localhost:18789">
+                                   value="${Gateway.getUrl()}" 
+                                   placeholder="https://your-tunnel.trycloudflare.com">
                         </div>
                         <div class="form-group flex-3">
                             <label for="gateway-token">Auth Token</label>
                             <div class="token-input-wrapper">
                                 <input type="password" id="gateway-token" 
-                                       value="${gateway.getToken()}" 
+                                       value="${Gateway.getToken()}" 
                                        placeholder="Enter your gateway token">
                                 <button type="button" class="btn-icon" id="toggle-token-visibility" title="Show/hide token">
                                     👁️
@@ -223,7 +103,7 @@
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">
-                                <span class="btn-text">📤 Send Message</span>
+                                <span class="btn-text">📤 Send via Gateway</span>
                                 <span class="btn-spinner"></span>
                             </button>
                         </div>
@@ -255,8 +135,8 @@
                             <div class="form-group flex-1">
                                 <label for="task-assignee">Assignee</label>
                                 <select id="task-assignee">
-                                    <option value="">Unassigned</option>
-                                    ${BOBS.map(bob => `
+                                    <option value="main">🎯 Main Bob</option>
+                                    ${BOBS.filter(b => b.id !== 'main').map(bob => `
                                         <option value="${bob.id}">${bob.emoji} ${bob.name}</option>
                                     `).join('')}
                                 </select>
@@ -282,25 +162,22 @@
                 </div>
             </div>
 
-            <!-- Cron Job Triggers -->
+            <!-- Quick Actions (formerly Cron Jobs) -->
             <div class="control-section" id="cron-section">
                 <div class="control-section-header">
-                    <h3>⏰ Cron Jobs</h3>
-                    <button type="button" class="btn btn-small btn-secondary" id="refresh-cron">
-                        🔄 Refresh
-                    </button>
+                    <h3>⚡ Quick Actions</h3>
                 </div>
                 <div class="control-section-body">
                     <div class="cron-grid" id="cron-grid">
-                        ${CRON_JOBS.map(job => `
-                            <div class="cron-card" data-cron-id="${job.id}">
-                                <div class="cron-icon">${job.emoji}</div>
+                        ${QUICK_ACTIONS.map(action => `
+                            <div class="cron-card" data-action-id="${action.id}">
+                                <div class="cron-icon">${action.emoji}</div>
                                 <div class="cron-info">
-                                    <span class="cron-name">${job.name}</span>
-                                    <span class="cron-desc">${job.description}</span>
+                                    <span class="cron-name">${action.name}</span>
+                                    <span class="cron-desc">${action.description}</span>
                                 </div>
                                 <button type="button" class="btn btn-small btn-primary cron-trigger" 
-                                        data-cron="${job.id}" title="Run ${job.name}">
+                                        data-action="${action.id}" title="Run ${action.name}">
                                     <span class="btn-text">▶️ Run</span>
                                     <span class="btn-spinner"></span>
                                 </button>
@@ -330,7 +207,23 @@
         `;
 
         attachEventListeners();
-        updateConnectionUI();
+        // Check connection status on load
+        checkConnectionStatus();
+    }
+
+    // ========================================
+    // Connection Management
+    // ========================================
+
+    async function checkConnectionStatus() {
+        if (!Gateway.hasToken()) {
+            updateConnectionStatus('disconnected');
+            return;
+        }
+        
+        updateConnectionStatus('connecting');
+        const result = await Gateway.testConnection();
+        updateConnectionStatus(result.success ? 'connected' : 'error');
     }
 
     // ========================================
@@ -350,13 +243,10 @@
         // Task form
         document.getElementById('task-form')?.addEventListener('submit', handleCreateTask);
 
-        // Cron triggers
+        // Quick action triggers
         document.querySelectorAll('.cron-trigger').forEach(btn => {
-            btn.addEventListener('click', () => handleTriggerCron(btn.dataset.cron, btn));
+            btn.addEventListener('click', () => handleTriggerAction(btn.dataset.action, btn));
         });
-
-        // Refresh cron status
-        document.getElementById('refresh-cron')?.addEventListener('click', handleRefreshCron);
 
         // Clear response log
         document.getElementById('clear-log')?.addEventListener('click', clearResponseLog);
@@ -367,15 +257,15 @@
         setButtonLoading(btn, true);
         updateConnectionStatus('connecting');
 
-        try {
-            // First save settings
-            handleSaveSettings();
+        // Save current field values first
+        handleSaveSettings();
 
-            const result = await gateway.testConnection();
+        try {
+            const result = await Gateway.testConnection();
             
             if (result.success) {
                 updateConnectionStatus('connected');
-                addToLog('success', 'Connection successful!', result.data);
+                addToLog('success', 'Gateway connected! Hooks API is reachable.', result.data);
                 showToast('Connected to gateway!', 'success');
             } else {
                 updateConnectionStatus('error');
@@ -395,15 +285,15 @@
         const url = document.getElementById('gateway-url')?.value;
         const token = document.getElementById('gateway-token')?.value;
 
-        if (url) gateway.setGatewayUrl(url);
-        gateway.setToken(token);
+        if (url) Gateway.setUrl(url);
+        if (token) Gateway.setToken(token);
         updateConnectionUI();
 
         showToast('Settings saved', 'info');
     }
 
     function handleClearToken() {
-        gateway.setToken('');
+        Gateway.setToken('');
         document.getElementById('gateway-token').value = '';
         updateConnectionStatus('disconnected');
         updateConnectionUI();
@@ -422,25 +312,39 @@
         }
     }
 
+    /**
+     * Send message via hooks/agent — delivers to the correct Bob session
+     */
     async function handleSendMessage(e) {
         e.preventDefault();
         const form = e.target;
         const btn = form.querySelector('button[type="submit"]');
         
-        const target = document.getElementById('message-target').value;
+        const targetId = document.getElementById('message-target').value;
         const message = document.getElementById('message-content').value;
 
-        if (!target || !message) {
+        if (!targetId || !message) {
             showToast('Please select a Bob and enter a message', 'warning');
             return;
         }
 
+        if (!Gateway.hasToken()) {
+            showToast('Gateway not configured — save your token first', 'warning');
+            return;
+        }
+
+        const bob = BOBS.find(b => b.id === targetId);
+        if (!bob) return;
+
         setButtonLoading(btn, true);
 
         try {
-            const result = await gateway.sendMessage(target, message);
-            addToLog('success', `Message sent to ${getBobName(target)}`, { target, message, response: result });
-            showToast(`Message sent to ${getBobName(target)}!`, 'success');
+            const result = await Gateway.sendMessage(bob.sessionKey, message, {
+                name: 'Mission Control',
+                channel: bob.channel
+            });
+            addToLog('success', `Message sent to ${bob.emoji} ${bob.name}`, { target: targetId, message, response: result });
+            showToast(`Message sent to ${bob.name}!`, 'success');
             form.reset();
         } catch (error) {
             addToLog('error', 'Failed to send message', error.message);
@@ -450,30 +354,47 @@
         }
     }
 
+    /**
+     * Create task via hooks/agent — sends instruction to assigned Bob
+     */
     async function handleCreateTask(e) {
         e.preventDefault();
         const form = e.target;
         const btn = form.querySelector('button[type="submit"]');
 
-        const taskData = {
-            title: document.getElementById('task-title').value,
-            description: document.getElementById('task-description').value,
-            priority: document.getElementById('task-priority').value,
-            assignee: document.getElementById('task-assignee').value,
-            successCriteria: document.getElementById('task-success').value
-        };
+        const title = document.getElementById('task-title').value.trim();
+        const description = document.getElementById('task-description').value.trim();
+        const priority = document.getElementById('task-priority').value;
+        const assigneeId = document.getElementById('task-assignee').value;
+        const success = document.getElementById('task-success').value.trim();
 
-        if (!taskData.title) {
+        if (!title) {
             showToast('Please enter a task title', 'warning');
             return;
         }
 
+        if (!Gateway.hasToken()) {
+            showToast('Gateway not configured — save your token first', 'warning');
+            return;
+        }
+
+        const bob = BOBS.find(b => b.id === assigneeId) || BOBS[0];
+        const taskMessage = [
+            `Create task: "${title}"`,
+            description ? `Description: ${description}` : null,
+            `Priority: ${priority}`,
+            success ? `Success criteria: ${success}` : null
+        ].filter(Boolean).join('. ');
+
         setButtonLoading(btn, true);
 
         try {
-            const result = await gateway.createTask(taskData);
-            addToLog('success', `Task created: ${taskData.title}`, { taskData, response: result });
-            showToast(`Task "${taskData.title}" created!`, 'success');
+            const result = await Gateway.sendMessage(bob.sessionKey, taskMessage, {
+                name: 'Mission Control',
+                channel: bob.channel
+            });
+            addToLog('success', `Task "${title}" sent to ${bob.emoji} ${bob.name}`, { task: title, priority, assignee: bob.name, response: result });
+            showToast(`Task "${title}" created!`, 'success');
             form.reset();
         } catch (error) {
             addToLog('error', 'Failed to create task', error.message);
@@ -483,32 +404,33 @@
         }
     }
 
-    async function handleTriggerCron(cronId, btn) {
-        setButtonLoading(btn, true);
+    /**
+     * Trigger a quick action via hooks API
+     */
+    async function handleTriggerAction(actionId, btn) {
+        const action = QUICK_ACTIONS.find(a => a.id === actionId);
+        if (!action) return;
 
-        try {
-            const result = await gateway.triggerCron(cronId);
-            const cronJob = CRON_JOBS.find(j => j.id === cronId);
-            addToLog('success', `Cron triggered: ${cronJob?.name || cronId}`, result);
-            showToast(`${cronJob?.emoji || '⏰'} ${cronJob?.name || cronId} triggered!`, 'success');
-        } catch (error) {
-            addToLog('error', `Failed to trigger ${cronId}`, error.message);
-            showToast(`Failed: ${error.message}`, 'error');
-        } finally {
-            setButtonLoading(btn, false);
+        if (!Gateway.hasToken()) {
+            showToast('Gateway not configured — save your token first', 'warning');
+            return;
         }
-    }
 
-    async function handleRefreshCron() {
-        const btn = document.getElementById('refresh-cron');
         setButtonLoading(btn, true);
 
         try {
-            const status = await gateway.getCronStatus();
-            addToLog('info', 'Cron status refreshed', status);
-            showToast('Cron status updated', 'info');
+            let result;
+
+            if (action.type === 'wake') {
+                result = await Gateway.triggerHeartbeat(action.text || `${action.name} triggered from Mission Control`);
+            } else if (action.type === 'spawn') {
+                result = await Gateway.spawnAgent(action.task, null, action.id);
+            }
+
+            addToLog('success', `${action.emoji} ${action.name} triggered`, result);
+            showToast(`${action.emoji} ${action.name} triggered!`, 'success');
         } catch (error) {
-            addToLog('error', 'Failed to refresh cron status', error.message);
+            addToLog('error', `Failed: ${action.name}`, error.message);
             showToast(`Failed: ${error.message}`, 'error');
         } finally {
             setButtonLoading(btn, false);
@@ -543,12 +465,12 @@
                 text.textContent = 'Error';
                 break;
             default:
-                text.textContent = gateway.hasToken() ? 'Configured' : 'Not configured';
+                text.textContent = Gateway.hasToken() ? 'Configured' : 'Not configured';
         }
     }
 
     function updateConnectionUI() {
-        const hasToken = gateway.hasToken();
+        const hasToken = Gateway.hasToken();
         const clearBtn = document.getElementById('clear-token');
         if (clearBtn) {
             clearBtn.style.display = hasToken ? 'inline-flex' : 'none';
@@ -637,7 +559,7 @@
 
     function init() {
         renderControlPanel();
-        console.log('🎮 Control Panel initialized');
+        console.log('🎮 Control Panel initialized (hooks API)');
     }
 
     function refresh() {
@@ -648,9 +570,8 @@
     window.ControlModule = {
         init,
         refresh,
-        gateway,
         BOBS,
-        CRON_JOBS
+        QUICK_ACTIONS
     };
 
     // Auto-init if control tab exists

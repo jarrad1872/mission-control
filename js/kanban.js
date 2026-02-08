@@ -20,8 +20,23 @@ const KanbanModule = (function() {
         await loadTasksData();
         renderBoard();
         setupDragAndDrop();
+        updateTimestamp();
         
         console.log('✅ Kanban Module ready');
+    }
+
+    /**
+     * Update the kanban "Updated" timestamp
+     */
+    function updateTimestamp() {
+        const el = document.getElementById('kanbanUpdated');
+        if (!el || !tasksData) return;
+        
+        if (tasksData.generated) {
+            el.textContent = Utils.formatRelativeTime(tasksData.generated);
+        } else {
+            el.textContent = '—';
+        }
     }
 
     /**
@@ -488,6 +503,7 @@ const KanbanModule = (function() {
         await loadTasksData();
         renderBoard();
         setupDragAndDrop();
+        updateTimestamp();
     }
 
     return {
