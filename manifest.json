@@ -2,13 +2,13 @@
   "name": "Mission Control",
   "short_name": "MissionCtrl",
   "description": "Bob Collective Command Center — Monitor, manage, and control your AI assistant collective",
-  "start_url": "/",
-  "id": "/",
+  "start_url": "/mission-control/",
+  "id": "/mission-control/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0f0f1a",
   "theme_color": "#e94560",
-  "scope": "/",
+  "scope": "/mission-control/",
   "lang": "en",
   "categories": ["productivity", "utilities"],
   "icons": [
@@ -94,14 +94,14 @@
       "name": "Activity Feed",
       "short_name": "Activity",
       "description": "View recent Bob activity",
-      "url": "/?tab=activity",
+      "url": "/mission-control/?tab=activity",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "CFO Center",
       "short_name": "CFO",
       "description": "Financial portfolio overview",
-      "url": "/?tab=cfo",
+      "url": "/mission-control/?tab=cfo",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
