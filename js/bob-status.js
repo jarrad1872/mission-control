@@ -8,7 +8,19 @@ const BobStatusModule = (function() {
     'use strict';
     
     const REFRESH_INTERVAL = 30000; // 30 seconds
-    const DATA_URL = 'data/bob-status.json';
+    const STATIC_DATA_URL = 'data/bob-status.json';
+    
+    /**
+     * Get the live bob-status URL from gateway config, or fall back to static file
+     */
+    function getDataUrl() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        if (gwUrl) {
+            // Use the CORS proxy's /api/bob-status endpoint (same base as gateway)
+            return gwUrl.replace(/\/$/, '') + '/api/bob-status';
+        }
+        return STATIC_DATA_URL;
+    }
     
     let refreshTimer = null;
     let statusData = null;
@@ -206,7 +218,8 @@ const BobStatusModule = (function() {
      */
     async function refresh() {
         try {
-            const response = await fetch(DATA_URL + '?t=' + Date.now());
+            const url = getDataUrl();
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) throw new Error('Failed to fetch bob status');
             
             statusData = await response.json();
