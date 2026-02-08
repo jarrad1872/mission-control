@@ -87,6 +87,15 @@ const BobStatusModule = (function() {
         title.textContent = bob.name;
         content.innerHTML = renderBobDetail(bob);
         
+        // Wire up message button inside the modal
+        const msgBtn = content.querySelector('.bob-action-btn[data-action="message"]');
+        if (msgBtn) {
+            msgBtn.addEventListener('click', () => {
+                closeDetailModal();
+                handleMessageBob(bobId);
+            });
+        }
+        
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
@@ -143,6 +152,16 @@ const BobStatusModule = (function() {
                             <span class="bob-metric-value" style="font-size: 0.75rem;">${bob.sessionId.slice(0, 20)}...</span>
                         </div>
                     ` : ''}
+                </div>
+                
+                <div class="bob-detail-actions">
+                    <button class="bob-action-btn" data-action="message" data-bob="${bob.id}">
+                        💬 Message ${bob.name}
+                    </button>
+                    ${BOB_TOPIC_MAP[bob.id] ? `
+                    <a class="bob-action-btn bob-tg-link" href="https://t.me/c/3765361939/${BOB_TOPIC_MAP[bob.id]}" target="_blank" rel="noopener">
+                        📱 Open in Telegram
+                    </a>` : ''}
                 </div>
             </div>
         `;
@@ -209,60 +228,20 @@ const BobStatusModule = (function() {
         const bobs = statusData.bobs || [];
         
         container.innerHTML = bobs.map(bob => {
-            const contextPercent = bob.contextPercent || 0;
-            const lastMessage = bob.lastMessage || 'No recent messages';
-            const truncatedMessage = lastMessage.length > 60 
-                ? lastMessage.substring(0, 60) + '...' 
-                : lastMessage;
-            
             return `
                 <button class="bob-chip" data-bob="${bob.id}" title="${bob.name} — ${getStatusText(bob.status)}">
-                    <div class="bob-chip-main">
-                        <span class="bob-chip-emoji">${bob.emoji}</span>
-                        <span class="bob-chip-name">${getShortName(bob.name)}</span>
-                        <span class="bob-chip-status ${bob.status}"></span>
-                    </div>
-                    <div class="bob-chip-expanded">
-                        <div class="bob-expanded-row">
-                            <span class="bob-expanded-label">Context</span>
-                            <span class="bob-expanded-value">${contextPercent}%</span>
-                        </div>
-                        <div class="bob-last-message">${Utils.escapeHtml(truncatedMessage)}</div>
-                        <button class="bob-action-btn" data-action="message" data-bob="${bob.id}">
-                            💬 Message
-                        </button>
-                    </div>
+                    <span class="bob-chip-emoji">${bob.emoji}</span>
+                    <span class="bob-chip-name">${getShortName(bob.name)}</span>
+                    <span class="bob-chip-status ${bob.status}"></span>
                 </button>
             `;
         }).join('');
         
-        // Add click handlers for chip expansion
+        // Tap chip → open detail modal with message button inside
         container.querySelectorAll('.bob-chip').forEach(chip => {
-            chip.addEventListener('click', (e) => {
-                // Don't expand/collapse if clicking the message button
-                if (e.target.closest('.bob-action-btn')) return;
-                
-                // Toggle expansion
-                const wasExpanded = chip.classList.contains('expanded');
-                
-                // Collapse all other chips
-                container.querySelectorAll('.bob-chip.expanded').forEach(c => {
-                    c.classList.remove('expanded');
-                });
-                
-                // Toggle this chip
-                if (!wasExpanded) {
-                    chip.classList.add('expanded');
-                }
-            });
-        });
-
-        // Direct click handlers on message buttons (separate from chip toggle)
-        container.querySelectorAll('.bob-action-btn[data-action="message"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const bobId = btn.dataset.bob;
-                if (bobId) handleMessageBob(bobId);
+            chip.addEventListener('click', () => {
+                const bobId = chip.dataset.bob;
+                if (bobId) openDetailModal(bobId);
             });
         });
     }
