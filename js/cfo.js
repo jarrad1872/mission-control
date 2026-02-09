@@ -431,7 +431,12 @@ const CFOModule = (function() {
      */
     function bindEvents() {
         const cfoTab = document.getElementById('cfo-tab');
-        if (!cfoTab) return;
+        if (!cfoTab) {
+            console.warn('CFO: cfo-tab not found, events not bound');
+            return;
+        }
+        console.log('CFO: Binding events on cfo-tab');
+        eventsBound = true;
 
         cfoTab.addEventListener('click', (e) => {
             // Refresh button
@@ -448,10 +453,20 @@ const CFOModule = (function() {
                 return;
             }
 
-            // Company card toggle
+            // Company card toggle — header or expand icon
             const cardHeader = e.target.closest('[data-toggle-company]');
             if (cardHeader) {
                 toggleCard(cardHeader.dataset.toggleCompany);
+                return;
+            }
+            
+            // Also toggle when clicking the expand arrow area
+            const expandArea = e.target.closest('.company-card-expand');
+            if (expandArea) {
+                const card = expandArea.closest('.cfo-company-card');
+                if (card) {
+                    toggleCard(card.dataset.companyId);
+                }
                 return;
             }
         });
@@ -474,20 +489,31 @@ const CFOModule = (function() {
         }
     }
     
+    /**
+     * Ensure events are bound (safe to call multiple times)
+     */
+    let eventsBound = false;
+    function ensureEvents() {
+        if (eventsBound) return;
+        bindEvents();
+        eventsBound = true;
+    }
+    
     // Public API
     return {
         init,
         refresh,
         toggleCard,
-        triggerAction
+        triggerAction,
+        ensureEvents
     };
 })();
 
-// Initialize when tab becomes active
-document.addEventListener('DOMContentLoaded', () => {
-    const cfoTab = document.getElementById('cfo-tab');
-    if (cfoTab && cfoTab.classList.contains('active')) {
-        CFOModule.init();
+// Re-bind events on tab clicks as a safety net
+document.addEventListener('click', (e) => {
+    const navItem = e.target.closest('[data-tab="cfo"]');
+    if (navItem && CFOModule) {
+        setTimeout(() => CFOModule.ensureEvents(), 100);
     }
 });
 
