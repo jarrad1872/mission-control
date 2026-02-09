@@ -12,6 +12,24 @@ const Analytics = (function() {
   let activityData = null;
 
   /**
+   * Get usage data URL (gateway or static fallback)
+   */
+  function getUsageUrl() {
+    const gwUrl = localStorage.getItem('mc_gateway_url');
+    if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/usage';
+    return 'data/usage.json';
+  }
+
+  /**
+   * Get activity data URL (gateway or static fallback)
+   */
+  function getActivityUrl() {
+    const gwUrl = localStorage.getItem('mc_gateway_url');
+    if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/activity';
+    return 'data/activity.json';
+  }
+
+  /**
    * Initialize analytics
    */
   function init() {
@@ -52,9 +70,11 @@ const Analytics = (function() {
 
     try {
       // Load data from JSON files
+      const usageUrl = getUsageUrl();
+      const activityUrl = getActivityUrl();
       const [usageResponse, activityResponse] = await Promise.all([
-        fetch('data/usage.json?t=' + Date.now()),
-        fetch('data/activity.json?t=' + Date.now())
+        fetch(usageUrl + (usageUrl.includes('?') ? '&' : '?') + 't=' + Date.now()),
+        fetch(activityUrl + (activityUrl.includes('?') ? '&' : '?') + 't=' + Date.now())
       ]);
 
       usageData = usageResponse.ok ? await usageResponse.json() : null;

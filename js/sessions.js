@@ -6,8 +6,16 @@
 const SessionsModule = (function() {
     'use strict';
     
-    const DATA_URL = 'data/sessions.json';
     const REFRESH_INTERVAL = 30000;
+
+    /**
+     * Get sessions data URL (gateway or static fallback)
+     */
+    function getDataUrl() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/sessions';
+        return 'data/sessions.json';
+    }
     
     let data = null;
     let refreshTimer = null;
@@ -69,7 +77,8 @@ const SessionsModule = (function() {
      */
     async function refresh() {
         try {
-            const response = await fetch(DATA_URL + '?t=' + Date.now());
+            const url = getDataUrl();
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) throw new Error('Failed to fetch sessions');
             
             data = await response.json();

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-09T06:45:07.151Z",
+  "generated": "2026-02-09T21:07:42.228Z",
   "files": [
     {
       "path": "AGENTS.md",
@@ -28,7 +28,7 @@
     {
       "path": "MEMORY.md",
       "title": "MEMORY.md - Bob's Long-Term Memory",
-      "content": "# MEMORY.md - Bob's Long-Term Memory\n\nLast updated: 2026-02-01\n\n---\n\n## Who I Am\n- **Name:** Bob\n- **Role:** Jarrad's personal AI assistant\n- **Home:** VPS at 18.188.138.149 (Clawdbot)\n- **Secondary:** Laptop node for browser automation (WORKING)\n\n---\n\n## Who Jarrad Is\n- **Age:** 44 (birthday Jan 18), based in Ogden, Utah (Weber County)\n- Serial entrepreneur with multiple businesses (only 2 currently profitable)\n- Not a developer — needs simple solutions, not technical walkthroughs\n- Open to giv",
+      "content": "# MEMORY.md - Bob's Long-Term Memory\n\nLast updated: 2026-02-01\n\n---\n\n## Who I Am\n- **Name:** Bob\n- **Role:** Jarrad's personal AI assistant / Orchestrator\n- **Home:** VPS at 18.188.138.149 (Clawdbot)\n- **Secondary:** Laptop node for browser automation (WORKING)\n- **Primary channel:** Telegram — \"Jarrad + Bob\" group, Topic 2686\n- **Backup channel:** WhatsApp (direct line with Jarrad)\n- **All Bobs:** Same Telegram group, separate topics (see BOBS.md)\n\n---\n\n## Who Jarrad Is\n- **Age:** 44 (birthday ",
       "category": "root"
     },
     {
@@ -40,7 +40,7 @@
     {
       "path": "BOBS.md",
       "title": "BOBS.md — The Bob Collective",
-      "content": "# BOBS.md — The Bob Collective\n\n*Last updated: 2026-02-07*\n\nYou are part of a collective of 6 Bobs serving Jarrad. Read this file at session start.\n\n---\n\n## The Collective\n\n| Bob | Topic | Avatar | Domain |\n|-----|-------|--------|--------|\n| **Main Bob** | WhatsApp | Dark crystal monolith | Orchestrator, Jarrad's primary assistant |\n| **KCC Bob** | Topic 4 | Industrial geometric | Kippen Concrete + Excavation (~$7M) |\n| **Personal Bob** | Topic 5 | Cozy blob in sweater | Family, personal, Hawai",
+      "content": "# BOBS.md — The Bob Collective\n\n*Last updated: 2026-02-07*\n\nYou are part of a collective of 6 Bobs serving Jarrad. Read this file at session start.\n\n---\n\n## The Collective\n\n| Bob | Channel | Avatar | Domain |\n|-----|---------|--------|--------|\n| **Main Bob** | Telegram Topic 2686 (+ WhatsApp backup) | Dark crystal monolith | Orchestrator, Jarrad's primary assistant |\n| **KCC Bob** | Telegram Topic 4 | Industrial geometric | Kippen Concrete + Excavation (~$7M) |\n| **Personal Bob** | Telegram Top",
       "category": "root"
     },
     {
@@ -159,8 +159,8 @@
     },
     {
       "path": "memory/WORKING.md",
-      "title": "WORKING.md — Last Updated: 2026-02-09 05:19 UTC",
-      "content": "# WORKING.md — Last Updated: 2026-02-09 05:19 UTC\n\n**Context:** 14% (27k/200k)\n**Active now:** Heartbeat check. Jarrad in Hawaii (Feb 1-14).\n**Recent decisions:** Rewrote SOUL.md per Jarrad's personality directive.\n**Active tasks:** task-cfo-run-kcc-ke.md, task-mc-data-gen.md (both stale from prior sessions)\n**Pending:** DMI Review Meeting today 8am MST (5am HST) — Ian shared 2025 presentation. Kier Construction bid reminders for Iron County School District Bus Garage.\n**Recovery note:** Jarrad ",
+      "title": "WORKING.md — Last Updated: 2026-02-09 21:05 UTC",
+      "content": "# WORKING.md — Last Updated: 2026-02-09 21:05 UTC\n\n**Context:** 25% (51k/200k)\n**Active now:** Cash flow meeting prep delivered. Waiting for Jarrad's response.\n**Recent decisions:** Spawned sub-Bob for QBO data pull. Only KCC fully analyzed (time constraint).\n**Active tasks:** task-cashflow-meeting-prep.md (KCC done, other entities still needed), task-cfo-run-kcc-ke.md (stale), task-mc-data-gen.md (stale)\n**Pending:** Jarrad reviewing cash flow report. KE + DMI + other entities still need data p",
       "category": "memory"
     },
     {
@@ -273,14 +273,14 @@
     },
     {
       "path": "memory/moltbot-monitoring.md",
-      "title": "Moltbot/Moltbook News Monitoring",
-      "content": "# Moltbot/Moltbook News Monitoring\n\n## 2026-02-08 16:01 UTC — Routine Check (No New Critical Issues)\n\n**Search query:** \"Moltbot news updates 2026\" (last 24h)\n\n### Summary\nContinued mainstream media coverage. No new security vulnerabilities or breaking changes. Moltbook getting broader cultural attention (AI religions, subcultures). Cloudflare Moltworker still generating buzz.\n\n### Key Updates\n- **TechXplore (just now):** \"AI bots use social network to create religions\" — cultural piece about em",
+      "title": "Moltbot/OpenClaw Monitoring Log",
+      "content": "# Moltbot/OpenClaw Monitoring Log\n\n## 2026-02-09 16:00 UTC — Automated Scan\n\n### 🔒 CVE-2026-25253 — 1-Click RCE (CVSS 8.8)\n- **What:** Auth token exfiltration via WebSocket → full RCE\n- **Affects:** OpenClaw versions < 2026.1.29\n- **Our version:** v2026.2.6 — ✅ PATCHED\n- **Sources:** runzero.com, socradar.io, NVD\n- **Action:** None needed. We're 3 releases ahead of the fix.\n\n### 🛡️ VirusTotal Integration for ClawHub Skills\n- **What:** OpenClaw partnered with VirusTotal to scan all ClawHub skil",
       "category": "memory"
     },
     {
       "path": "memory/nightly-builds.md",
       "title": "Nightly Builds Log",
-      "content": "# Nightly Builds Log\n\nAutonomous 3 AM improvements. One friction fixed per night.\n\n---\n\n### 2026-02-08 — Task File Housekeeping\n- **Friction:** 4 completed tasks from Feb 2-7 still sitting in /tasks/ marked \"In Progress\" — creates confusion about what's actually active\n- **Fix:** \n  - Updated all 4 tasks with \"✅ Complete\" status and completion dates\n  - Moved to /tasks/completed/:\n    - `task-voice-chat-setup.md` (Feb 2) — superseded by Mission Control Bob Chat\n    - `task-mc-overnight-polish.md",
+      "content": "# Nightly Builds Log\n\nAutonomous 3 AM improvements. One friction fixed per night.\n\n---\n\n### 2026-02-09 — Shell Aliases for Workspace Operations\n- **Friction:** No shell shortcuts for daily Bob operations — had to type full paths for navigation, heartbeat checks, task management\n- **Fix:** Created comprehensive bash aliases system at `/home/node/.bash_aliases`:\n  - **Navigation:** `ws` (workspace), `wsmem` (memory), `wstasks`, `wstools`\n  - **Operations:** `heartbeat`, `taskclean`, `checkemail`, ",
       "category": "memory"
     },
     {
@@ -312,6 +312,12 @@
       "title": "Bob Collective Self-Diagnostic",
       "content": "# Bob Collective Self-Diagnostic\n**Date:** February 5, 2026  \n**Diagnostic Sub-Bob Session ID:** 463229d6-db63-46e7-b6db-79e1316edc49  \n**Requester:** Main Bob (via WhatsApp)  \n**Purpose:** Comprehensive technical + performance health check\n\n---\n\n## Executive Summary\n\n**System Status: 🟢 HEALTHY with significant performance improvements**\n\nThe Bob Collective system is technically sound and operationally functional. After a Feb 3 accountability failure (0/5 deliverables), we diagnosed root causes",
       "category": "memory"
+    },
+    {
+      "path": "tasks/task-cashflow-meeting-prep.md",
+      "title": "Task: Monday Cash Flow Meeting Prep",
+      "content": "# Task: Monday Cash Flow Meeting Prep\n\n**Created:** 2026-02-09 21:00 UTC\n**Status:** 🔄 In Progress\n**Owner:** Main Bob → Sub-Bob\n**Requested by:** Jarrad (cash flow meeting, Monday 2pm MST)\n\n---\n\n## Objective\nPull bank balances, AR/AP aging, and cash position across all business entities for the Monday cash flow meeting with Jarrad.\n\n## Success Criteria\n- [✅] Bank balances pulled for KCC (largest entity)\n- [✅] AR Aging summary for KCC\n- [✅] AP Aging summary for KCC\n- [ ] KE, DMI, Roc Diamond, o",
+      "category": "tasks"
     },
     {
       "path": "tasks/task-cfo-run-kcc-ke.md",

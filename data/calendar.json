@@ -1,44 +1,17 @@
 {
-  "generated": "2026-02-08T18:16:46.853Z",
+  "generated": "2026-02-09T21:07:42.228Z",
   "events": [
     {
-      "id": "recurring-1",
-      "title": "Bob Collective Arena",
-      "time": "03:00",
-      "recurring": "daily",
+      "id": "recurring-heartbeat",
+      "title": "Bob Heartbeats",
+      "time": "*/30 * * * *",
+      "recurring": "every 30 min",
       "type": "recurring",
       "source": "system",
-      "description": "Nightly coordination session for the Bob Collective"
+      "description": "Periodic heartbeat polls across all Bob sessions"
     },
     {
-      "id": "recurring-2",
-      "title": "Heartbeat Check",
-      "time": "09:00",
-      "recurring": "daily",
-      "type": "recurring",
-      "source": "system",
-      "description": "Morning heartbeat - check email, calendar, notifications"
-    },
-    {
-      "id": "recurring-3",
-      "title": "Heartbeat Check",
-      "time": "15:00",
-      "recurring": "daily",
-      "type": "recurring",
-      "source": "system",
-      "description": "Afternoon heartbeat - check for updates"
-    },
-    {
-      "id": "recurring-4",
-      "title": "Heartbeat Check",
-      "time": "21:00",
-      "recurring": "daily",
-      "type": "recurring",
-      "source": "system",
-      "description": "Evening heartbeat - wrap up, prepare for next day"
-    },
-    {
-      "id": "recurring-5",
+      "id": "recurring-standup",
       "title": "Daily Standup",
       "time": "23:00",
       "recurring": "daily",
@@ -47,14 +20,40 @@
       "description": "Daily standup summary posted to Topic 1"
     },
     {
-      "id": "recurring-6",
-      "title": "CFO Weekly Report",
-      "time": "00:00",
-      "recurring": "weekly",
-      "dayOfWeek": 5,
+      "id": "recurring-mc-data",
+      "title": "MC Data Generator",
+      "time": "*/5 * * * *",
+      "recurring": "every 5 min",
       "type": "recurring",
       "source": "system",
-      "description": "Weekly financial report generation"
+      "description": "Regenerates all Mission Control dashboard data"
+    },
+    {
+      "id": "recurring-bob-status",
+      "title": "Bob Status Update",
+      "time": "*/5 * * * *",
+      "recurring": "every 5 min",
+      "type": "recurring",
+      "source": "system",
+      "description": "Updates bob-status.json with live session data"
+    },
+    {
+      "id": "arena-0",
+      "title": "Arena: Active Projects",
+      "time": null,
+      "recurring": null,
+      "type": "arena",
+      "source": "arena",
+      "description": "Active arena project: Active Projects"
+    },
+    {
+      "id": "arena-1",
+      "title": "Arena: Project: Mission Control v2 — Full Upgrade",
+      "time": null,
+      "recurring": null,
+      "type": "arena",
+      "source": "arena",
+      "description": "Active arena project: Project: Mission Control v2 — Full Upgrade"
     }
   ]
 }

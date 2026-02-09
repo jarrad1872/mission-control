@@ -21,7 +21,7 @@ const DataModule = (function() {
     const API_MAP = {
         'activity.json': '/api/activity',
         'search-index.json': '/api/search',
-        'calendar.json': null, // no API endpoint yet
+        'calendar.json': '/api/calendar',
     };
 
     /**

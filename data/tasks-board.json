@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-09T21:04:03.079Z",
+  "generated": "2026-02-09T21:07:42.228Z",
   "columns": {
     "todo": [],
     "inProgress": [
@@ -11,7 +11,7 @@
         "file": "tasks/task-cashflow-meeting-prep.md",
         "objective": "Pull bank balances, AR/AP aging, and cash position across all business entities for the Monday cash flow meeting with Jarrad.",
         "created": "2026-02-09T21:01:01.228Z",
-        "progress": "0/6"
+        "progress": "0/1"
       },
       {
         "id": "task-cfo-run-kcc-ke",
