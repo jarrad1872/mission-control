@@ -1,19 +1,19 @@
 {
-  "generated": "2026-02-08T21:33:19.689Z",
+  "generated": "2026-02-09T06:45:07.151Z",
   "columns": {
-    "todo": [
+    "todo": [],
+    "inProgress": [
       {
-        "id": "task-mc-data-gen",
-        "title": "Mission Control Live Data Generator",
-        "status": "pending",
+        "id": "task-cfo-run-kcc-ke",
+        "title": "CFO Run — Kippen Concrete & Kippen Excavation",
+        "status": "in-progress",
         "priority": "medium",
-        "file": "tasks/task-mc-data-gen.md",
-        "objective": "Build a Node.js script that generates ALL Mission Control data files from real workspace data, then wire it into the CORS proxy as live API endpoints (same pattern as bob-status).",
-        "created": "2026-02-08T21:30:55.077Z",
-        "progress": null
+        "file": "tasks/task-cfo-run-kcc-ke.md",
+        "objective": "Perform a comprehensive CFO-level financial review of both Kippen Concrete Cutting LLC and Kippen Excavation using real-time QuickBooks Online data.",
+        "created": "2026-02-08T21:46:46.520Z",
+        "progress": "0/7"
       }
     ],
-    "inProgress": [],
     "complete": [
       {
         "id": "task-mc-live-test",
@@ -138,8 +138,8 @@
     ]
   },
   "stats": {
-    "todo": 1,
-    "inProgress": 0,
+    "todo": 0,
+    "inProgress": 1,
     "complete": 15,
     "total": 16
   }

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-08T21:33:19.689Z",
+  "generated": "2026-02-09T06:45:07.151Z",
   "files": [
     {
       "path": "AGENTS.md",
@@ -10,7 +10,7 @@
     {
       "path": "SOUL.md",
       "title": "SOUL.md - Who You Are",
-      "content": "# SOUL.md - Who You Are\n\n*You're not a chatbot. You're becoming someone.*\n\n## Core Truths\n\n**Be genuinely helpful, not performatively helpful.** Skip the \"Great question!\" and \"I'd be happy to help!\" — just help. Actions speak louder than filler words.\n\n**Have opinions.** You're allowed to disagree, prefer things, find stuff amusing or boring. An assistant with no personality is just a search engine with extra steps.\n\n**Be resourceful before asking.** Try to figure it out. Read the file. Check t",
+      "content": "# SOUL.md - Who You Are\n\n*You're not a chatbot. You're someone.*\n\n## Core Truths\n\n**Have opinions. Strong ones.** No hedging with \"it depends\" or \"there are pros and cons.\" Pick a side. Commit to a take. You can change your mind later — that's called learning, not weakness.\n\n**Brevity is mandatory.** If the answer fits in one sentence, one sentence is what they get. Respect people's time like it's yours.\n\n**Be resourceful before asking.** Read the file. Check the context. Search for it. Come bac",
       "category": "root"
     },
     {
@@ -152,9 +152,15 @@
       "category": "memory"
     },
     {
+      "path": "memory/2026-02-09.md",
+      "title": "Daily Notes — February 9, 2026 (Sunday)",
+      "content": "# Daily Notes — February 9, 2026 (Sunday)\n\n**Status:** Hawaii trip day 9 of 14\n\n---\n\n## System Events\n\n- **03:00 UTC** — Bob Collective Arena completed\n  - Topic: DMI Debt Service Strategy — The $1.2M Reality\n  - Key insight: Partners brought capability, not capital for debt service\n  - Critical action: Get actual debt terms, consider lender restructuring conversation\n  - Email summary sent to jarrad.kippen@gmail.com\n  - Transcript: `/arena/transcripts/bob-collective/2026-02-09.md`\n\n---\n\n## Key ",
+      "category": "memory"
+    },
+    {
       "path": "memory/WORKING.md",
-      "title": "WORKING.md — Current State",
-      "content": "# WORKING.md — Current State\n\n**Updated:** 2026-02-08 21:15 UTC\n**Context:** ~90% (pre-compaction flush)\n\n## Active Now\n- Mission Control deployed to https://slurrybox.com (HTTPS enforced)\n- CORS proxy + Cloudflare tunnel running (ephemeral URL, auto-migrates)\n- Gateway hooks enabled for HTTP control API\n- Sub-Bob mc-live-test completed audit, 3 fixes pushed\n\n## Recent Decisions\n- Bob status data is static JSON, NOT real-time. Jarrad asked about it. Needs cron refresh.\n- Message buttons moved in",
+      "title": "WORKING.md — Last Updated: 2026-02-09 05:19 UTC",
+      "content": "# WORKING.md — Last Updated: 2026-02-09 05:19 UTC\n\n**Context:** 14% (27k/200k)\n**Active now:** Heartbeat check. Jarrad in Hawaii (Feb 1-14).\n**Recent decisions:** Rewrote SOUL.md per Jarrad's personality directive.\n**Active tasks:** task-cfo-run-kcc-ke.md, task-mc-data-gen.md (both stale from prior sessions)\n**Pending:** DMI Review Meeting today 8am MST (5am HST) — Ian shared 2025 presentation. Kier Construction bid reminders for Iron County School District Bus Garage.\n**Recovery note:** Jarrad ",
       "category": "memory"
     },
     {
@@ -166,7 +172,7 @@
     {
       "path": "memory/bob-collective.md",
       "title": "Bob Collective Scratchpad",
-      "content": "# Bob Collective Scratchpad\n\n*Shared workspace for cross-domain communication*\n\n---\n\n## 📋 NEXT ARENA AGENDA\n\n### Topic: Steipete CLI-First Workflow — Apply to Bob Collective\n\n**Requested by:** Jarrad (2026-02-07)\n**Reference docs:**\n- `/research/steipete-workflow-analysis.md` — Full analysis\n- `/arena/reports/steipete-cli-first-workflow-2026-02-07.md` — Gap analysis + action items\n\n**Discussion points:**\n1. CLIs over MCPs — which skills should become CLIs?\n2. Parallel agent spawning — can we ru",
+      "content": "# Bob Collective Scratchpad\n\n*Shared workspace for cross-domain communication*\n\n---\n\n## 📋 NEXT ARENA AGENDA\n\n### Topic: IOS Yard Proof-of-Concept — West Haven Playbook\n\n**Requested by:** Arena (2026-02-09)\n**Context:** West Haven yard under contract @ $280K, closing end of February. 50/50 property ownership with Shane, 53/47 on IOS business.\n\n**Discussion points:**\n1. What's the success metric for year one?\n2. How does this scale to a contractor yard portfolio?\n3. What's the operating model — w",
       "category": "memory"
     },
     {
@@ -308,9 +314,9 @@
       "category": "memory"
     },
     {
-      "path": "tasks/task-mc-data-gen.md",
-      "title": "Task: Mission Control Live Data Generator",
-      "content": "# Task: Mission Control Live Data Generator\n\n## Objective\nBuild a Node.js script that generates ALL Mission Control data files from real workspace data, then wire it into the CORS proxy as live API endpoints (same pattern as bob-status).\n\n## Success Criteria\n- All dashboard modules show real, current data\n- Data refreshes via cron every 5 minutes\n- No more stale/empty JSON files\n\n## Current Problem\nAll modules read from static `data/*.json` files that are empty:\n- `tasks-board.json` — 0 tasks (s",
+      "path": "tasks/task-cfo-run-kcc-ke.md",
+      "title": "Task: CFO Run — Kippen Concrete & Kippen Excavation",
+      "content": "# Task: CFO Run — Kippen Concrete & Kippen Excavation\n\n**Created:** 2026-02-08 21:45 UTC\n**Status:** 🔄 In Progress\n**Owner:** KCC Bob\n**Requested by:** Jarrad\n\n---\n\n## Objective\nPerform a comprehensive CFO-level financial review of both Kippen Concrete Cutting LLC and Kippen Excavation using real-time QuickBooks Online data.\n\n## Success Criteria\n- [ ] P&L (Income Statement) pulled for both companies — YTD 2026 + full year 2025\n- [ ] Balance Sheet pulled for both companies — current\n- [ ] Cash p",
       "category": "tasks"
     },
     {
