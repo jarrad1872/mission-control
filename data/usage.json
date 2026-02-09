@@ -1,77 +1,71 @@
 {
-  "lastUpdate": "2026-02-08T18:16:46.853Z",
-  "source": "real",
+  "generated": "2026-02-09T21:04:03.079Z",
+  "lastUpdate": "2026-02-09T21:04:03.079Z",
   "today": {
-    "date": "2026-02-08",
     "tokens": {
-      "input": 1624,
-      "output": 188495,
-      "cacheRead": 54848446,
-      "cacheWrite": 6632972
+      "input": 300865,
+      "output": 136757,
+      "cacheRead": 109405
     },
-    "totalTokens": 190119,
+    "totalTokens": 547027,
+    "sessions": 7,
+    "messages": 70,
     "byModel": {
-      "claude-opus-4-6": 159787,
-      "delivery-mirror": 0,
-      "claude-opus-4-5": 17056,
-      "claude-sonnet-4-5": 13276
-    },
-    "sessions": 15,
-    "messages": 722
+      "claude-opus-4-6": 547027
+    }
   },
   "week": {
-    "tokens": {
-      "input": 13414733,
-      "output": 1689141,
-      "cacheRead": 367918657,
-      "cacheWrite": 46221815
-    },
-    "totalTokens": 15103874,
-    "sessions": 136,
-    "messages": 5336,
+    "totalTokens": 547027,
+    "sessions": 7,
+    "messages": 70,
     "days": [
       {
-        "date": "2026-02-02",
-        "totalTokens": 364131,
-        "sessions": 18
-      },
-      {
         "date": "2026-02-03",
-        "totalTokens": 12978669,
-        "sessions": 31
+        "totalTokens": 0,
+        "sessions": 0,
+        "byModel": {}
       },
       {
         "date": "2026-02-04",
-        "totalTokens": 109149,
-        "sessions": 22
+        "totalTokens": 0,
+        "sessions": 0,
+        "byModel": {}
       },
       {
         "date": "2026-02-05",
-        "totalTokens": 815574,
-        "sessions": 15
+        "totalTokens": 0,
+        "sessions": 0,
+        "byModel": {}
       },
       {
         "date": "2026-02-06",
-        "totalTokens": 43050,
-        "sessions": 4
+        "totalTokens": 0,
+        "sessions": 0,
+        "byModel": {}
       },
       {
         "date": "2026-02-07",
-        "totalTokens": 603182,
-        "sessions": 31
+        "totalTokens": 0,
+        "sessions": 0,
+        "byModel": {}
       },
       {
         "date": "2026-02-08",
-        "totalTokens": 190119,
-        "sessions": 15
+        "totalTokens": 0,
+        "sessions": 0,
+        "byModel": {}
+      },
+      {
+        "date": "2026-02-09",
+        "totalTokens": 547027,
+        "sessions": 7,
+        "byModel": {
+          "claude-opus-4-6": 547027
+        }
       }
     ],
     "byModel": {
-      "claude-sonnet-4-5": 113306,
-      "claude-opus-4-5": 1402278,
-      "delivery-mirror": 0,
-      "kimi-k2.5": 13428503,
-      "claude-opus-4-6": 159787
+      "claude-opus-4-6": 547027
     }
   }
 }

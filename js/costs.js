@@ -45,18 +45,28 @@ const CostsModule = (function() {
     }
     
     /**
+     * Get usage data URL (gateway API or static fallback)
+     */
+    function getDataUrl() {
+        const gwUrl = localStorage.getItem('mc_gateway_url');
+        if (gwUrl) return gwUrl.replace(/\/$/, '') + '/api/usage';
+        return 'data/usage.json';
+    }
+    
+    /**
      * Load usage data
      */
     async function loadData() {
         try {
-            const response = await fetch('data/usage.json?t=' + Date.now());
+            const url = getDataUrl();
+            const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
             if (!response.ok) {
-                throw new Error('usage.json not found');
+                throw new Error('usage data not found');
             }
             data = await response.json();
-            console.log('   ✅ Usage data loaded');
+            console.log('   ✅ Usage data loaded from', url.includes('/api/') ? 'gateway' : 'static');
         } catch (e) {
-            console.warn('   ⚠️ Could not load usage.json, using placeholder data');
+            console.warn('   ⚠️ Could not load usage data, using placeholder data');
             data = getPlaceholderData();
         }
     }

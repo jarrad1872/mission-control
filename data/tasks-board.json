@@ -1,8 +1,18 @@
 {
-  "generated": "2026-02-09T06:45:07.151Z",
+  "generated": "2026-02-09T21:04:03.079Z",
   "columns": {
     "todo": [],
     "inProgress": [
+      {
+        "id": "task-cashflow-meeting-prep",
+        "title": "Monday Cash Flow Meeting Prep",
+        "status": "in-progress",
+        "priority": "medium",
+        "file": "tasks/task-cashflow-meeting-prep.md",
+        "objective": "Pull bank balances, AR/AP aging, and cash position across all business entities for the Monday cash flow meeting with Jarrad.",
+        "created": "2026-02-09T21:01:01.228Z",
+        "progress": "0/6"
+      },
       {
         "id": "task-cfo-run-kcc-ke",
         "title": "CFO Run — Kippen Concrete & Kippen Excavation",
@@ -139,8 +149,8 @@
   },
   "stats": {
     "todo": 0,
-    "inProgress": 1,
+    "inProgress": 2,
     "complete": 15,
-    "total": 16
+    "total": 17
   }
 }
