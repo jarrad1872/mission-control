@@ -1,60 +1,39 @@
 /**
- * Calendar Module - Weekly view of scheduled events
+ * Calendar Module - Weekly view of Bob ecosystem schedule
+ * Shows cron jobs, recurring tasks, and scheduled events
  */
 
 const CalendarModule = (function() {
     let events = [];
     let currentWeekStart = getStartOfWeekUTC(new Date());
 
-    /**
-     * Get the Monday of the week containing the given date (UTC-based)
-     * Uses UTC methods throughout to match event dates from calendar.json
-     */
     function getStartOfWeekUTC(date) {
         const d = new Date(date);
-        // Use UTC day to avoid timezone drift
         const day = d.getUTCDay();
-        const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1); // Monday
+        const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
         d.setUTCDate(diff);
         d.setUTCHours(0, 0, 0, 0);
         return d;
     }
 
-    /**
-     * Initialize the calendar
-     */
     async function init() {
         const data = await DataModule.loadCalendar();
         if (data && data.events) {
             events = data.events;
         }
-        
         setupListeners();
         render();
     }
 
-    /**
-     * Set up event listeners
-     */
     function setupListeners() {
         const prevBtn = document.getElementById('prevWeek');
         const nextBtn = document.getElementById('nextWeek');
         const closeBtn = document.getElementById('closeEventPanel');
-
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => navigateWeek(-1));
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => navigateWeek(1));
-        }
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeEventPanel);
-        }
+        if (prevBtn) prevBtn.addEventListener('click', () => navigateWeek(-1));
+        if (nextBtn) nextBtn.addEventListener('click', () => navigateWeek(1));
+        if (closeBtn) closeBtn.addEventListener('click', closeEventPanel);
     }
 
-    /**
-     * Navigate to previous or next week
-     */
     function navigateWeek(direction) {
         const newDate = new Date(currentWeekStart);
         newDate.setUTCDate(newDate.getUTCDate() + (direction * 7));
@@ -63,106 +42,122 @@ const CalendarModule = (function() {
     }
 
     /**
-     * Render the calendar grid
+     * Check if an event occurs on a given date
      */
-    function render() {
-        const container = document.getElementById('calendarGrid');
-        const weekLabel = document.getElementById('currentWeek');
-        
-        if (!container) return;
+    function eventMatchesDate(event, date) {
+        const dateStr = formatDateKey(date);
+        const dow = date.getUTCDay(); // 0=Sun..6=Sat
 
-        // Update week label
-        const weekEnd = new Date(currentWeekStart);
-        weekEnd.setUTCDate(weekEnd.getUTCDate() + 6);
-        
-        if (weekLabel) {
-            const options = { month: 'short', day: 'numeric', timeZone: 'UTC' };
-            weekLabel.textContent = `${currentWeekStart.toLocaleDateString('en-US', options)} — ${weekEnd.toLocaleDateString('en-US', options)}, ${weekEnd.getUTCFullYear()}`;
-        }
+        // Exact date match
+        if (event.date === dateStr) return true;
 
-        // Generate days
-        const days = [];
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0]; // UTC date string for comparison
+        // Recurring patterns
+        const r = (event.recurring || '').toLowerCase();
+        if (!r) return false;
 
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(currentWeekStart);
-            date.setUTCDate(date.getUTCDate() + i);
-            
-            const dayEvents = getEventsForDate(date);
-            const isToday = formatDateKey(date) === todayStr;
-            
-            days.push(renderDay(date, dayEvents, isToday));
-        }
+        if (r === 'daily' || r === 'every day') return true;
+        if (r === 'weekdays' && dow >= 1 && dow <= 5) return true;
+        if (r === 'weekends' && (dow === 0 || dow === 6)) return true;
 
-        container.innerHTML = days.join('');
+        // "every N min" / "every N hours" — these run continuously, show on all days
+        if (r.startsWith('every ') && (r.includes('min') || r.includes('hour'))) return true;
 
-        // Add click handlers to events
-        container.querySelectorAll('.calendar-event').forEach(el => {
-            el.addEventListener('click', (e) => {
-                const eventId = e.currentTarget.dataset.eventId;
-                showEventDetails(eventId);
-            });
-        });
+        // Day-of-week matching: "monday", "friday", "sunday" etc
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        if (dayNames.indexOf(r) === dow) return true;
+
+        // "weekly" with dayOfWeek property
+        if (r === 'weekly' && event.dayOfWeek === dow) return true;
+
+        return false;
     }
 
     /**
-     * Get events for a specific date
+     * Get events for a specific date, sorted by priority
      */
     function getEventsForDate(date) {
-        const dateStr = formatDateKey(date);
-        const dayOfWeek = date.getUTCDay(); // 0 = Sunday, 1 = Monday, etc. (UTC)
-        
-        return events.filter(event => {
-            // Exact date match
-            if (event.date === dateStr) {
-                return true;
-            }
-            
-            // Recurring events
-            if (event.recurring) {
-                const recurrence = event.recurring;
-                
-                // Daily
-                if (recurrence === 'daily') {
-                    return true;
-                }
-                
-                // Weekly on specific day
-                if (recurrence === 'weekly' && event.dayOfWeek === dayOfWeek) {
-                    return true;
-                }
-                
-                // Weekdays
-                if (recurrence === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) {
-                    return true;
-                }
-            }
-            
-            return false;
+        const matched = events.filter(e => eventMatchesDate(e, date));
+
+        // Sort: timed events first (by time), then background tasks
+        return matched.sort((a, b) => {
+            // Background tasks (every N min) go to bottom
+            const aFreq = isFrequentTask(a);
+            const bFreq = isFrequentTask(b);
+            if (aFreq && !bFreq) return 1;
+            if (!aFreq && bFreq) return -1;
+            // Then by time string
+            if (a.time && b.time) return a.time.localeCompare(b.time);
+            if (a.time) return -1;
+            if (b.time) return 1;
+            return 0;
         });
     }
 
-    /**
-     * Format date as YYYY-MM-DD
-     */
+    function isFrequentTask(event) {
+        const r = (event.recurring || '').toLowerCase();
+        return r.startsWith('every ') && (r.includes('min') || r.includes('hour'));
+    }
+
     function formatDateKey(date) {
         return date.toISOString().split('T')[0];
     }
 
     /**
-     * Render a single day column
+     * Render the calendar
      */
+    function render() {
+        const container = document.getElementById('calendarGrid');
+        const weekLabel = document.getElementById('currentWeek');
+        if (!container) return;
+
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setUTCDate(weekEnd.getUTCDate() + 6);
+
+        if (weekLabel) {
+            const opts = { month: 'short', day: 'numeric', timeZone: 'UTC' };
+            weekLabel.textContent = `${currentWeekStart.toLocaleDateString('en-US', opts)} — ${weekEnd.toLocaleDateString('en-US', opts)}, ${weekEnd.getUTCFullYear()}`;
+        }
+
+        const today = new Date();
+        const todayStr = formatDateKey(today);
+        const days = [];
+
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(currentWeekStart);
+            date.setUTCDate(date.getUTCDate() + i);
+            const dayEvents = getEventsForDate(date);
+            const isToday = formatDateKey(date) === todayStr;
+            days.push(renderDay(date, dayEvents, isToday));
+        }
+
+        container.innerHTML = days.join('');
+
+        container.querySelectorAll('.calendar-event').forEach(el => {
+            el.addEventListener('click', (e) => {
+                showEventDetails(e.currentTarget.dataset.eventId);
+            });
+        });
+    }
+
     function renderDay(date, dayEvents, isToday) {
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const dayName = dayNames[date.getUTCDay()];
         const dayNum = date.getUTCDate();
 
+        // Separate scheduled events from background tasks
+        const scheduled = dayEvents.filter(e => !isFrequentTask(e));
+        const background = dayEvents.filter(e => isFrequentTask(e));
+
         let eventsHtml = '';
-        if (dayEvents.length === 0) {
-            eventsHtml = '<div class="no-events" style="color: var(--text-muted); font-size: 0.75rem; padding: 8px;">No events</div>';
+        if (scheduled.length === 0 && background.length === 0) {
+            eventsHtml = '<div class="no-events">No events</div>';
         } else {
-            eventsHtml = dayEvents.map(event => renderEvent(event)).join('');
+            eventsHtml = scheduled.map(e => renderEvent(e)).join('');
+            if (background.length > 0) {
+                eventsHtml += `<div class="calendar-bg-tasks" title="${background.map(b => b.title).join(', ')}">
+                    ⚙️ ${background.length} background task${background.length > 1 ? 's' : ''}
+                </div>`;
+            }
         }
 
         return `
@@ -178,24 +173,25 @@ const CalendarModule = (function() {
         `;
     }
 
-    /**
-     * Render a calendar event
-     */
     function renderEvent(event) {
-        const typeClass = event.type || '';
-        const recurringClass = event.recurring ? 'recurring' : '';
+        const typeColors = {
+            'cron': '#4ecdc4',
+            'recurring': '#a855f7',
+            'arena': '#ffc107',
+            'system': '#6c6c7c',
+            'meeting': '#e94560'
+        };
+        const color = typeColors[event.type] || '#4ecdc4';
 
         return `
-            <div class="calendar-event ${typeClass} ${recurringClass}" data-event-id="${event.id}">
-                ${event.time ? `<div class="event-time">${event.time}</div>` : ''}
+            <div class="calendar-event" data-event-id="${event.id}" style="border-left: 3px solid ${color}">
                 <div class="event-title">${Utils.escapeHtml(event.title)}</div>
+                ${event.time ? `<div class="event-time">${Utils.escapeHtml(event.time)}</div>` : ''}
+                ${event.recurring ? `<div class="event-recurrence">${Utils.escapeHtml(event.recurring)}</div>` : ''}
             </div>
         `;
     }
 
-    /**
-     * Show event details in the side panel
-     */
     function showEventDetails(eventId) {
         const event = events.find(e => e.id === eventId);
         if (!event) return;
@@ -203,81 +199,41 @@ const CalendarModule = (function() {
         const panel = document.getElementById('eventDetailPanel');
         const title = document.getElementById('eventDetailTitle');
         const content = document.getElementById('eventDetailContent');
-
         if (!panel || !title || !content) return;
 
         title.textContent = event.title;
-        
-        let details = '';
-        if (event.time) {
-            details += `<p><strong>Time:</strong> ${event.time}</p>`;
-        }
-        if (event.date) {
-            details += `<p><strong>Date:</strong> ${DataModule.formatDate(event.date)}</p>`;
-        }
-        if (event.recurring) {
-            details += `<p><strong>Recurrence:</strong> ${capitalizeFirst(event.recurring)}</p>`;
-        }
-        if (event.source) {
-            details += `<p><strong>Source:</strong> ${event.source}</p>`;
-        }
-        if (event.description) {
-            details += `<p><strong>Description:</strong></p><p>${Utils.escapeHtml(event.description)}</p>`;
-        }
 
-        content.innerHTML = details || '<p class="placeholder-text">No additional details available.</p>';
+        let details = '';
+        if (event.time) details += `<p><strong>Time:</strong> ${event.time}</p>`;
+        if (event.recurring) details += `<p><strong>Recurrence:</strong> ${event.recurring}</p>`;
+        if (event.type) details += `<p><strong>Type:</strong> ${event.type}</p>`;
+        if (event.source) details += `<p><strong>Source:</strong> ${event.source}</p>`;
+        if (event.model) details += `<p><strong>Model:</strong> ${event.model}</p>`;
+        if (event.delivery) details += `<p><strong>Delivery:</strong> ${event.delivery}</p>`;
+        if (event.description) details += `<p>${Utils.escapeHtml(event.description)}</p>`;
+        if (event.lastRun) details += `<p><strong>Last run:</strong> ${Utils.formatRelativeTime(event.lastRun)}</p>`;
+        if (event.nextRun) details += `<p><strong>Next run:</strong> ${Utils.formatRelativeTime(event.nextRun)}</p>`;
+
+        content.innerHTML = details || '<p>No details available.</p>';
         panel.classList.add('open');
     }
 
-    /**
-     * Close the event detail panel
-     */
     function closeEventPanel() {
         const panel = document.getElementById('eventDetailPanel');
-        if (panel) {
-            panel.classList.remove('open');
-        }
+        if (panel) panel.classList.remove('open');
     }
 
-    /**
-     * Capitalize first letter
-     */
-    function capitalizeFirst(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    /**
-     * Refresh calendar data
-     */
     async function refresh() {
         events = [];
-        const container = document.getElementById('calendarGrid');
-        if (container) {
-            container.innerHTML = `
-                <div class="loading-spinner" style="grid-column: span 7;">
-                    <div class="spinner"></div>
-                    <span>Loading calendar...</span>
-                </div>
-            `;
-        }
         await init();
     }
 
-    /**
-     * Go to today's week
-     */
     function goToToday() {
         currentWeekStart = getStartOfWeekUTC(new Date());
         render();
     }
 
-    return {
-        init,
-        refresh,
-        goToToday,
-        navigateWeek
-    };
+    return { init, refresh, goToToday, navigateWeek };
 })();
 
-// Export for use in main.js
 window.CalendarModule = CalendarModule;
