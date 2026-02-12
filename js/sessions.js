@@ -209,13 +209,17 @@ const SessionsModule = (function() {
         // Parse session key for display
         const keyParts = session.key.split(':');
         const displayName = getDisplayName(session);
+        const safeDisplayName = Utils.escapeHtml(displayName);
+        const safeModel = Utils.escapeHtml(session.model);
+        const safeLabel = session.label ? Utils.escapeHtml(session.label) : '';
+        const safeSessionKey = Utils.escapeHtml(session.key);
         
         // Token bar color based on context
         const contextClass = session.contextPercent > 80 ? 'critical' : 
                             session.contextPercent > 50 ? 'warning' : 'healthy';
         
         return `
-            <div class="session-row ${isExpanded ? 'expanded' : ''}" data-session-key="${session.key}">
+            <div class="session-row ${isExpanded ? 'expanded' : ''}" data-session-key="${safeSessionKey}">
                 <div class="session-header">
                     <div class="session-kind" style="--kind-color: ${kindInfo.color}">
                         <span class="kind-icon">${kindInfo.icon}</span>
@@ -225,12 +229,12 @@ const SessionsModule = (function() {
                     <div class="session-main">
                         <div class="session-name">
                             <span class="channel-icon">${channelIcon}</span>
-                            <span class="session-title">${displayName}</span>
+                            <span class="session-title">${safeDisplayName}</span>
                         </div>
                         <div class="session-meta">
-                            <span class="session-model">${session.model}</span>
+                            <span class="session-model">${safeModel}</span>
                             <span class="session-msgs">${session.messageCount || 0} msgs</span>
-                            ${session.label ? `<span class="session-label">${session.label}</span>` : ''}
+                            ${session.label ? `<span class="session-label">${safeLabel}</span>` : ''}
                         </div>
                     </div>
                     
@@ -262,21 +266,26 @@ const SessionsModule = (function() {
     function renderSessionDetails(session) {
         const kindInfo = KIND_INFO[session.kind] || KIND_INFO.main;
         const encodedSessionKey = encodeURIComponent(session.key || '');
+        const safeSessionKey = Utils.escapeHtml(session.key);
+        const safeChannel = Utils.escapeHtml(session.channel);
+        const safeModel = Utils.escapeHtml(session.model);
+        const safeParentSession = session.parentSession ? Utils.escapeHtml(truncateKey(session.parentSession)) : '';
+        const safeSchedule = session.schedule ? Utils.escapeHtml(session.schedule) : '';
         
         return `
             <div class="session-details">
                 <div class="session-info-grid">
                     <div class="info-item">
                         <span class="info-label">Session Key</span>
-                        <code class="info-value session-key-full">${session.key}</code>
+                        <code class="info-value session-key-full">${safeSessionKey}</code>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Channel</span>
-                        <span class="info-value">${session.channel}</span>
+                        <span class="info-value">${safeChannel}</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Model</span>
-                        <span class="info-value">${session.model}</span>
+                        <span class="info-value">${safeModel}</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Total Tokens</span>
@@ -285,13 +294,13 @@ const SessionsModule = (function() {
                     ${session.parentSession ? `
                     <div class="info-item">
                         <span class="info-label">Parent Session</span>
-                        <code class="info-value">${truncateKey(session.parentSession)}</code>
+                        <code class="info-value">${safeParentSession}</code>
                     </div>
                     ` : ''}
                     ${session.schedule ? `
                     <div class="info-item">
                         <span class="info-label">Schedule</span>
-                        <code class="info-value">${session.schedule}</code>
+                        <code class="info-value">${safeSchedule}</code>
                     </div>
                     ` : ''}
                 </div>

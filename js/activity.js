@@ -478,16 +478,19 @@ const ActivityModule = (function() {
         const icon = DataModule.getActivityIcon(item.type);
         const time = DataModule.formatTime(item.timestamp);
         const relativeTime = formatSmartTime(new Date(item.timestamp));
+        const safeType = Utils.escapeHtml(item.type);
+        const safeId = Utils.escapeHtml(item.id);
+        const safeFile = item.file ? Utils.escapeHtml(item.file) : '';
 
         return `
-            <div class="activity-item ${isNew ? 'new-item' : ''}" data-type="${item.type}" data-id="${item.id}">
-                <div class="activity-icon ${item.type}">${icon}</div>
+            <div class="activity-item ${isNew ? 'new-item' : ''}" data-type="${safeType}" data-id="${safeId}">
+                <div class="activity-icon ${safeType}">${icon}</div>
                 <div class="activity-content">
                     <div class="activity-title">${Utils.escapeHtml(item.title)}</div>
                     <div class="activity-meta">
                         <span class="activity-source">${getSourceLabel(item.source)}</span>
                         <span class="activity-time" title="${time}" data-timestamp="${item.timestamp}">${relativeTime}</span>
-                        ${item.file ? `<span class="activity-file">${item.file}</span>` : ''}
+                        ${item.file ? `<span class="activity-file">${safeFile}</span>` : ''}
                     </div>
                 </div>
             </div>

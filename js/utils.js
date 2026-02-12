@@ -78,11 +78,12 @@ const Utils = (function() {
             const container = document.querySelector('.toast-container') || _createToastContainer();
             const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
             const t = type || 'info';
+            const safeMessage = escapeHtml(message);
             const toast = document.createElement('div');
             toast.className = `toast toast-${t} toast-visible`;
             toast.innerHTML = `
                 <span class="toast-icon">${icons[t] || icons.info}</span>
-                <span class="toast-message">${message}</span>
+                <span class="toast-message">${safeMessage}</span>
             `;
             container.appendChild(toast);
             setTimeout(() => {

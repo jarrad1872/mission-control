@@ -515,13 +515,15 @@
 
         const entry = document.createElement('div');
         entry.className = `log-entry log-${type}`;
+        const safeMessage = Utils.escapeHtml(message);
+        const safeData = data ? Utils.escapeHtml(JSON.stringify(data, null, 2)) : '';
         entry.innerHTML = `
             <div class="log-header">
                 <span class="log-icon">${icons[type] || icons.info}</span>
-                <span class="log-message">${message}</span>
+                <span class="log-message">${safeMessage}</span>
                 <span class="log-time">${timestamp}</span>
             </div>
-            ${data ? `<pre class="log-data">${JSON.stringify(data, null, 2)}</pre>` : ''}
+            ${data ? `<pre class="log-data">${safeData}</pre>` : ''}
         `;
 
         // Add click to expand/collapse

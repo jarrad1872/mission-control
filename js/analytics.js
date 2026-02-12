@@ -362,7 +362,7 @@ const Analytics = (function() {
       'gemini-2.0-flash': 'Gemini 2.0 Flash',
       'delivery-mirror': 'Delivery Mirror'
     };
-    return names[model] || model;
+    return names[model] || Utils.escapeHtml(model || 'Unknown');
   }
 
   /**

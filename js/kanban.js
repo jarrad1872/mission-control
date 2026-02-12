@@ -168,6 +168,7 @@ const KanbanModule = (function() {
         const priorityClass = getPriorityClass(task.priority);
         const priorityLabel = getPriorityLabel(task.priority);
         const statusClass = getStatusClass(task.status);
+        const safeAssignee = task.assignee ? Utils.escapeHtml(task.assignee) : '';
         
         return `
             <div class="kanban-card ${priorityClass}" 
@@ -179,7 +180,7 @@ const KanbanModule = (function() {
                 </div>
                 <div class="card-title">${Utils.escapeHtml(task.title)}</div>
                 <div class="card-meta">
-                    ${task.assignee ? `<span class="card-assignee" title="Assigned to ${task.assignee}">👤 ${task.assignee}</span>` : ''}
+                    ${task.assignee ? `<span class="card-assignee" title="Assigned to ${safeAssignee}">👤 ${safeAssignee}</span>` : ''}
                     <span class="card-status ${statusClass}">${task.status}</span>
                 </div>
                 ${task.due ? `<div class="card-due">${formatDue(task.due)}</div>` : ''}
