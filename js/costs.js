@@ -7,6 +7,27 @@ const CostsModule = (function() {
     'use strict';
     
     let data = null;
+    let initialized = false;
+
+    function escapeHtml(value) {
+        if (window.Utils?.escapeHtml) return window.Utils.escapeHtml(value);
+        const div = document.createElement('div');
+        div.textContent = String(value ?? '');
+        return div.innerHTML;
+    }
+
+    function toFiniteNumber(value, fallback = 0) {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+    }
+
+    function formatTokens(value) {
+        const safeValue = toFiniteNumber(value, 0);
+        const formatted = window.Utils?.formatTokens
+            ? window.Utils.formatTokens(safeValue)
+            : safeValue.toLocaleString('en-US');
+        return escapeHtml(formatted);
+    }
     
     // Model display names
     const MODEL_NAMES = {
@@ -38,6 +59,8 @@ const CostsModule = (function() {
      * Initialize the module
      */
     async function init() {
+        if (initialized) return true;
+        initialized = true;
         console.log('📊 Initializing Usage Stats Module...');
         await loadData();
         render();
@@ -161,33 +184,35 @@ const CostsModule = (function() {
         const updateTimeEl = document.getElementById('costUpdateTime');
         if (updateTimeEl && data.lastUpdate) {
             const freshness = getDataFreshness(data.lastUpdate);
-            
-            let badgeHTML = '';
-            if (freshness.status === 'stale') {
-                badgeHTML = '<span class="freshness-badge stale">⚠️ Stale</span>';
-            } else if (freshness.status === 'outdated') {
-                badgeHTML = '<span class="freshness-badge outdated">🔴 Outdated</span>';
+
+            updateTimeEl.textContent = freshness.relative;
+            if (freshness.status === 'stale' || freshness.status === 'outdated') {
+                const badge = document.createElement('span');
+                badge.className = freshness.status === 'stale'
+                    ? 'freshness-badge stale'
+                    : 'freshness-badge outdated';
+                badge.textContent = freshness.status === 'stale' ? '⚠️ Stale' : '🔴 Outdated';
+                updateTimeEl.appendChild(document.createTextNode(' '));
+                updateTimeEl.appendChild(badge);
             }
-            
-            updateTimeEl.innerHTML = `${freshness.relative} ${badgeHTML}`;
         }
         
-        const todayTokens = data.today?.totalTokens || 0;
-        const weekTokens = data.week?.totalTokens || 0;
+        const todayTokens = toFiniteNumber(data.today?.totalTokens, 0);
+        const weekTokens = toFiniteNumber(data.week?.totalTokens, 0);
         const tokens = data.today?.tokens || { input: 0, output: 0, cacheRead: 0 };
-        const todaySessions = data.today?.sessions || 0;
-        const weekSessions = data.week?.sessions || 0;
+        const todaySessions = Math.max(0, Math.floor(toFiniteNumber(data.today?.sessions, 0)));
+        const weekSessions = Math.max(0, Math.floor(toFiniteNumber(data.week?.sessions, 0)));
         
         container.innerHTML = `
             <div class="cost-summary">
                 <div class="cost-card">
                     <div class="cost-label">Today</div>
-                    <div class="cost-amount">${Utils.formatTokens(todayTokens)}</div>
+                    <div class="cost-amount">${formatTokens(todayTokens)}</div>
                     <div class="cost-tokens">${todaySessions} session${todaySessions !== 1 ? 's' : ''}</div>
                 </div>
                 <div class="cost-card">
                     <div class="cost-label">This Week</div>
-                    <div class="cost-amount">${Utils.formatTokens(weekTokens)}</div>
+                    <div class="cost-amount">${formatTokens(weekTokens)}</div>
                     <div class="cost-tokens">${weekSessions} session${weekSessions !== 1 ? 's' : ''}</div>
                 </div>
             </div>
@@ -195,15 +220,15 @@ const CostsModule = (function() {
             <div class="token-breakdown">
                 <div class="token-item">
                     <span class="token-label">Input</span>
-                    <span class="token-value">${Utils.formatTokens(tokens.input)}</span>
+                    <span class="token-value">${formatTokens(tokens.input)}</span>
                 </div>
                 <div class="token-item">
                     <span class="token-label">Output</span>
-                    <span class="token-value">${Utils.formatTokens(tokens.output)}</span>
+                    <span class="token-value">${formatTokens(tokens.output)}</span>
                 </div>
                 <div class="token-item">
                     <span class="token-label">Cache</span>
-                    <span class="token-value">${Utils.formatTokens(tokens.cacheRead || 0)}</span>
+                    <span class="token-value">${formatTokens(tokens.cacheRead || 0)}</span>
                 </div>
             </div>
             
@@ -223,26 +248,30 @@ const CostsModule = (function() {
      * Render model usage bars (by token count)
      */
     function renderModelBars(byModel) {
+        if (!byModel || typeof byModel !== 'object') {
+            return '<div class="no-data">No model data available</div>';
+        }
         const entries = Object.entries(byModel).sort((a, b) => b[1] - a[1]);
         if (entries.length === 0) {
             return '<div class="no-data">No model data available</div>';
         }
         
-        const maxTokens = Math.max(...entries.map(e => e[1]));
+        const maxTokens = Math.max(...entries.map(e => toFiniteNumber(e[1], 0)));
         
         return entries.map(([model, tokens]) => {
-            const percentage = maxTokens > 0 ? (tokens / maxTokens) * 100 : 0;
+            const safeTokens = toFiniteNumber(tokens, 0);
+            const percentage = maxTokens > 0 ? (safeTokens / maxTokens) * 100 : 0;
             const color = MODEL_COLORS[model] || 'var(--accent)';
             const displayName = MODEL_NAMES[model] || model;
             
             return `
                 <div class="model-bar-container">
                     <div class="model-bar-header">
-                        <span class="model-name">${displayName}</span>
-                        <span class="model-cost">${Utils.formatTokens(tokens)}</span>
+                        <span class="model-name">${escapeHtml(displayName)}</span>
+                        <span class="model-cost">${formatTokens(safeTokens)}</span>
                     </div>
                     <div class="model-bar-track">
-                        <div class="model-bar-fill" style="width: ${percentage}%; background: ${color}"></div>
+                        <div class="model-bar-fill" style="width: ${Math.max(0, Math.min(100, percentage))}%; background: ${color}"></div>
                     </div>
                 </div>
             `;
@@ -257,25 +286,27 @@ const CostsModule = (function() {
             return '<div class="no-data">No weekly data available</div>';
         }
         
-        const maxTokens = Math.max(...days.map(d => d.totalTokens || 0));
+        const maxTokens = Math.max(...days.map(d => toFiniteNumber(d?.totalTokens, 0)));
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         
         return `
             <div class="chart-container">
                 ${days.map(day => {
-                    const totalTokens = day.totalTokens || 0;
+                    const totalTokens = toFiniteNumber(day?.totalTokens, 0);
                     const percentage = maxTokens > 0 ? (totalTokens / maxTokens) * 100 : 0;
-                    const date = new Date(day.date);
-                    const dayName = dayNames[date.getDay()];
-                    const isToday = day.date === new Date().toISOString().split('T')[0];
+                    const safeDate = String(day?.date || '');
+                    const date = new Date(safeDate);
+                    const dayIndex = Number.isNaN(date.getTime()) ? -1 : date.getDay();
+                    const dayName = dayNames[dayIndex] || '?';
+                    const isToday = safeDate === new Date().toISOString().split('T')[0];
                     
                     return `
-                        <div class="chart-bar ${isToday ? 'today' : ''}" title="${day.date}: ${Utils.formatTokens(totalTokens)}">
-                            <div class="chart-bar-label">${dayName}</div>
+                        <div class="chart-bar ${isToday ? 'today' : ''}" title="${escapeHtml(safeDate)}: ${formatTokens(totalTokens)}">
+                            <div class="chart-bar-label">${escapeHtml(dayName)}</div>
                             <div class="chart-bar-track">
-                                <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+                                <div class="chart-bar-fill" style="width: ${Math.max(0, Math.min(100, percentage))}%"></div>
                             </div>
-                            <div class="chart-bar-value">${Utils.formatTokens(totalTokens)}</div>
+                            <div class="chart-bar-value">${formatTokens(totalTokens)}</div>
                         </div>
                     `;
                 }).join('')}

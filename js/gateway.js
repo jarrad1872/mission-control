@@ -15,25 +15,67 @@
     };
 
     const DEFAULT_GATEWAY_URL = 'http://100.72.187.117:18789';
+    const REQUEST_TIMEOUT_MS = 15000;
 
     // Connection state
     let _status = 'unknown'; // unknown | connected | disconnected | error
     let _lastCheck = null;
     let _statusListeners = [];
+    let _testConnectionSeq = 0;
+
+    function sanitizeUrl(url) {
+        const raw = String(url || '').trim().replace(/\/+$/, '');
+        const fallback = DEFAULT_GATEWAY_URL;
+        const candidate = raw || fallback;
+        try {
+            const parsed = new URL(candidate);
+            const normalized = `${parsed.origin}${parsed.pathname}`.replace(/\/+$/, '');
+            return normalized || fallback;
+        } catch {
+            return fallback;
+        }
+    }
 
     /**
      * Get the configured gateway URL
      */
     function getUrl() {
-        return localStorage.getItem(STORAGE_KEYS.url) || DEFAULT_GATEWAY_URL;
+        return sanitizeUrl(localStorage.getItem(STORAGE_KEYS.url));
     }
 
     /**
      * Set the gateway URL
      */
     function setUrl(url) {
-        const clean = (url || '').replace(/\/+$/, '');
-        localStorage.setItem(STORAGE_KEYS.url, clean || DEFAULT_GATEWAY_URL);
+        localStorage.setItem(STORAGE_KEYS.url, sanitizeUrl(url));
+    }
+
+    function buildRequestUrl(endpoint) {
+        if (endpoint === null || endpoint === undefined) {
+            throw new GatewayError('Request endpoint is required', 0);
+        }
+        const base = getUrl();
+        const path = String(endpoint).trim();
+        if (!path) {
+            throw new GatewayError('Request endpoint is required', 0);
+        }
+        if (/^https?:\/\//i.test(path)) {
+            return path;
+        }
+        return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+        const controller = new AbortController();
+        const timerId = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            return await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+        } finally {
+            clearTimeout(timerId);
+        }
     }
 
     /**
@@ -96,39 +138,56 @@
      * Make an authenticated request to the gateway
      */
     async function request(endpoint, options = {}) {
-        const url = `${getUrl()}${endpoint}`;
-        const headers = {
-            'Content-Type': 'application/json',
-            ...(options.headers || {})
-        };
-
-        const token = getToken();
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(url, {
-            ...options,
-            headers
-        });
-
-        if (response.status === 401 || response.status === 403) {
-            _setStatus('error');
-            throw new GatewayError('Authentication failed — check your token', response.status);
-        }
-
-        if (!response.ok) {
-            const body = await response.text().catch(() => 'Unknown error');
-            throw new GatewayError(`API Error ${response.status}: ${body}`, response.status);
-        }
-
-        // Some endpoints return empty body
-        const text = await response.text();
-        if (!text) return {};
         try {
-            return JSON.parse(text);
-        } catch {
-            return { raw: text };
+            const url = buildRequestUrl(endpoint);
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            };
+
+            const token = getToken();
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetchWithTimeout(url, {
+                ...options,
+                headers
+            }, REQUEST_TIMEOUT_MS);
+
+            if (response.status === 401 || response.status === 403) {
+                _setStatus('error');
+                throw new GatewayError('Authentication failed — check your token', response.status);
+            }
+
+            if (!response.ok) {
+                const body = await response.text().catch(() => 'Unknown error');
+                throw new GatewayError(`API Error ${response.status}: ${body}`, response.status);
+            }
+
+            // Some endpoints return empty body
+            const text = await response.text();
+            if (!text) return {};
+            try {
+                return JSON.parse(text);
+            } catch {
+                return { raw: text };
+            }
+        } catch (error) {
+            if (error instanceof GatewayError) {
+                throw error;
+            }
+            const message = error?.message || String(error);
+            if (error?.name === 'AbortError') {
+                _setStatus('disconnected');
+                throw new GatewayError('Gateway request timed out', 0);
+            }
+            if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+                _setStatus('disconnected');
+                throw new GatewayError('Gateway unreachable — check URL and network', 0);
+            }
+            _setStatus('error');
+            throw new GatewayError(message || 'Gateway request failed', 0);
         }
     }
 
@@ -156,38 +215,43 @@
      * Any non-network-error response means the gateway is reachable.
      */
     async function testConnection() {
+        const seq = ++_testConnectionSeq;
         try {
             const url = getUrl();
             const token = getToken();
             // Use a lightweight POST to /hooks/wake with a no-op as connectivity check
-            const response = await fetch(`${url}/hooks/wake`, {
+            const response = await fetchWithTimeout(`${url}/hooks/wake`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ text: 'connectivity check', mode: 'next-heartbeat' })
-            });
+            }, REQUEST_TIMEOUT_MS);
             if (response.ok) {
-                _setStatus('connected');
+                if (seq === _testConnectionSeq) _setStatus('connected');
                 _lastCheck = Date.now();
                 return { success: true, data: await response.json().catch(() => ({})) };
             }
             if (response.status === 401) {
-                _setStatus('error');
+                if (seq === _testConnectionSeq) _setStatus('error');
                 return { success: false, error: 'Authentication failed — check your token' };
             }
             // Gateway responded but endpoint issue — still reachable
-            _setStatus('connected');
+            if (seq === _testConnectionSeq) _setStatus('connected');
             _lastCheck = Date.now();
             return { success: true, data: {} };
         } catch (error) {
-            if (error.message && error.message.includes('Failed to fetch')) {
-                _setStatus('disconnected');
+            if (error?.name === 'AbortError') {
+                if (seq === _testConnectionSeq) _setStatus('disconnected');
+                return { success: false, error: 'Gateway request timed out' };
+            }
+            if (error?.message && error.message.includes('Failed to fetch')) {
+                if (seq === _testConnectionSeq) _setStatus('disconnected');
                 return { success: false, error: 'Gateway unreachable — check URL and network' };
             }
-            _setStatus('error');
-            return { success: false, error: error.message };
+            if (seq === _testConnectionSeq) _setStatus('error');
+            return { success: false, error: error?.message || 'Gateway test failed' };
         }
     }
 
@@ -272,7 +336,7 @@
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', autoCheck);
+        document.addEventListener('DOMContentLoaded', autoCheck, { once: true });
     } else {
         setTimeout(autoCheck, 500);
     }

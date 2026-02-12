@@ -6,8 +6,18 @@
 const CFOModule = (function() {
     let cfoData = null;
     let expandedCards = new Set();
+    let initialized = false;
     
     const STATIC_DATA_URL = 'data/cfo.json';
+
+    function escapeHtml(value) {
+        return Utils?.escapeHtml ? Utils.escapeHtml(value) : String(value ?? '');
+    }
+
+    function toFiniteNumber(value, fallback = 0) {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+    }
     
     function getDataUrl() {
         const gwUrl = localStorage.getItem('mc_gateway_url');
@@ -117,6 +127,8 @@ const CFOModule = (function() {
      * Initialize the CFO module
      */
     async function init() {
+        if (initialized) return;
+        initialized = true;
         console.log('💰 Initializing CFO Center...');
         
         await loadCFOData();
@@ -145,22 +157,25 @@ const CFOModule = (function() {
      * Format currency for display
      */
     function formatCurrency(amount) {
-        if (!amount && amount !== 0) return '—';
-        if (amount >= 1000000) {
-            return '$' + (amount / 1000000).toFixed(1) + 'M';
-        } else if (amount >= 1000) {
-            return '$' + (amount / 1000).toFixed(0) + 'K';
+        const safeAmount = toFiniteNumber(amount, NaN);
+        if (Number.isNaN(safeAmount)) return '—';
+        const abs = Math.abs(safeAmount);
+        const sign = safeAmount < 0 ? '-' : '';
+        if (abs >= 1000000) {
+            return sign + '$' + (abs / 1000000).toFixed(1) + 'M';
+        } else if (abs >= 1000) {
+            return sign + '$' + (abs / 1000).toFixed(0) + 'K';
         }
-        return '$' + amount.toFixed(0);
+        return sign + '$' + abs.toFixed(0);
     }
     
     /**
      * Format percentage
      */
     function formatPercent(value) {
-        if (!value && value !== 0) return '—';
-        const sign = value >= 0 ? '' : '';
-        return sign + value.toFixed(1) + '%';
+        const safeValue = toFiniteNumber(value, NaN);
+        if (Number.isNaN(safeValue)) return '—';
+        return safeValue.toFixed(1) + '%';
     }
     
     /**
@@ -174,6 +189,7 @@ const CFOModule = (function() {
         const companies = cfoData?.companies || [];
         const alerts = cfoData?.alerts || [];
         const generated = cfoData?.generated;
+        const generatedText = escapeHtml(Utils.formatRelativeTime(generated));
         
         container.innerHTML = `
             <div class="cfo-container">
@@ -181,7 +197,7 @@ const CFOModule = (function() {
                 <div class="cfo-header">
                     <div class="cfo-header-title">
                         <h2>💰 CFO Center</h2>
-                        <span class="cfo-updated">Updated: ${Utils.formatRelativeTime(generated)}</span>
+                        <span class="cfo-updated">Updated: ${generatedText}</span>
                     </div>
                     <button class="cfo-refresh-btn" data-action="refresh" title="Refresh Data">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -231,6 +247,8 @@ const CFOModule = (function() {
                           portfolio.health === 'watch' ? '🟡' : '🔴';
         const healthLabel = portfolio.health === 'good' ? 'Good' :
                            portfolio.health === 'watch' ? 'Watch' : 'Concern';
+        const profitable = toFiniteNumber(portfolio.profitable, 0);
+        const needsAttention = toFiniteNumber(portfolio.needsAttention, 0);
         
         return `
             <div class="cfo-portfolio-card">
@@ -244,11 +262,11 @@ const CFOModule = (function() {
                         <span class="stat-label">Total Revenue</span>
                     </div>
                     <div class="portfolio-stat">
-                        <span class="stat-value">${portfolio.profitable || 0}</span>
+                        <span class="stat-value">${profitable}</span>
                         <span class="stat-label">Profitable</span>
                     </div>
                     <div class="portfolio-stat">
-                        <span class="stat-value">${portfolio.needsAttention || 0}</span>
+                        <span class="stat-value">${needsAttention}</span>
                         <span class="stat-label">Watch</span>
                     </div>
                 </div>
@@ -266,51 +284,56 @@ const CFOModule = (function() {
      * Render a company card
      */
     function renderCompanyCard(company) {
-        const config = COMPANY_CONFIG[company.id] || { 
+        const companyId = String(company?.id || '');
+        const config = COMPANY_CONFIG[companyId] || {
             icon: '🏢', 
-            name: company.name,
-            shortName: company.name,
+            name: company?.name || 'Unknown',
+            shortName: company?.name || 'Unknown',
             color: '#6c6c7c'
         };
-        const statusConfig = STATUS_CONFIG[company.status] || STATUS_CONFIG['inactive'];
-        const isExpanded = expandedCards.has(company.id);
+        const statusConfig = STATUS_CONFIG[company?.status] || STATUS_CONFIG['inactive'];
+        const isExpanded = expandedCards.has(companyId);
+        const safeCompanyId = escapeHtml(companyId);
+        const safeShortName = escapeHtml(config.shortName);
+        const safeCashStatus = escapeHtml(company?.cashStatus || '');
+        const safeColor = escapeHtml(config.color);
         
         return `
             <div class="cfo-company-card ${isExpanded ? 'expanded' : ''}" 
-                 data-company-id="${company.id}"
-                 style="--company-color: ${config.color}">
-                <div class="company-card-header" data-toggle-company="${company.id}">
+                 data-company-id="${safeCompanyId}"
+                 style="--company-color: ${safeColor}">
+                <div class="company-card-header" data-toggle-company="${safeCompanyId}">
                     <div class="company-identity">
                         <span class="company-icon">${config.icon}</span>
                         <div class="company-name-group">
-                            <span class="company-name">${config.shortName}</span>
+                            <span class="company-name">${safeShortName}</span>
                             <span class="company-status" style="background: ${statusConfig.bg}; color: ${statusConfig.color}">
                                 ${statusConfig.label}
                             </span>
                         </div>
                     </div>
                     <div class="company-revenue">
-                        ${formatCurrency(company.revenue)}
+                        ${formatCurrency(company?.revenue)}
                     </div>
                 </div>
                 
                 <div class="company-card-metrics">
-                    ${company.grossMargin !== undefined ? `
+                    ${company?.grossMargin !== undefined ? `
                         <div class="metric">
                             <span class="metric-label">GM</span>
-                            <span class="metric-value ${company.grossMargin < 20 ? 'negative' : ''}">${formatPercent(company.grossMargin)}</span>
+                            <span class="metric-value ${toFiniteNumber(company.grossMargin, 0) < 20 ? 'negative' : ''}">${formatPercent(company.grossMargin)}</span>
                         </div>
                     ` : ''}
-                    ${company.cashStatus ? `
+                    ${company?.cashStatus ? `
                         <div class="metric">
                             <span class="metric-label">Cash</span>
-                            <span class="metric-value ${company.cashStatus === 'Low' ? 'negative' : ''}">${company.cashStatus}</span>
+                            <span class="metric-value ${company.cashStatus === 'Low' ? 'negative' : ''}">${safeCashStatus}</span>
                         </div>
                     ` : ''}
-                    ${company.debt ? `
+                    ${company?.debt ? `
                         <div class="metric">
                             <span class="metric-label">Debt</span>
-                            <span class="metric-value">${formatCurrency(company.debt)}</span>
+                            <span class="metric-value">${formatCurrency(company?.debt)}</span>
                         </div>
                     ` : ''}
                 </div>
@@ -328,30 +351,31 @@ const CFOModule = (function() {
      * Render expanded card content
      */
     function renderExpandedContent(company) {
+        const allowedSeverity = new Set(['critical', 'warning', 'info']);
         return `
             <div class="company-card-expanded">
-                ${company.summary ? `
+                ${company?.summary ? `
                     <div class="expanded-section">
                         <h4>Overview</h4>
-                        <p>${Utils.escapeHtml(company.summary)}</p>
+                        <p>${escapeHtml(company.summary)}</p>
                     </div>
                 ` : ''}
                 
-                ${company.keyFacts && company.keyFacts.length > 0 ? `
+                ${Array.isArray(company?.keyFacts) && company.keyFacts.length > 0 ? `
                     <div class="expanded-section">
                         <h4>Key Facts</h4>
                         <ul class="key-facts-list">
-                            ${company.keyFacts.map(fact => `<li>${Utils.escapeHtml(fact)}</li>`).join('')}
+                            ${company.keyFacts.map(fact => `<li>${escapeHtml(fact)}</li>`).join('')}
                         </ul>
                     </div>
                 ` : ''}
                 
-                ${company.alerts && company.alerts.length > 0 ? `
+                ${Array.isArray(company?.alerts) && company.alerts.length > 0 ? `
                     <div class="expanded-section">
                         <h4>⚠️ Alerts</h4>
                         <ul class="company-alerts-list">
                             ${company.alerts.map(alert => `
-                                <li class="alert-${alert.severity || 'info'}">${Utils.escapeHtml(alert.message)}</li>
+                                <li class="alert-${allowedSeverity.has(alert?.severity) ? alert.severity : 'info'}">${escapeHtml(alert?.message)}</li>
                             `).join('')}
                         </ul>
                     </div>
@@ -364,15 +388,16 @@ const CFOModule = (function() {
      * Render alerts section
      */
     function renderAlertsSection(alerts) {
+        const allowedSeverity = new Set(['critical', 'warning', 'info']);
         return `
             <div class="cfo-section">
                 <h3 class="cfo-section-title">⚠️ Alerts</h3>
                 <div class="cfo-alerts">
                     ${alerts.map(alert => `
-                        <div class="cfo-alert alert-${alert.severity || 'warning'}">
+                        <div class="cfo-alert alert-${allowedSeverity.has(alert?.severity) ? alert.severity : 'warning'}">
                             <span class="alert-icon">${getAlertIcon(alert.severity)}</span>
-                            <span class="alert-message">${Utils.escapeHtml(alert.message)}</span>
-                            ${alert.company ? `<span class="alert-company">${Utils.escapeHtml(alert.company)}</span>` : ''}
+                            <span class="alert-message">${escapeHtml(alert?.message)}</span>
+                            ${alert?.company ? `<span class="alert-company">${escapeHtml(alert.company)}</span>` : ''}
                         </div>
                     `).join('')}
                 </div>
@@ -430,6 +455,7 @@ const CFOModule = (function() {
      * Bind event handlers (event delegation on CFO tab)
      */
     function bindEvents() {
+        if (eventsBound) return;
         const cfoTab = document.getElementById('cfo-tab');
         if (!cfoTab) {
             console.warn('CFO: cfo-tab not found, events not bound');
@@ -480,12 +506,14 @@ const CFOModule = (function() {
         if (refreshBtn) {
             refreshBtn.classList.add('spinning');
         }
-        
-        await loadCFOData();
-        render();
-        
-        if (refreshBtn) {
-            refreshBtn.classList.remove('spinning');
+
+        try {
+            await loadCFOData();
+            render();
+        } finally {
+            if (refreshBtn) {
+                refreshBtn.classList.remove('spinning');
+            }
         }
     }
     

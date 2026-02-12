@@ -24,11 +24,21 @@ const BobStatusModule = (function() {
     
     let refreshTimer = null;
     let statusData = null;
+    let initialized = false;
+    let refreshPromise = null;
+
+    function toContextPercent(value) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return 0;
+        return Math.max(0, Math.min(100, Math.round(n)));
+    }
     
     /**
      * Initialize the module
      */
     async function init() {
+        if (initialized) return;
+        initialized = true;
         console.log('👥 Bob Status Module initializing...');
         
         setupModalHandlers();
@@ -94,7 +104,7 @@ const BobStatusModule = (function() {
         const title = document.getElementById('bobDetailTitle');
         const content = document.getElementById('bobDetailContent');
         
-        if (!modal || !content) return;
+        if (!modal || !content || !title) return;
         
         title.textContent = bob.name;
         content.innerHTML = renderBobDetail(bob);
@@ -130,7 +140,9 @@ const BobStatusModule = (function() {
         const safeDescription = Utils.escapeHtml(bob.description || '');
         const safeError = Utils.escapeHtml(bob.errorMessage || '');
         
-        const contextLevel = getContextLevel(bob.contextPercent || 0);
+        const contextPercent = toContextPercent(bob.contextPercent);
+        const contextLevel = getContextLevel(contextPercent);
+        const safeLastActive = Utils.escapeHtml(Utils.formatRelativeTime(bob.lastActivity));
         
         return `
             <div class="bob-detail-card">
@@ -158,12 +170,12 @@ const BobStatusModule = (function() {
                 <div class="bob-detail-metrics">
                     <div class="bob-metric-row">
                         <span class="bob-metric-label">Context</span>
-                        ${renderContextGauge(bob.contextPercent || 0)}
-                        <span class="bob-metric-value">${bob.contextPercent || 0}%</span>
+                        ${renderContextGauge(contextPercent)}
+                        <span class="bob-metric-value">${contextPercent}%</span>
                     </div>
                     <div class="bob-metric-row">
                         <span class="bob-metric-label">Last Active</span>
-                        <span class="bob-metric-value">${Utils.formatRelativeTime(bob.lastActivity)}</span>
+                        <span class="bob-metric-value">${safeLastActive}</span>
                     </div>
                     ${bob.sessionId ? `
                         <div class="bob-metric-row">
@@ -194,10 +206,11 @@ const BobStatusModule = (function() {
      * Render circular context gauge (#9)
      */
     function renderContextGauge(percent) {
+        const safePercent = toContextPercent(percent);
         const radius = 16;
         const circumference = 2 * Math.PI * radius;
-        const offset = circumference - (percent / 100) * circumference;
-        const level = getContextLevel(percent);
+        const offset = circumference - (safePercent / 100) * circumference;
+        const level = getContextLevel(safePercent);
         
         return `
             <div class="context-gauge">
@@ -210,7 +223,7 @@ const BobStatusModule = (function() {
                         stroke-dashoffset="${offset}"
                     />
                 </svg>
-                <span class="context-gauge-text">${percent}</span>
+                <span class="context-gauge-text">${safePercent}</span>
             </div>
         `;
     }
@@ -228,6 +241,9 @@ const BobStatusModule = (function() {
      * Fetch and render bob status
      */
     async function refresh() {
+        if (refreshPromise) return refreshPromise;
+
+        refreshPromise = (async () => {
         try {
             const url = getDataUrl();
             const response = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
@@ -249,7 +265,15 @@ const BobStatusModule = (function() {
             
         } catch (error) {
             console.error('❌ Bob Status fetch error:', error);
+            statusData = null;
             renderError();
+        }
+        })();
+
+        try {
+            await refreshPromise;
+        } finally {
+            refreshPromise = null;
         }
     }
     

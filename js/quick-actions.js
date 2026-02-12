@@ -6,6 +6,12 @@
 
 (function() {
     'use strict';
+    let initialized = false;
+    let initPromise = null;
+
+    function escapeHtml(value) {
+        return Utils?.escapeHtml ? Utils.escapeHtml(value) : String(value ?? '');
+    }
 
     // Model mapping for spawn
     const MODEL_MAP = {
@@ -118,6 +124,10 @@
     // ========================================
 
     function init() {
+        if (initialized) return initPromise || Promise.resolve(true);
+        initialized = true;
+        initPromise = Promise.resolve(true);
+
         renderFabMenu();
         renderModals();
         renderToastContainer();
@@ -126,6 +136,7 @@
 
         // Listen for gateway status changes
         Gateway.onStatusChange(updateConnectionIndicator);
+        return initPromise;
     }
 
     // ========================================
@@ -394,7 +405,7 @@
 
         toast.innerHTML = `
             <span class="toast-icon">${icons[type] || icons.info}</span>
-            <span class="toast-message">${Utils.escapeHtml(message)}</span>
+            <span class="toast-message">${escapeHtml(message)}</span>
             <button class="toast-close">×</button>
         `;
 
@@ -502,6 +513,7 @@
 
         const dot = container.querySelector('.settings-status-dot');
         const text = container.querySelector('.settings-status-text');
+        if (!dot || !text) return;
 
         dot.className = 'settings-status-dot';
 
@@ -699,15 +711,20 @@
 
         showToast('Settings saved!', 'success');
 
-        // Auto-test after save
-        const result = await Gateway.testConnection();
-        updateSettingsStatus(result.success ? 'connected' : 'error');
+        try {
+            // Auto-test after save
+            const result = await Gateway.testConnection();
+            updateSettingsStatus(result.success ? 'connected' : 'error');
 
-        if (result.success) {
-            showToast('Gateway connected! ✅', 'success');
-            setTimeout(() => closeModal('settingsModal'), 800);
-        } else {
-            showToast(`Connection failed: ${result.error}`, 'error', 6000);
+            if (result.success) {
+                showToast('Gateway connected! ✅', 'success');
+                setTimeout(() => closeModal('settingsModal'), 800);
+            } else {
+                showToast(`Connection failed: ${result.error}`, 'error', 6000);
+            }
+        } catch (error) {
+            updateSettingsStatus('error');
+            showToast(friendlyError(error), 'error', 6000);
         }
     }
 
@@ -827,6 +844,7 @@
         document.getElementById('toggleTokenVis')?.addEventListener('click', () => {
             const input = document.getElementById('settingsToken');
             const btn = document.getElementById('toggleTokenVis');
+            if (!input || !btn) return;
             if (input.type === 'password') {
                 input.type = 'text';
                 btn.textContent = '🙈';
@@ -839,6 +857,7 @@
         document.getElementById('toggleOpenAIVis')?.addEventListener('click', () => {
             const input = document.getElementById('settingsOpenAIKey');
             const btn = document.getElementById('toggleOpenAIVis');
+            if (!input || !btn) return;
             if (input.type === 'password') {
                 input.type = 'text';
                 btn.textContent = '🙈';
@@ -851,6 +870,7 @@
         document.getElementById('toggleElevenLabsVis')?.addEventListener('click', () => {
             const input = document.getElementById('settingsElevenLabsKey');
             const btn = document.getElementById('toggleElevenLabsVis');
+            if (!input || !btn) return;
             if (input.type === 'password') {
                 input.type = 'text';
                 btn.textContent = '🙈';

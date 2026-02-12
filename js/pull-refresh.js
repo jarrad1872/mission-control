@@ -13,11 +13,14 @@
     let currentY = 0;
     let isPulling = false;
     let isRefreshing = false;
+    let initialized = false;
+    let hideTimer = null;
     
     /**
      * Initialize pull to refresh
      */
     function init() {
+        if (initialized) return;
         const mainContent = document.getElementById('mainContent');
         const indicator = document.getElementById('pullRefreshIndicator');
         
@@ -28,8 +31,10 @@
         
         // Only enable on touch devices
         if (!('ontouchstart' in window)) {
+            initialized = true;
             return;
         }
+        initialized = true;
         
         mainContent.addEventListener('touchstart', handleTouchStart, { passive: true });
         mainContent.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -43,8 +48,10 @@
      */
     function handleTouchStart(e) {
         if (isRefreshing) return;
+        if (!e.touches || e.touches.length === 0) return;
         
         const mainContent = document.getElementById('mainContent');
+        if (!mainContent) return;
         
         // Only start if scrolled to top
         if (mainContent.scrollTop > 0) return;
@@ -58,8 +65,10 @@
      */
     function handleTouchMove(e) {
         if (!isPulling || isRefreshing) return;
+        if (!e.touches || e.touches.length === 0) return;
         
         const mainContent = document.getElementById('mainContent');
+        if (!mainContent) return;
         
         // Cancel if not at top
         if (mainContent.scrollTop > 0) {
@@ -145,10 +154,14 @@
         
         indicator.style.transform = '';
         indicator.style.opacity = '';
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+        }
         
-        setTimeout(() => {
+        hideTimer = setTimeout(() => {
             indicator.classList.remove('visible');
             indicator.classList.remove('refreshing');
+            hideTimer = null;
         }, 200);
     }
     
@@ -174,13 +187,19 @@
         
         try {
             // Trigger the main refresh
-            await DataModule.refresh();
-            await Promise.all([
-                BobStatusModule.refresh(),
-                CostsModule?.refresh?.(),
-                ActivityModule?.refresh?.(),
-                KanbanModule?.refresh?.()
-            ]);
+            if (!window.DataModule?.refresh) {
+                throw new Error('DataModule unavailable');
+            }
+            await window.DataModule.refresh();
+            const refreshTasks = [
+                window.BobStatusModule?.refresh?.(),
+                window.CostsModule?.refresh?.(),
+                window.ActivityModule?.refresh?.(),
+                window.KanbanModule?.refresh?.()
+            ].filter(Boolean);
+            if (refreshTasks.length > 0) {
+                await Promise.all(refreshTasks);
+            }
             
             // Show success
             if (text) {
@@ -206,7 +225,7 @@
     
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', init, { once: true });
     } else {
         init();
     }

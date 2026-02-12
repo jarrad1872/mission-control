@@ -38,6 +38,9 @@ const BobChat = (function() {
     let animationFrameId = null;
     let audioUnlocked = false;
     let mediaSource = null;
+    let initialized = false;
+    let activeBobForRecording = 'main';
+    let activePipelineId = 0;
 
     // Conversation histories per bob
     const histories = {};
@@ -48,6 +51,16 @@ const BobChat = (function() {
     // ========================================
 
     let els = {};
+
+    function handleSetKeyClick() {
+        if (window.QuickActions?.openSettingsModal) {
+            window.QuickActions.openSettingsModal();
+        }
+    }
+
+    function handleMicContextMenu(e) {
+        e.preventDefault();
+    }
 
     function cacheDom() {
         els = {
@@ -69,20 +82,20 @@ const BobChat = (function() {
     // ========================================
 
     function init() {
+        if (initialized) return;
         cacheDom();
-        if (!els.mic) {
+        const required = ['selector', 'avatar', 'avatarImg', 'status', 'messages', 'mic', 'clear', 'apiNotice'];
+        const missing = required.filter(key => !els[key]);
+        if (missing.length > 0) {
             console.warn('Bob Chat: DOM elements not found');
             return;
         }
+        initialized = true;
 
         // Event listeners
         els.selector.addEventListener('change', handleBobChange);
         els.clear.addEventListener('click', handleClear);
-        els.setKey?.addEventListener('click', () => {
-            if (window.QuickActions?.openSettingsModal) {
-                window.QuickActions.openSettingsModal();
-            }
-        });
+        els.setKey?.addEventListener('click', handleSetKeyClick);
 
         // Push-to-talk: pointer events for cross-device support
         els.mic.addEventListener('pointerdown', handleMicDown);
@@ -90,10 +103,10 @@ const BobChat = (function() {
         els.mic.addEventListener('pointerleave', handleMicUp);
         els.mic.addEventListener('pointercancel', handleMicUp);
         // Prevent context menu on long press (mobile)
-        els.mic.addEventListener('contextmenu', e => e.preventDefault());
+        els.mic.addEventListener('contextmenu', handleMicContextMenu);
 
         // Audio unlock for mobile
-        els.audioUnlock.addEventListener('click', unlockAudio);
+        els.audioUnlock?.addEventListener('click', unlockAudio);
 
         // Check if audio is already unlocked (desktop usually is)
         checkAudioUnlock();
@@ -116,9 +129,13 @@ const BobChat = (function() {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         if (!isMobile) {
             audioUnlocked = true;
-            els.audioUnlock.style.display = 'none';
+            if (els.audioUnlock) {
+                els.audioUnlock.style.display = 'none';
+            }
         } else {
-            els.audioUnlock.style.display = '';
+            if (els.audioUnlock) {
+                els.audioUnlock.style.display = '';
+            }
         }
     }
 
@@ -132,7 +149,9 @@ const BobChat = (function() {
             source.connect(audioContext.destination);
             source.start(0);
             audioUnlocked = true;
-            els.audioUnlock.style.display = 'none';
+            if (els.audioUnlock) {
+                els.audioUnlock.style.display = 'none';
+            }
             console.log('🔊 Audio unlocked');
         } catch (e) {
             console.error('Audio unlock failed:', e);
@@ -150,7 +169,7 @@ const BobChat = (function() {
     }
 
     function updateAvatar() {
-        const bob = BOBS[currentBob];
+        const bob = BOBS[currentBob] || BOBS.main;
         els.avatarImg.src = bob.avatar;
         els.avatarImg.alt = bob.name;
         // Reset glow
@@ -173,7 +192,7 @@ const BobChat = (function() {
     function updateApiNotice() {
         const hasOpenAI = !!getOpenAIKey();
         const hasElevenLabs = !!getElevenLabsKey();
-        const hasGateway = Gateway.hasToken();
+        const hasGateway = window.Gateway?.hasToken?.() || false;
         
         if ((hasOpenAI || hasElevenLabs) && hasGateway) {
             els.apiNotice.style.display = 'none';
@@ -184,12 +203,16 @@ const BobChat = (function() {
             if (!hasGateway) parts.push('Gateway token');
             const notice = els.apiNotice.querySelector('p');
             if (notice) {
-                notice.innerHTML = `${parts.join(' and ')} required. <button id="bobChatSetKey">Configure →</button>`;
-                document.getElementById('bobChatSetKey')?.addEventListener('click', () => {
-                    if (window.QuickActions?.openSettingsModal) {
-                        window.QuickActions.openSettingsModal();
-                    }
-                });
+                notice.textContent = `${parts.join(' and ')} required. `;
+                const button = document.createElement('button');
+                button.id = 'bobChatSetKey';
+                button.type = 'button';
+                button.textContent = 'Configure →';
+                notice.appendChild(button);
+                const setKeyBtn = document.getElementById('bobChatSetKey');
+                if (setKeyBtn) {
+                    setKeyBtn.onclick = handleSetKeyClick;
+                }
             }
         }
     }
@@ -199,6 +222,7 @@ const BobChat = (function() {
     // ========================================
 
     function setState(newState) {
+        if (!els.status || !els.mic || !els.avatar) return;
         state = newState;
         const labels = {
             ready: 'Ready',
@@ -253,6 +277,14 @@ const BobChat = (function() {
         e.preventDefault();
 
         if (state !== 'ready') return;
+        if (!navigator.mediaDevices?.getUserMedia) {
+            showToast('Microphone API is not available in this browser', 'error');
+            return;
+        }
+        if (typeof MediaRecorder === 'undefined') {
+            showToast('MediaRecorder is not supported in this browser', 'error');
+            return;
+        }
 
         // Check prerequisites
         const openaiKey = getOpenAIKey();
@@ -260,7 +292,7 @@ const BobChat = (function() {
             showToast('Set your OpenAI API key in ⚙️ Settings first', 'warning');
             return;
         }
-        if (!Gateway.hasToken()) {
+        if (!window.Gateway?.hasToken?.()) {
             showToast('Configure Gateway in ⚙️ Settings first', 'warning');
             return;
         }
@@ -280,6 +312,8 @@ const BobChat = (function() {
 
             const options = mimeType ? { mimeType } : {};
             mediaRecorder = new MediaRecorder(stream, options);
+            activeBobForRecording = currentBob;
+            const pipelineId = ++activePipelineId;
 
             mediaRecorder.ondataavailable = (e) => {
                 if (e.data.size > 0) audioChunks.push(e.data);
@@ -289,7 +323,11 @@ const BobChat = (function() {
                 // Stop all tracks
                 stream.getTracks().forEach(t => t.stop());
                 // Process the recording
-                processRecording();
+                processRecording(activeBobForRecording, pipelineId).catch(err => {
+                    console.error('Recording processing failed:', err);
+                    showToast('Recording processing failed. Please try again.', 'error');
+                    setState('ready');
+                });
             };
 
             mediaRecorder.start(100); // collect chunks every 100ms
@@ -313,7 +351,11 @@ const BobChat = (function() {
     // Processing Pipeline: STT → LLM → TTS
     // ========================================
 
-    async function processRecording() {
+    async function processRecording(bobKey, pipelineId) {
+        if (!BOBS[bobKey]) {
+            setState('ready');
+            return;
+        }
         if (audioChunks.length === 0) {
             setState('ready');
             return;
@@ -335,6 +377,7 @@ const BobChat = (function() {
         try {
             // Step 1: STT — Whisper
             const transcription = await transcribeAudio(audioBlob, ext);
+            if (pipelineId !== activePipelineId) return;
             if (!transcription || !transcription.trim()) {
                 showToast('Could not understand audio. Try again.', 'info');
                 setState('ready');
@@ -342,10 +385,11 @@ const BobChat = (function() {
             }
 
             // Add user message
-            addMessage('user', transcription);
+            addMessage('user', transcription, bobKey);
 
             // Step 2: LLM — Gateway
-            const response = await getLLMResponse(transcription);
+            const response = await getLLMResponse(transcription, bobKey);
+            if (pipelineId !== activePipelineId) return;
             if (!response) {
                 showToast('No response from Bob. Try again.', 'error');
                 setState('ready');
@@ -353,11 +397,12 @@ const BobChat = (function() {
             }
 
             // Add assistant message
-            addMessage('assistant', response);
+            addMessage('assistant', response, bobKey);
 
             // Step 3: TTS — OpenAI
             setState('speaking');
-            await speakResponse(response);
+            await speakResponse(response, bobKey);
+            if (pipelineId !== activePipelineId) return;
 
             setState('ready');
         } catch (err) {
@@ -388,17 +433,17 @@ const BobChat = (function() {
             throw new Error(`Whisper API error ${res.status}: ${errText}`);
         }
 
-        const data = await res.json();
-        return data.text || '';
+        const data = await res.json().catch(() => null);
+        return data?.text || '';
     }
 
     // ========================================
     // LLM: Gateway Chat Completions
     // ========================================
 
-    async function getLLMResponse(userText) {
-        const bob = BOBS[currentBob];
-        const history = histories[currentBob];
+    async function getLLMResponse(userText, bobKey) {
+        const bob = BOBS[bobKey] || BOBS.main;
+        const history = histories[bobKey] || [];
 
         const messages = [
             { role: 'system', content: bob.system },
@@ -406,7 +451,11 @@ const BobChat = (function() {
             { role: 'user', content: userText }
         ];
 
-        const response = await Gateway.request('/v1/chat/completions', {
+        if (!window.Gateway?.request) {
+            throw new Error('Gateway is not available');
+        }
+
+        const response = await window.Gateway.request('/v1/chat/completions', {
             method: 'POST',
             body: JSON.stringify({
                 model: 'openclaw:main',
@@ -414,7 +463,10 @@ const BobChat = (function() {
             })
         });
 
-        const text = response?.choices?.[0]?.message?.content || '';
+        const content = response?.choices?.[0]?.message?.content;
+        const text = Array.isArray(content)
+            ? content.map(part => part?.text || '').join(' ').trim()
+            : (content || '');
         return text;
     }
 
@@ -422,10 +474,10 @@ const BobChat = (function() {
     // TTS: OpenAI Text-to-Speech
     // ========================================
 
-    async function speakResponse(text) {
+    async function speakResponse(text, bobKey) {
         const elevenLabsKey = getElevenLabsKey();
         const openaiKey = getOpenAIKey();
-        const bob = BOBS[currentBob];
+        const bob = BOBS[bobKey] || BOBS.main;
         let blob;
         let url;
 
@@ -530,7 +582,9 @@ const BobChat = (function() {
 
             // Resume if suspended (mobile)
             if (audioContext.state === 'suspended') {
-                audioContext.resume();
+                audioContext.resume().catch(err => {
+                    console.warn('Audio resume failed:', err);
+                });
             }
 
             // Create source — note: can only call createMediaElementSource once per element
@@ -590,8 +644,8 @@ const BobChat = (function() {
     // Conversation History & Messages
     // ========================================
 
-    function addMessage(role, content) {
-        const history = histories[currentBob];
+    function addMessage(role, content, bobKey = currentBob) {
+        const history = histories[bobKey] || histories.main;
         history.push({ role, content });
 
         // Trim to MAX_HISTORY exchanges (each exchange = 1 user + 1 assistant)
@@ -605,12 +659,13 @@ const BobChat = (function() {
     function renderMessages() {
         if (!els.messages) return;
 
-        const history = histories[currentBob];
+        const history = histories[currentBob] || [];
+        const bob = BOBS[currentBob] || BOBS.main;
 
         if (history.length === 0) {
             els.messages.innerHTML = `
                 <div class="bob-chat-empty">
-                    <p>${BOBS[currentBob].emoji} Hold the mic button and speak</p>
+                    <p>${escapeHtml(bob.emoji)} Hold the mic button and speak</p>
                 </div>
             `;
             return;
@@ -629,7 +684,8 @@ const BobChat = (function() {
     function handleClear() {
         histories[currentBob] = [];
         renderMessages();
-        showToast(`${BOBS[currentBob].name} conversation cleared`, 'info');
+        const bob = BOBS[currentBob] || BOBS.main;
+        showToast(`${bob.name} conversation cleared`, 'info');
     }
 
     // ========================================
@@ -637,6 +693,7 @@ const BobChat = (function() {
     // ========================================
 
     function escapeHtml(str) {
+        if (window.Utils?.escapeHtml) return window.Utils.escapeHtml(str);
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
