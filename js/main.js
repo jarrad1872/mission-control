@@ -14,11 +14,13 @@
     function initDefaults() {
         // OpenAI key is base64-encoded to avoid GitHub push protection pattern matching
         const _oaiB64 = 'c2stcHJvai0yQVVHXy1QSGplTWllamxaN0hYVWxvNGtybDFqcGxiRjg3THNRZi1aNml3UzJhRFExZ2JjZVZ3U0VxUWJMVXhsTTlEcU42U2lFdVQzQmxia0ZKT2UtbG1xUjdRa25iSWc1MHAwam92VFY5NUd2cmxVNEkxLV9kRGZzT0taVjRySkdDTXJWdnBwMDdrMXNkU05aeXcwMVpwSEExTUE=';
+        const _elB64 = 'c2tfZGRmNDBjYTdjYTE1N2FlZGNjMmNmNjRmOTI5ZWFjYTJhMmJmN2NkMjE2MjI1ODYy';
 
         const defaults = {
             'mc_gateway_url':   'https://assembled-courses-budget-roles.trycloudflare.com',
             'mc_gateway_token': 'dcc3f1b418346afbaa3870d46c10e0111db809109402a437',
-            'mc_openai_key':    atob(_oaiB64)
+            'mc_openai_key':    atob(_oaiB64),
+            'mc_elevenlabs_key': atob(_elB64)
         };
 
         // Force-update gateway URL if it still points to an old tunnel

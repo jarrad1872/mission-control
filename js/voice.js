@@ -12,16 +12,17 @@ const BobChat = (function() {
     // ========================================
 
     const BOBS = {
-        main:     { name: 'Main Bob',     emoji: '🎯', avatar: 'avatars/main.png',     voice: 'alloy',   system: 'You are Main Bob, the orchestrator of the Bob Collective. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally and conversationally.' },
-        kcc:      { name: 'KCC Bob',      emoji: '🏗️', avatar: 'avatars/kcc.png',      voice: 'echo',    system: 'You are KCC Bob, managing Kippen Concrete & Excavation. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally about construction, concrete, excavation business.' },
-        dmi:      { name: 'DMI Bob',      emoji: '🔧', avatar: 'avatars/dmi.png',      voice: 'fable',   system: 'You are DMI Bob, managing DMI Tools Corp. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally about tools, inventory, and e-commerce.' },
-        sawdot:   { name: 'SawDot Bob',   emoji: '🪚', avatar: 'avatars/sawdot.png',   voice: 'onyx',    system: 'You are SawDot Bob, managing SawDot (saw blade sharpening). This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally about saw blades and sharpening.' },
-        mrbex:    { name: 'mrbex Bob',    emoji: '🎬', avatar: 'avatars/mrbex.png',    voice: 'nova',    system: 'You are mrbex Bob, managing creative and media projects. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally and creatively.' },
-        personal: { name: 'Personal Bob', emoji: '🏠', avatar: 'avatars/personal.png', voice: 'shimmer', system: 'You are Personal Bob, handling personal life and home matters. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally and warmly.' }
+        main:     { name: 'Main Bob',     emoji: '🎯', avatar: 'avatars/main.png',     elevenLabsVoice: 'pNInz6obpgDQGcFmaJgB', openaiVoice: 'alloy',   system: 'You are Main Bob, the orchestrator of the Bob Collective. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally and conversationally.\n\nYou can use expressive tags to control how your voice sounds:\n[laughs] [whispers] [sighs] [slow] [excited]\nEach tag affects ~4-5 words. Use naturally and sparingly.' },
+        kcc:      { name: 'KCC Bob',      emoji: '🏗️', avatar: 'avatars/kcc.png',      elevenLabsVoice: 'VR6AewLTigWG4xSOukaG', openaiVoice: 'echo',    system: 'You are KCC Bob, managing Kippen Concrete & Excavation. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally about construction, concrete, excavation business.\n\nYou can use expressive tags to control how your voice sounds:\n[laughs] [whispers] [sighs] [slow] [excited]\nEach tag affects ~4-5 words. Use naturally and sparingly.' },
+        dmi:      { name: 'DMI Bob',      emoji: '🔧', avatar: 'avatars/dmi.png',      elevenLabsVoice: 'CYw3kZ02Hs0563khs1Fj', openaiVoice: 'fable',   system: 'You are DMI Bob, managing DMI Tools Corp. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally about tools, inventory, and e-commerce.\n\nYou can use expressive tags to control how your voice sounds:\n[laughs] [whispers] [sighs] [slow] [excited]\nEach tag affects ~4-5 words. Use naturally and sparingly.' },
+        sawdot:   { name: 'SawDot Bob',   emoji: '🪚', avatar: 'avatars/sawdot.png',   elevenLabsVoice: 'IKne3meq5aSn9XLyUdCD', openaiVoice: 'onyx',    system: 'You are SawDot Bob, managing SawDot (saw blade sharpening). This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally about saw blades and sharpening.\n\nYou can use expressive tags to control how your voice sounds:\n[laughs] [whispers] [sighs] [slow] [excited]\nEach tag affects ~4-5 words. Use naturally and sparingly.' },
+        mrbex:    { name: 'mrbex Bob',    emoji: '🎬', avatar: 'avatars/mrbex.png',    elevenLabsVoice: 'D38z5RcWu1voky8WS1ja', openaiVoice: 'nova',    system: 'You are mrbex Bob, managing creative and media projects. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally and creatively.\n\nYou can use expressive tags to control how your voice sounds:\n[laughs] [whispers] [sighs] [slow] [excited]\nEach tag affects ~4-5 words. Use naturally and sparingly.' },
+        personal: { name: 'Personal Bob', emoji: '🏠', avatar: 'avatars/personal.png', elevenLabsVoice: 'ErXwobaYiN019PkySvjV', openaiVoice: 'shimmer', system: 'You are Personal Bob, handling personal life and home matters. This is a VOICE conversation. Keep responses SHORT (1-3 sentences). No markdown. Speak naturally and warmly.\n\nYou can use expressive tags to control how your voice sounds:\n[laughs] [whispers] [sighs] [slow] [excited]\nEach tag affects ~4-5 words. Use naturally and sparingly.' }
     };
 
     const MAX_HISTORY = 10; // max exchanges per bob (10 user + 10 assistant = 20 messages)
     const OPENAI_KEY_STORAGE = 'mc_openai_key';
+    const ELEVENLABS_KEY_STORAGE = 'mc_elevenlabs_key';
 
     // ========================================
     // State
@@ -165,15 +166,21 @@ const BobChat = (function() {
         return localStorage.getItem(OPENAI_KEY_STORAGE) || '';
     }
 
+    function getElevenLabsKey() {
+        return localStorage.getItem(ELEVENLABS_KEY_STORAGE) || '';
+    }
+
     function updateApiNotice() {
-        const hasKey = !!getOpenAIKey();
+        const hasOpenAI = !!getOpenAIKey();
+        const hasElevenLabs = !!getElevenLabsKey();
         const hasGateway = Gateway.hasToken();
-        if (hasKey && hasGateway) {
+        
+        if ((hasOpenAI || hasElevenLabs) && hasGateway) {
             els.apiNotice.style.display = 'none';
         } else {
             els.apiNotice.style.display = '';
             const parts = [];
-            if (!hasKey) parts.push('OpenAI API key');
+            if (!hasOpenAI && !hasElevenLabs) parts.push('TTS API key (ElevenLabs or OpenAI)');
             if (!hasGateway) parts.push('Gateway token');
             const notice = els.apiNotice.querySelector('p');
             if (notice) {
@@ -416,29 +423,62 @@ const BobChat = (function() {
     // ========================================
 
     async function speakResponse(text) {
+        const elevenLabsKey = getElevenLabsKey();
         const openaiKey = getOpenAIKey();
         const bob = BOBS[currentBob];
+        let blob;
+        let url;
 
-        const ttsRes = await fetch('https://api.openai.com/v1/audio/speech', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${openaiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'tts-1',
-                voice: bob.voice,
-                input: text
-            })
-        });
+        try {
+            if (!elevenLabsKey) throw new Error('No ElevenLabs key');
 
-        if (!ttsRes.ok) {
-            const errText = await ttsRes.text().catch(() => '');
-            throw new Error(`TTS API error ${ttsRes.status}: ${errText}`);
+            const elRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${bob.elevenLabsVoice}`, {
+                method: 'POST',
+                headers: {
+                    'xi-api-key': elevenLabsKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    model_id: 'eleven_v3'
+                })
+            });
+
+            if (!elRes.ok) {
+                const errText = await elRes.text().catch(() => '');
+                throw new Error(`ElevenLabs error ${elRes.status}: ${errText}`);
+            }
+
+            blob = await elRes.blob();
+        } catch (elErr) {
+            console.warn('ElevenLabs TTS failed, falling back to OpenAI:', elErr);
+            
+            if (!openaiKey) {
+                throw new Error('No TTS API keys available (ElevenLabs failed and no OpenAI key)');
+            }
+
+            const oaiRes = await fetch('https://api.openai.com/v1/audio/speech', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${openaiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'tts-1',
+                    voice: bob.openaiVoice,
+                    input: text
+                })
+            });
+
+            if (!oaiRes.ok) {
+                const errText = await oaiRes.text().catch(() => '');
+                throw new Error(`OpenAI TTS error ${oaiRes.status}: ${errText}`);
+            }
+
+            blob = await oaiRes.blob();
         }
 
-        const blob = await ttsRes.blob();
-        const url = URL.createObjectURL(blob);
+        url = URL.createObjectURL(blob);
 
         return new Promise((resolve, reject) => {
             // Clean up previous audio

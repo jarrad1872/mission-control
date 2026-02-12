@@ -335,7 +335,16 @@
                                     <input type="password" id="settingsOpenAIKey" name="openaiKey" placeholder="sk-...">
                                     <button type="button" class="btn btn-icon" id="toggleOpenAIVis" title="Show/hide">👁️</button>
                                 </div>
-                                <span class="form-hint">Required for Bob Chat (STT + TTS)</span>
+                                <span class="form-hint">Required for Bob Chat STT (Whisper)</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="settingsElevenLabsKey">ElevenLabs API Key</label>
+                                <div class="token-input-row">
+                                    <input type="password" id="settingsElevenLabsKey" name="elevenlabsKey" placeholder="sk_...">
+                                    <button type="button" class="btn btn-icon" id="toggleElevenLabsVis" title="Show/hide">👁️</button>
+                                </div>
+                                <span class="form-hint">Required for Bob Chat Expressive TTS</span>
                             </div>
 
                             <div class="settings-status" id="settingsStatus">
@@ -461,9 +470,11 @@
         const urlInput = document.getElementById('settingsGatewayUrl');
         const tokenInput = document.getElementById('settingsToken');
         const openaiInput = document.getElementById('settingsOpenAIKey');
+        const elInput = document.getElementById('settingsElevenLabsKey');
         if (urlInput) urlInput.value = Gateway.getUrl();
         if (tokenInput) tokenInput.value = Gateway.getToken();
         if (openaiInput) openaiInput.value = localStorage.getItem('mc_openai_key') || '';
+        if (elInput) elInput.value = localStorage.getItem('mc_elevenlabs_key') || '';
         updateSettingsStatus(Gateway.getStatus());
         document.getElementById('settingsModal')?.classList.add('open');
         if (!Gateway.hasToken()) {
@@ -651,13 +662,21 @@
         e.preventDefault();
         const form = e.target;
 
-        // Always save OpenAI key first (independent of Gateway)
+        // Save TTS keys (independent of Gateway)
         const openaiKey = (document.getElementById('settingsOpenAIKey')?.value || '').trim();
         if (openaiKey) {
             localStorage.setItem('mc_openai_key', openaiKey);
         } else {
             localStorage.removeItem('mc_openai_key');
         }
+
+        const elKey = (document.getElementById('settingsElevenLabsKey')?.value || '').trim();
+        if (elKey) {
+            localStorage.setItem('mc_elevenlabs_key', elKey);
+        } else {
+            localStorage.removeItem('mc_elevenlabs_key');
+        }
+
         // Update Bob Chat API notice if available
         if (window.BobChat?.updateApiNotice) {
             window.BobChat.updateApiNotice();
@@ -667,11 +686,11 @@
         const token = form.token.value.trim();
 
         if (!url) {
-            showToast('OpenAI key saved. Please enter a gateway URL for full setup.', 'warning');
+            showToast('TTS keys saved. Please enter a gateway URL for full setup.', 'warning');
             return;
         }
         if (!token) {
-            showToast('OpenAI key saved. Please enter an auth token for full setup.', 'warning');
+            showToast('TTS keys saved. Please enter an auth token for full setup.', 'warning');
             return;
         }
 
@@ -820,6 +839,18 @@
         document.getElementById('toggleOpenAIVis')?.addEventListener('click', () => {
             const input = document.getElementById('settingsOpenAIKey');
             const btn = document.getElementById('toggleOpenAIVis');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        });
+
+        document.getElementById('toggleElevenLabsVis')?.addEventListener('click', () => {
+            const input = document.getElementById('settingsElevenLabsKey');
+            const btn = document.getElementById('toggleElevenLabsVis');
             if (input.type === 'password') {
                 input.type = 'text';
                 btn.textContent = '🙈';
