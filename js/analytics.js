@@ -44,7 +44,7 @@ const Analytics = (function() {
     const rangeSelect = document.getElementById('analyticsRange');
     if (rangeSelect) {
       rangeSelect.addEventListener('change', (e) => {
-        range = parseInt(e.target.value);
+        range = parseInt(e.target.value, 10);
         render();
       });
     }
@@ -108,8 +108,10 @@ const Analytics = (function() {
   function renderDashboard() {
     const week = usageData.week || {};
     const today = usageData.today || {};
-    const days = week.days || [];
-    const byModel = week.byModel || {};
+    const rangeData = getRangeData(range);
+    const days = rangeData.days;
+    const byModel = rangeData.byModel;
+    const rangeTotals = rangeData.totals;
 
     // Calculate stats
     const avgDailyTokens = days.length > 0
@@ -133,7 +135,7 @@ const Analytics = (function() {
           <div class="stat-card primary">
             <div class="stat-icon">📊</div>
             <div class="stat-content">
-              <div class="stat-value">${Utils.formatNumber(week.totalTokens || 0)}</div>
+              <div class="stat-value">${Utils.formatNumber(rangeTotals.totalTokens || 0)}</div>
               <div class="stat-label">${range}-Day Tokens</div>
             </div>
           </div>
@@ -154,8 +156,8 @@ const Analytics = (function() {
           <div class="stat-card">
             <div class="stat-icon">💬</div>
             <div class="stat-content">
-              <div class="stat-value">${week.sessions || 0}</div>
-              <div class="stat-label">Sessions (7d)</div>
+              <div class="stat-value">${rangeTotals.sessions || 0}</div>
+              <div class="stat-label">Sessions (${range}d)</div>
             </div>
           </div>
         </div>
@@ -196,6 +198,48 @@ const Analytics = (function() {
         ` : ''}
       </div>
     `;
+  }
+
+  function getRangeData(daysRange) {
+    const sourceDays = usageData?.week?.days || usageData?.days || [];
+    const dayMap = new Map();
+
+    sourceDays.forEach((day) => {
+      if (!day?.date) return;
+      const key = day.date;
+      const existing = dayMap.get(key) || { date: key, totalTokens: 0, sessions: 0, byModel: {} };
+      existing.totalTokens += day.totalTokens || 0;
+      existing.sessions += day.sessions || 0;
+      if (day.byModel) {
+        Object.entries(day.byModel).forEach(([model, tokens]) => {
+          existing.byModel[model] = (existing.byModel[model] || 0) + (tokens || 0);
+        });
+      }
+      dayMap.set(key, existing);
+    });
+
+    const sortedDates = Array.from(dayMap.keys()).sort();
+    const endDate = sortedDates.length > 0 ? new Date(sortedDates[sortedDates.length - 1]) : new Date();
+    const days = [];
+
+    for (let i = daysRange - 1; i >= 0; i--) {
+      const d = new Date(endDate);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      days.push(dayMap.get(key) || { date: key, totalTokens: 0, sessions: 0, byModel: {} });
+    }
+
+    const byModel = {};
+    const totals = { totalTokens: 0, sessions: 0 };
+    days.forEach((day) => {
+      totals.totalTokens += day.totalTokens || 0;
+      totals.sessions += day.sessions || 0;
+      Object.entries(day.byModel || {}).forEach(([model, tokens]) => {
+        byModel[model] = (byModel[model] || 0) + (tokens || 0);
+      });
+    });
+
+    return { days, byModel, totals };
   }
 
   /**

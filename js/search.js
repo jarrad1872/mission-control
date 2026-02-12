@@ -5,24 +5,27 @@
 const SearchModule = (function() {
     let searchIndex = [];
     let searchTimeout = null;
+    let listenersBound = false;
     const DEBOUNCE_MS = 200;
 
     /**
      * Initialize the search module
      */
     async function init() {
-        const data = await DataModule.loadSearchIndex();
-        if (data && data.files) {
-            searchIndex = data.files;
-        }
-        
+        await loadSearchIndexData();
         setupListeners();
+    }
+    
+    async function loadSearchIndexData() {
+        const data = await DataModule.loadSearchIndex();
+        searchIndex = data?.files || [];
     }
 
     /**
      * Set up event listeners
      */
     function setupListeners() {
+        if (listenersBound) return;
         const searchInput = document.getElementById('searchInput');
         const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
         
@@ -66,6 +69,8 @@ const SearchModule = (function() {
                 }
             });
         });
+        
+        listenersBound = true;
     }
     
     /**
@@ -464,8 +469,7 @@ const SearchModule = (function() {
      * Refresh search index
      */
     async function refresh() {
-        searchIndex = [];
-        await init();
+        await loadSearchIndexData();
         // Re-run current search if any
         const searchInput = document.getElementById('searchInput');
         if (searchInput && searchInput.value) {

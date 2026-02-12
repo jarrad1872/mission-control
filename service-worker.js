@@ -55,6 +55,7 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.error('[SW] Cache failed:', error);
+        throw error;
       })
   );
 });
@@ -107,14 +108,22 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(cacheFirst(request));
 });
 
+function getCacheKey(request) {
+  const url = new URL(request.url);
+  url.search = '';
+  url.hash = '';
+  return url.pathname;
+}
+
 // Cache-first strategy
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
+  const cacheKey = getCacheKey(request);
+  const cachedResponse = await cache.match(cacheKey);
   
   if (cachedResponse) {
     // Return cache hit, update cache in background
-    updateCache(request, cache);
+    updateCache(request, cache, cacheKey);
     return cachedResponse;
   }
   
@@ -123,7 +132,7 @@ async function cacheFirst(request) {
     
     // Cache successful responses
     if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
+      cache.put(cacheKey, networkResponse.clone());
     }
     
     return networkResponse;
@@ -140,19 +149,20 @@ async function cacheFirst(request) {
 // Network-first strategy
 async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
+  const cacheKey = getCacheKey(request);
   
   try {
     const networkResponse = await fetch(request);
     
     // Cache successful responses
     if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
+      cache.put(cacheKey, networkResponse.clone());
     }
     
     return networkResponse;
   } catch (error) {
     // Fall back to cache
-    const cachedResponse = await cache.match(request);
+    const cachedResponse = await cache.match(cacheKey);
     
     if (cachedResponse) {
       return cachedResponse;
@@ -168,11 +178,11 @@ async function networkFirst(request) {
 }
 
 // Background cache update
-async function updateCache(request, cache) {
+async function updateCache(request, cache, cacheKey) {
   try {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
+      cache.put(cacheKey || getCacheKey(request), networkResponse.clone());
     }
   } catch (error) {
     // Silent fail for background updates

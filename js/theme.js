@@ -25,7 +25,7 @@
         // Load saved preference or detect system preference
         const savedTheme = localStorage.getItem(STORAGE_KEY);
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = savedTheme || (prefersDark ? 'dark' : 'dark'); // Default to dark
+        const theme = savedTheme || (prefersDark ? 'dark' : 'light');
         
         applyTheme(theme);
         setupToggle();

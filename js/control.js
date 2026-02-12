@@ -48,14 +48,14 @@
                         <div class="form-group flex-2">
                             <label for="gateway-url">Gateway URL</label>
                             <input type="url" id="gateway-url" 
-                                   value="${Gateway.getUrl()}" 
+                                   value="${Utils.escapeHtml(String(Gateway.getUrl() || ''))}" 
                                    placeholder="https://your-tunnel.trycloudflare.com">
                         </div>
                         <div class="form-group flex-3">
                             <label for="gateway-token">Auth Token</label>
                             <div class="token-input-wrapper">
                                 <input type="password" id="gateway-token" 
-                                       value="${Gateway.getToken()}" 
+                                       value="${Utils.escapeHtml(String(Gateway.getToken() || ''))}" 
                                        placeholder="Enter your gateway token">
                                 <button type="button" class="btn-icon" id="toggle-token-visibility" title="Show/hide token">
                                     👁️

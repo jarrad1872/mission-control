@@ -17,6 +17,7 @@ const KanbanModule = (function() {
     
     let tasksData = null;
     let currentDraggedCard = null;
+    let dragListenersBound = false;
 
     /**
      * Initialize the Kanban board
@@ -193,28 +194,31 @@ const KanbanModule = (function() {
         const container = document.getElementById('kanban-board');
         if (!container) return;
 
-        // Drag start
-        container.addEventListener('dragstart', (e) => {
-            if (e.target.classList.contains('kanban-card')) {
-                currentDraggedCard = e.target;
-                e.target.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', e.target.dataset.taskId);
-            }
-        });
+        if (!dragListenersBound) {
+            // Drag start
+            container.addEventListener('dragstart', (e) => {
+                if (e.target.classList.contains('kanban-card')) {
+                    currentDraggedCard = e.target;
+                    e.target.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', e.target.dataset.taskId);
+                }
+            });
 
-        // Drag end
-        container.addEventListener('dragend', (e) => {
-            if (e.target.classList.contains('kanban-card')) {
-                e.target.classList.remove('dragging');
-                currentDraggedCard = null;
-                
-                // Remove all drop indicators
-                container.querySelectorAll('.kanban-cards').forEach(col => {
-                    col.classList.remove('drag-over');
-                });
-            }
-        });
+            // Drag end
+            container.addEventListener('dragend', (e) => {
+                if (e.target.classList.contains('kanban-card')) {
+                    e.target.classList.remove('dragging');
+                    currentDraggedCard = null;
+                    
+                    // Remove all drop indicators
+                    container.querySelectorAll('.kanban-cards').forEach(col => {
+                        col.classList.remove('drag-over');
+                    });
+                }
+            });
+            dragListenersBound = true;
+        }
 
         // Setup drop zones
         container.querySelectorAll('.kanban-cards').forEach(dropZone => {

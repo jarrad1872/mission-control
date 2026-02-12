@@ -122,29 +122,36 @@ const BobStatusModule = (function() {
             error: 'Error — Needs attention',
             offline: 'Offline'
         };
+        const allowedStatuses = ['active', 'idle', 'error', 'offline'];
+        const safeStatus = allowedStatuses.includes(bob.status) ? bob.status : 'offline';
+        const safeEmoji = Utils.escapeHtml(bob.emoji || '🤖');
+        const safeName = Utils.escapeHtml(bob.name || 'Unknown');
+        const safeChannel = Utils.escapeHtml(bob.channel || 'Unknown channel');
+        const safeDescription = Utils.escapeHtml(bob.description || '');
+        const safeError = Utils.escapeHtml(bob.errorMessage || '');
         
         const contextLevel = getContextLevel(bob.contextPercent || 0);
         
         return `
             <div class="bob-detail-card">
                 <div class="bob-detail-header">
-                    <span class="bob-detail-emoji">${bob.emoji}</span>
+                    <span class="bob-detail-emoji">${safeEmoji}</span>
                     <div class="bob-detail-info">
-                        <h4>${bob.name}</h4>
-                        <span class="bob-detail-channel">${bob.channel || 'Unknown channel'}</span>
+                        <h4>${safeName}</h4>
+                        <span class="bob-detail-channel">${safeChannel}</span>
                     </div>
                 </div>
                 
                 <div class="bob-detail-status">
-                    <span class="bob-detail-status-dot ${bob.status}"></span>
-                    <span class="bob-detail-status-text">${statusLabels[bob.status] || bob.status}</span>
+                    <span class="bob-detail-status-dot ${safeStatus}"></span>
+                    <span class="bob-detail-status-text">${Utils.escapeHtml(statusLabels[safeStatus] || safeStatus)}</span>
                 </div>
                 
-                ${bob.description ? `<p class="bob-detail-description">${bob.description}</p>` : ''}
+                ${bob.description ? `<p class="bob-detail-description">${safeDescription}</p>` : ''}
                 
                 ${bob.errorMessage ? `
                     <div class="bob-error-banner">
-                        ⚠️ ${bob.errorMessage}
+                        ⚠️ ${safeError}
                     </div>
                 ` : ''}
                 
@@ -161,14 +168,14 @@ const BobStatusModule = (function() {
                     ${bob.sessionId ? `
                         <div class="bob-metric-row">
                             <span class="bob-metric-label">Session</span>
-                            <span class="bob-metric-value" style="font-size: 0.75rem;">${bob.sessionId.slice(0, 20)}...</span>
+                            <span class="bob-metric-value" style="font-size: 0.75rem;">${Utils.escapeHtml(bob.sessionId.slice(0, 20))}...</span>
                         </div>
                     ` : ''}
                 </div>
                 
                 <div class="bob-detail-actions">
-                    <button class="bob-action-btn" data-action="message" data-bob="${bob.id}">
-                        💬 Message ${bob.name}
+                    <button class="bob-action-btn" data-action="message" data-bob="${Utils.escapeHtml(bob.id)}">
+                        💬 Message ${safeName}
                     </button>
                     ${bob.channel === 'whatsapp' ? `
                     <a class="bob-action-btn bob-wa-link" href="https://wa.me/18014301004" target="_blank" rel="noopener">
@@ -257,10 +264,10 @@ const BobStatusModule = (function() {
         
         container.innerHTML = bobs.map(bob => {
             return `
-                <button class="bob-chip" data-bob="${bob.id}" title="${bob.name} — ${getStatusText(bob.status)}">
-                    <span class="bob-chip-emoji">${bob.emoji}</span>
-                    <span class="bob-chip-name">${getShortName(bob.name)}</span>
-                    <span class="bob-chip-status ${bob.status}"></span>
+                <button class="bob-chip" data-bob="${Utils.escapeHtml(bob.id)}" title="${Utils.escapeHtml(bob.name)} — ${Utils.escapeHtml(getStatusText(bob.status))}">
+                    <span class="bob-chip-emoji">${Utils.escapeHtml(bob.emoji || '🤖')}</span>
+                    <span class="bob-chip-name">${Utils.escapeHtml(getShortName(bob.name || 'Unknown'))}</span>
+                    <span class="bob-chip-status ${['active','idle','error','offline'].includes(bob.status) ? bob.status : 'offline'}"></span>
                 </button>
             `;
         }).join('');
@@ -305,6 +312,7 @@ const BobStatusModule = (function() {
 
         const sessionKey = BOB_SESSION_KEYS[bobId] || '';
         const topicId = BOB_TOPIC_MAP[bobId];
+        const safeBobName = Utils.escapeHtml(bob.name || 'Bob');
 
         // Create or reuse message modal
         let modal = document.getElementById('bobMessageModal');
@@ -342,7 +350,7 @@ const BobStatusModule = (function() {
         body.innerHTML = `
             <div class="bob-message-form">
                 <textarea id="bobMessageInput" class="bob-message-textarea" rows="4"
-                    placeholder="Type a message to ${bob.name}..."></textarea>
+                    placeholder="Type a message to ${safeBobName}..."></textarea>
                 <div class="bob-message-actions">
                     <button class="bob-msg-send-btn" id="bobMsgSendBtn">
                         📤 Send via Gateway

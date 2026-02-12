@@ -180,6 +180,22 @@ const SessionsModule = (function() {
                 toggleSessionExpand(row.dataset.sessionKey);
             });
         });
+        
+        container.querySelectorAll('.btn-session-action[data-action]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let sessionKey = '';
+                try {
+                    sessionKey = decodeURIComponent(btn.dataset.sessionKey || '');
+                } catch (_) {
+                    return;
+                }
+                
+                if (!sessionKey) return;
+                if (btn.dataset.action === 'history') viewHistory(sessionKey);
+                if (btn.dataset.action === 'copy') copyKey(sessionKey);
+            });
+        });
     }
     
     /**
@@ -245,6 +261,7 @@ const SessionsModule = (function() {
      */
     function renderSessionDetails(session) {
         const kindInfo = KIND_INFO[session.kind] || KIND_INFO.main;
+        const encodedSessionKey = encodeURIComponent(session.key || '');
         
         return `
             <div class="session-details">
@@ -288,10 +305,10 @@ const SessionsModule = (function() {
                 </div>
                 
                 <div class="session-actions">
-                    <button class="btn-session-action" onclick="SessionsModule.viewHistory('${session.key}')" title="View conversation history">
+                    <button class="btn-session-action" data-action="history" data-session-key="${encodedSessionKey}" title="View conversation history">
                         📜 View History
                     </button>
-                    <button class="btn-session-action" onclick="SessionsModule.copyKey('${session.key}')" title="Copy session key">
+                    <button class="btn-session-action" data-action="copy" data-session-key="${encodedSessionKey}" title="Copy session key">
                         📋 Copy Key
                     </button>
                 </div>

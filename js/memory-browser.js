@@ -157,24 +157,25 @@ const MemoryBrowser = (function() {
         }
         
         return Object.entries(entities).map(([key, entity]) => {
-            const config = CATEGORY_CONFIG[category];
             const factCount = entity.factCount || 0;
             const isSelected = selectedEntity === `${category}/${key}`;
+            const encodedKey = encodeURIComponent(key);
+            const safePath = Utils.escapeHtml(`${category}/${key}`);
             
             // Highlight search matches
-            let displayName = formatEntityName(key);
+            let displayName = Utils.escapeHtml(formatEntityName(key));
             if (searchQuery) {
-                const regex = new RegExp(`(${escapeRegex(searchQuery)})`, 'gi');
+                const regex = new RegExp(`(${escapeRegex(Utils.escapeHtml(searchQuery))})`, 'gi');
                 displayName = displayName.replace(regex, '<mark>$1</mark>');
             }
             
             return `
                 <div class="tree-entity ${isSelected ? 'selected' : ''}" 
-                     data-path="${category}/${key}"
-                     onclick="MemoryBrowser.selectEntity('${category}', '${key}')">
+                     data-path="${safePath}"
+                     onclick="MemoryBrowser.selectEntityFromEncoded('${category}', '${encodedKey}')">
                     <div class="entity-info">
                         <span class="entity-name">${displayName}</span>
-                        <span class="entity-preview">${truncate(entity.summary, 50)}</span>
+                        <span class="entity-preview">${Utils.escapeHtml(truncate(entity.summary || '', 50))}</span>
                     </div>
                     <span class="entity-facts" title="${factCount} facts">${factCount}</span>
                 </div>
@@ -226,7 +227,7 @@ const MemoryBrowser = (function() {
             <div class="content-entity-header">
                 <span class="entity-icon" style="color: ${config.color}">${config.icon}</span>
                 <div class="entity-title-info">
-                    <h2>${formatEntityName(key)}</h2>
+                    <h2>${Utils.escapeHtml(formatEntityName(key))}</h2>
                     <span class="entity-category">${config.label}</span>
                 </div>
                 <span class="entity-fact-badge">${entity.factCount || 0} facts</span>
@@ -255,6 +256,16 @@ const MemoryBrowser = (function() {
         `;
     }
     
+    function selectEntityFromEncoded(category, encodedKey) {
+        let key = '';
+        try {
+            key = decodeURIComponent(encodedKey);
+        } catch (_) {
+            return;
+        }
+        return selectEntity(category, key);
+    }
+    
     /**
      * Render facts list
      */
@@ -264,10 +275,10 @@ const MemoryBrowser = (function() {
             return `
                 <div class="fact-item">
                     <span class="fact-category" style="background: ${categoryColor}20; color: ${categoryColor}">
-                        ${fact.category || 'general'}
+                        ${Utils.escapeHtml(fact.category || 'general')}
                     </span>
                     <span class="fact-text">${Utils.escapeHtml(fact.fact)}</span>
-                    <span class="fact-date">${fact.timestamp || ''}</span>
+                    <span class="fact-date">${Utils.escapeHtml(fact.timestamp || '')}</span>
                 </div>
             `;
         }).join('');
@@ -294,7 +305,7 @@ const MemoryBrowser = (function() {
     function renderMarkdown(text) {
         if (!text) return '';
         
-        const lines = text.split('\n');
+        const lines = Utils.escapeHtml(String(text)).split('\n');
         const output = [];
         let inList = false;
         
@@ -433,7 +444,8 @@ const MemoryBrowser = (function() {
         init,
         refresh,
         toggleCategory,
-        selectEntity
+        selectEntity,
+        selectEntityFromEncoded
     };
 })();
 

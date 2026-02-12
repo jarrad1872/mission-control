@@ -6,6 +6,7 @@
 const CalendarModule = (function() {
     let events = [];
     let currentWeekStart = getStartOfWeekUTC(new Date());
+    let listenersBound = false;
 
     function getStartOfWeekUTC(date) {
         const d = new Date(date);
@@ -26,12 +27,14 @@ const CalendarModule = (function() {
     }
 
     function setupListeners() {
+        if (listenersBound) return;
         const prevBtn = document.getElementById('prevWeek');
         const nextBtn = document.getElementById('nextWeek');
         const closeBtn = document.getElementById('closeEventPanel');
         if (prevBtn) prevBtn.addEventListener('click', () => navigateWeek(-1));
         if (nextBtn) nextBtn.addEventListener('click', () => navigateWeek(1));
         if (closeBtn) closeBtn.addEventListener('click', closeEventPanel);
+        listenersBound = true;
     }
 
     function navigateWeek(direction) {
@@ -224,8 +227,9 @@ const CalendarModule = (function() {
     }
 
     async function refresh() {
-        events = [];
-        await init();
+        const data = await DataModule.loadCalendar();
+        events = data?.events || [];
+        render();
     }
 
     function goToToday() {

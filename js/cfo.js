@@ -333,7 +333,7 @@ const CFOModule = (function() {
                 ${company.summary ? `
                     <div class="expanded-section">
                         <h4>Overview</h4>
-                        <p>${company.summary}</p>
+                        <p>${Utils.escapeHtml(company.summary)}</p>
                     </div>
                 ` : ''}
                 
@@ -372,7 +372,7 @@ const CFOModule = (function() {
                         <div class="cfo-alert alert-${alert.severity || 'warning'}">
                             <span class="alert-icon">${getAlertIcon(alert.severity)}</span>
                             <span class="alert-message">${Utils.escapeHtml(alert.message)}</span>
-                            ${alert.company ? `<span class="alert-company">${alert.company}</span>` : ''}
+                            ${alert.company ? `<span class="alert-company">${Utils.escapeHtml(alert.company)}</span>` : ''}
                         </div>
                     `).join('')}
                 </div>
