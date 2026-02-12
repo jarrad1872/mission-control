@@ -422,12 +422,13 @@ const SearchModule = (function() {
         if (!file) return;
 
         const modal = document.getElementById('resultModal');
+        if (!modal) return;
         const title = document.getElementById('modalTitle');
         const content = document.getElementById('modalContent');
         const closeBtn = document.getElementById('closeModal');
         const backdrop = modal.querySelector('.modal-backdrop');
 
-        if (!modal || !title || !content) return;
+        if (!title || !content || !closeBtn || !backdrop) return;
 
         title.textContent = path;
         content.textContent = file.content || 'No content available';
@@ -435,15 +436,18 @@ const SearchModule = (function() {
         modal.classList.add('open');
 
         // Close handlers
-        const closeModal = () => modal.classList.remove('open');
+        let escHandler;
+        const closeModal = () => {
+            modal.classList.remove('open');
+            document.removeEventListener('keydown', escHandler);
+        };
         closeBtn.addEventListener('click', closeModal, { once: true });
         backdrop.addEventListener('click', closeModal, { once: true });
         
         // ESC key
-        const escHandler = (e) => {
+        escHandler = (e) => {
             if (e.key === 'Escape') {
                 closeModal();
-                document.removeEventListener('keydown', escHandler);
             }
         };
         document.addEventListener('keydown', escHandler);

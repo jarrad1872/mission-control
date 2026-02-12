@@ -7,6 +7,8 @@ const MemoryBrowser = (function() {
     let memoryData = null;
     let selectedEntity = null;
     let searchQuery = '';
+    let initialized = false;
+    let eventsBound = false;
     
     const STATIC_DATA_URL = 'data/memory-tree.json';
     
@@ -27,6 +29,8 @@ const MemoryBrowser = (function() {
      * Initialize the memory browser
      */
     async function init() {
+        if (initialized) return;
+        initialized = true;
         console.log('🧠 Initializing Memory Browser...');
         
         await loadMemoryData();
@@ -367,6 +371,7 @@ const MemoryBrowser = (function() {
      * Bind event handlers
      */
     function bindEvents() {
+        if (eventsBound) return;
         // Search input
         const searchInput = document.getElementById('memorySearchInput');
         if (searchInput) {
@@ -390,6 +395,7 @@ const MemoryBrowser = (function() {
                 }, 200);
             });
         }
+        eventsBound = true;
     }
     
     /**
@@ -448,18 +454,6 @@ const MemoryBrowser = (function() {
         selectEntityFromEncoded
     };
 })();
-
-// Initialize when tab becomes active
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if memory tab exists
-    const memoryTab = document.getElementById('memory-tab');
-    if (memoryTab) {
-        // Initialize immediately if visible, otherwise wait for tab click
-        if (memoryTab.classList.contains('active')) {
-            MemoryBrowser.init();
-        }
-    }
-});
 
 // Export for global access
 window.MemoryBrowser = MemoryBrowser;

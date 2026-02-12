@@ -15,7 +15,6 @@
     <meta name="apple-mobile-web-app-title" content="MissionCtrl">
     <meta name="application-name" content="Mission Control">
     <meta name="msapplication-TileColor" content="#e94560">
-    <meta name="msapplication-config" content="icons/browserconfig.xml">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -96,7 +95,7 @@
                 <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">
                     <span class="theme-icon">🌙</span>
                 </button>
-                <button class="btn-refresh" id="refreshBtn" title="Refresh Data">
+                <button class="btn-refresh" id="refreshBtn" title="Refresh Data" aria-label="Refresh Data">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                         <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -197,7 +196,7 @@
                             <option value="14">14 days</option>
                             <option value="30">30 days</option>
                         </select>
-                        <button class="btn-refresh" id="refreshAnalytics" title="Refresh Analytics">
+                        <button class="btn-refresh" id="refreshAnalytics" title="Refresh Analytics" aria-label="Refresh Analytics">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                 <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -300,8 +299,8 @@
                     <button class="bob-chat-audio-unlock" id="bobChatAudioUnlock">🔊 Tap to Enable Audio</button>
                     <div class="bob-chat-messages" id="bobChatMessages"></div>
                     <div class="bob-chat-controls">
-                        <button class="bob-chat-mic" id="bobChatMic">🎤</button>
-                        <button class="bob-chat-clear" id="bobChatClear">🗑️ Clear</button>
+                        <button class="bob-chat-mic" id="bobChatMic" aria-label="Hold to talk">🎤</button>
+                        <button class="bob-chat-clear" id="bobChatClear" aria-label="Clear conversation">🗑️ Clear</button>
                     </div>
                     <div class="bob-chat-api-notice" id="bobChatApiNotice">
                         <p>OpenAI API key required for voice. <button id="bobChatSetKey">Configure →</button></p>
@@ -338,9 +337,9 @@
                 <div class="section-header">
                     <h2>Weekly Schedule</h2>
                     <div class="calendar-nav">
-                        <button class="nav-btn" id="prevWeek">←</button>
+                        <button class="nav-btn" id="prevWeek" aria-label="Previous week">←</button>
                         <span class="current-week" id="currentWeek">Loading...</span>
-                        <button class="nav-btn" id="nextWeek">→</button>
+                        <button class="nav-btn" id="nextWeek" aria-label="Next week">→</button>
                     </div>
                 </div>
                 <div class="calendar-grid" id="calendarGrid">
@@ -446,7 +445,7 @@
             <div class="modal-content modal-bottom-sheet">
                 <div class="modal-header">
                     <h3 id="bobDetailTitle">Bob Details</h3>
-                    <button class="close-btn" id="closeBobDetail">×</button>
+                    <button class="close-btn" id="closeBobDetail" aria-label="Close Bob details">×</button>
                 </div>
                 <div class="modal-body" id="bobDetailContent">
                     <!-- Bob details rendered dynamically -->
@@ -460,7 +459,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modalTitle">File Content</h3>
-                    <button class="close-btn" id="closeModal">×</button>
+                    <button class="close-btn" id="closeModal" aria-label="Close file content">×</button>
                 </div>
                 <div class="modal-body" id="modalBody">
                     <pre id="modalContent"></pre>
@@ -474,7 +473,7 @@
             <div class="modal-content modal-large">
                 <div class="modal-header">
                     <h3 id="historyModalTitle">Session History</h3>
-                    <button class="close-btn" onclick="SessionsModule.closeHistoryModal()">×</button>
+                    <button class="close-btn" onclick="SessionsModule.closeHistoryModal()" aria-label="Close session history">×</button>
                 </div>
                 <div class="modal-body" id="historyModalContent">
                 </div>
@@ -487,7 +486,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="taskDetailTitle">Task Details</h3>
-                    <button class="close-btn">×</button>
+                    <button class="close-btn" aria-label="Close task details">×</button>
                 </div>
                 <div class="modal-body" id="taskDetailContent">
                 </div>
@@ -498,7 +497,7 @@
         <div class="event-detail-panel" id="eventDetailPanel">
             <div class="panel-header">
                 <h3 id="eventDetailTitle">Select an event</h3>
-                <button class="close-btn" id="closeEventPanel">×</button>
+                <button class="close-btn" id="closeEventPanel" aria-label="Close event details">×</button>
             </div>
             <div class="panel-content" id="eventDetailContent">
                 <p class="placeholder-text">Click on a calendar event to view details.</p>

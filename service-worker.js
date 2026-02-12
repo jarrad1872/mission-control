@@ -45,9 +45,17 @@ self.addEventListener('install', (event) => {
   
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('[SW] Caching core assets');
-        return cache.addAll(PRECACHE_ASSETS);
+        await Promise.all(
+          PRECACHE_ASSETS.map(async (asset) => {
+            try {
+              await cache.add(asset);
+            } catch (error) {
+              console.warn('[SW] Failed to precache asset:', asset, error);
+            }
+          })
+        );
       })
       .then(() => {
         // Skip waiting to activate immediately
@@ -55,7 +63,6 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.error('[SW] Cache failed:', error);
-        throw error;
       })
   );
 });
@@ -99,7 +106,7 @@ self.addEventListener('fetch', (event) => {
   }
   
   // Data files: network-first (fresh data preferred)
-  if (url.pathname.startsWith('/data/') || url.pathname.endsWith('.json')) {
+  if (url.pathname.includes('/data/') || url.pathname.endsWith('.json')) {
     event.respondWith(networkFirst(request));
     return;
   }
@@ -217,8 +224,8 @@ self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
     body: data.body || 'New activity in Mission Control',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-72.png',
+    icon: `${BASE_PATH}/icons/icon-192.png`,
+    badge: `${BASE_PATH}/icons/icon-72.png`,
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/'

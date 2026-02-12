@@ -8,6 +8,8 @@ const PWA = {
   isInstalled: false,
   isOnline: navigator.onLine,
   swRegistration: null,
+  updateCheckTimer: null,
+  isReloadingForUpdate: false,
   
   /**
    * Initialize PWA functionality
@@ -42,6 +44,7 @@ const PWA = {
       // Check for updates
       this.swRegistration.addEventListener('updatefound', () => {
         const newWorker = this.swRegistration.installing;
+        if (!newWorker) return;
         console.log('[PWA] New service worker installing...');
         
         newWorker.addEventListener('statechange', () => {
@@ -53,8 +56,8 @@ const PWA = {
       });
       
       // Periodic update check (every hour)
-      setInterval(() => {
-        this.swRegistration.update();
+      this.updateCheckTimer = setInterval(() => {
+        this.swRegistration?.update();
       }, 60 * 60 * 1000);
       
     } catch (error) {
@@ -239,9 +242,21 @@ const PWA = {
    * Apply pending service worker update
    */
   applyUpdate() {
+    if (this.isReloadingForUpdate) return;
+    this.isReloadingForUpdate = true;
+
+    const reloadOnControllerChange = () => {
+      navigator.serviceWorker.removeEventListener('controllerchange', reloadOnControllerChange);
+      window.location.reload();
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', reloadOnControllerChange);
+
     if (this.swRegistration && this.swRegistration.waiting) {
       this.swRegistration.waiting.postMessage('skipWaiting');
+      return;
     }
+
+    // No waiting worker available; fallback to reload.
     window.location.reload();
   },
   
@@ -256,7 +271,7 @@ const PWA = {
    * Clear all caches (for debugging)
    */
   async clearCache() {
-    if (this.swRegistration) {
+    if (this.swRegistration?.active) {
       this.swRegistration.active.postMessage('clearCache');
     }
     

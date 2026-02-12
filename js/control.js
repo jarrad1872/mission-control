@@ -24,6 +24,7 @@
 
     // State
     let connectionStatus = 'disconnected';
+    let initialized = false;
 
     // ========================================
     // UI Rendering
@@ -560,6 +561,8 @@
     // ========================================
 
     function init() {
+        if (initialized) return;
+        initialized = true;
         renderControlPanel();
         console.log('🎮 Control Panel initialized (hooks API)');
     }

@@ -218,17 +218,16 @@ const KanbanModule = (function() {
                     });
                 }
             });
-            dragListenersBound = true;
-        }
 
-        // Setup drop zones
-        container.querySelectorAll('.kanban-cards').forEach(dropZone => {
-            dropZone.addEventListener('dragover', (e) => {
+            // Drag over/drop handling via delegation to avoid duplicate listeners after re-render
+            container.addEventListener('dragover', (e) => {
+                const dropZone = e.target.closest('.kanban-cards');
+                if (!dropZone || !container.contains(dropZone)) return;
+
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
                 dropZone.classList.add('drag-over');
-                
-                // Find position to insert
+
                 const afterElement = getDragAfterElement(dropZone, e.clientY);
                 const dragging = document.querySelector('.dragging');
                 if (dragging) {
@@ -240,25 +239,30 @@ const KanbanModule = (function() {
                 }
             });
 
-            dropZone.addEventListener('dragleave', (e) => {
-                // Only remove if actually leaving the drop zone
+            container.addEventListener('dragleave', (e) => {
+                const dropZone = e.target.closest('.kanban-cards');
+                if (!dropZone || !container.contains(dropZone)) return;
                 if (!dropZone.contains(e.relatedTarget)) {
                     dropZone.classList.remove('drag-over');
                 }
             });
 
-            dropZone.addEventListener('drop', (e) => {
+            container.addEventListener('drop', (e) => {
+                const dropZone = e.target.closest('.kanban-cards');
+                if (!dropZone || !container.contains(dropZone)) return;
+
                 e.preventDefault();
                 dropZone.classList.remove('drag-over');
-                
+
                 const taskId = e.dataTransfer.getData('text/plain');
                 const newColumn = dropZone.dataset.column;
-                
                 if (taskId && newColumn) {
                     moveTask(taskId, newColumn);
                 }
             });
-        });
+
+            dragListenersBound = true;
+        }
     }
 
     /**

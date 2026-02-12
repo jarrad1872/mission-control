@@ -14,6 +14,9 @@ const ActivityModule = (function() {
     let isLive = false;
     let soundEnabled = false;
     let notificationCount = 0;
+    let relativeTimeInterval = null;
+    let listenersBound = false;
+    let initialized = false;
     
     // Config
     const BASE_POLL_INTERVAL = 10000;  // 10 seconds
@@ -25,6 +28,8 @@ const ActivityModule = (function() {
      * Initialize the activity feed
      */
     async function init() {
+        if (initialized) return;
+        initialized = true;
         renderLiveHeader();
         setupListeners();
         await fetchAndRender();
@@ -35,7 +40,7 @@ const ActivityModule = (function() {
      * Render the live indicator header
      */
     function renderLiveHeader() {
-        const sectionHeader = document.querySelector('#activity-tab .section-header h2');
+        const sectionHeader = document.querySelector('#dashboard-tab [data-section="activity-feed"] .section-header h2');
         if (sectionHeader) {
             sectionHeader.innerHTML = `
                 Activity Feed
@@ -47,12 +52,19 @@ const ActivityModule = (function() {
             `;
         }
         
-        // Add notification badge and sound toggle to filters
-        const filters = document.querySelector('#activity-tab .filters');
-        if (filters) {
+        // Add notification/date/sound controls to the Activity section header
+        const headerRight = document.querySelector('#dashboard-tab [data-section="activity-feed"] .section-header-right');
+        if (headerRight && !document.getElementById('activityControls')) {
             const controls = document.createElement('div');
+            controls.id = 'activityControls';
             controls.className = 'activity-controls';
             controls.innerHTML = `
+                <select id="dateRange" class="filter-select" title="Date range">
+                    <option value="1">24h</option>
+                    <option value="7" selected>7d</option>
+                    <option value="30">30d</option>
+                    <option value="all">All</option>
+                </select>
                 <span class="new-badge" id="newActivityBadge" style="display: none;">
                     <span class="badge-count">0</span> new
                 </span>
@@ -60,7 +72,7 @@ const ActivityModule = (function() {
                     🔇
                 </button>
             `;
-            filters.prepend(controls);
+            headerRight.prepend(controls);
         }
     }
 
@@ -68,6 +80,7 @@ const ActivityModule = (function() {
      * Set up event listeners for filters and controls
      */
     function setupListeners() {
+        if (listenersBound) return;
         const typeFilter = document.getElementById('activityType');
         const dateFilter = document.getElementById('dateRange');
         const soundToggle = document.getElementById('soundToggle');
@@ -87,10 +100,11 @@ const ActivityModule = (function() {
         }
         
         // Update relative times every minute
-        setInterval(updateRelativeTimes, 60000);
+        relativeTimeInterval = setInterval(updateRelativeTimes, 60000);
         
         // Visibility change - pause/resume polling
         document.addEventListener('visibilitychange', handleVisibilityChange);
+        listenersBound = true;
     }
 
     /**
@@ -311,7 +325,10 @@ const ActivityModule = (function() {
         if (indicator) {
             indicator.classList.toggle('live', live);
             indicator.classList.toggle('offline', !live);
-            indicator.querySelector('.live-text').textContent = live ? 'LIVE' : 'OFFLINE';
+            const liveText = indicator.querySelector('.live-text');
+            if (liveText) {
+                liveText.textContent = live ? 'LIVE' : 'OFFLINE';
+            }
         }
     }
 
@@ -377,7 +394,7 @@ const ActivityModule = (function() {
             if (selectedRange !== 'all') {
                 const itemDate = new Date(item.timestamp);
                 const cutoff = new Date();
-                cutoff.setDate(cutoff.getDate() - parseInt(selectedRange));
+                cutoff.setDate(cutoff.getDate() - parseInt(selectedRange, 10));
                 if (itemDate < cutoff) {
                     return false;
                 }
@@ -557,6 +574,15 @@ const ActivityModule = (function() {
             clearInterval(pollInterval);
             pollInterval = null;
         }
+        if (relativeTimeInterval) {
+            clearInterval(relativeTimeInterval);
+            relativeTimeInterval = null;
+        }
+        if (listenersBound) {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            listenersBound = false;
+        }
+        initialized = false;
     }
 
     return {

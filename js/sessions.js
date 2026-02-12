@@ -98,7 +98,8 @@ const SessionsModule = (function() {
         // Filter buttons
         document.querySelectorAll('[data-session-filter]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                currentFilter = e.target.dataset.sessionFilter;
+                const clicked = e.currentTarget;
+                currentFilter = clicked.dataset.sessionFilter;
                 document.querySelectorAll('[data-session-filter]').forEach(b => 
                     b.classList.toggle('active', b.dataset.sessionFilter === currentFilter)
                 );
