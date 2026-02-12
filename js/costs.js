@@ -28,6 +28,13 @@ const CostsModule = (function() {
             : safeValue.toLocaleString('en-US');
         return escapeHtml(formatted);
     }
+
+    function getCostLevelClass(tokenCount) {
+        const value = toFiniteNumber(tokenCount, 0);
+        if (value >= 150000) return 'cost-high';
+        if (value >= 50000) return 'cost-medium';
+        return 'cost-low';
+    }
     
     // Model display names
     const MODEL_NAMES = {
@@ -202,17 +209,19 @@ const CostsModule = (function() {
         const tokens = data.today?.tokens || { input: 0, output: 0, cacheRead: 0 };
         const todaySessions = Math.max(0, Math.floor(toFiniteNumber(data.today?.sessions, 0)));
         const weekSessions = Math.max(0, Math.floor(toFiniteNumber(data.week?.sessions, 0)));
+        const todayCostClass = getCostLevelClass(todayTokens);
+        const weekCostClass = getCostLevelClass(weekTokens);
         
         container.innerHTML = `
             <div class="cost-summary">
                 <div class="cost-card">
                     <div class="cost-label">Today</div>
-                    <div class="cost-amount">${formatTokens(todayTokens)}</div>
+                    <div class="cost-amount ${todayCostClass}">${formatTokens(todayTokens)}</div>
                     <div class="cost-tokens">${todaySessions} session${todaySessions !== 1 ? 's' : ''}</div>
                 </div>
                 <div class="cost-card">
                     <div class="cost-label">This Week</div>
-                    <div class="cost-amount">${formatTokens(weekTokens)}</div>
+                    <div class="cost-amount ${weekCostClass}">${formatTokens(weekTokens)}</div>
                     <div class="cost-tokens">${weekSessions} session${weekSessions !== 1 ? 's' : ''}</div>
                 </div>
             </div>

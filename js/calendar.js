@@ -157,7 +157,8 @@ const CalendarModule = (function() {
         } else {
             eventsHtml = scheduled.map(e => renderEvent(e)).join('');
             if (background.length > 0) {
-                eventsHtml += `<div class="calendar-bg-tasks" title="${background.map(b => b.title).join(', ')}">
+                const safeBackgroundTitle = Utils.escapeHtml(background.map(b => b.title || 'Untitled').join(', '));
+                eventsHtml += `<div class="calendar-bg-tasks" title="${safeBackgroundTitle}">
                     ⚙️ ${background.length} background task${background.length > 1 ? 's' : ''}
                 </div>`;
             }
@@ -186,8 +187,10 @@ const CalendarModule = (function() {
         };
         const color = typeColors[event.type] || '#4ecdc4';
 
+        const safeEventId = Utils.escapeHtml(String(event?.id ?? ''));
+
         return `
-            <div class="calendar-event" data-event-id="${event.id}" style="border-left: 3px solid ${color}">
+            <div class="calendar-event" data-event-id="${safeEventId}" style="border-left: 3px solid ${color}">
                 <div class="event-title">${Utils.escapeHtml(event.title)}</div>
                 ${event.time ? `<div class="event-time">${Utils.escapeHtml(event.time)}</div>` : ''}
                 ${event.recurring ? `<div class="event-recurrence">${Utils.escapeHtml(event.recurring)}</div>` : ''}
@@ -196,7 +199,7 @@ const CalendarModule = (function() {
     }
 
     function showEventDetails(eventId) {
-        const event = events.find(e => e.id === eventId);
+        const event = events.find(e => String(e?.id ?? '') === String(eventId ?? ''));
         if (!event) return;
 
         const panel = document.getElementById('eventDetailPanel');

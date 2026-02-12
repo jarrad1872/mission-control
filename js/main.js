@@ -150,6 +150,13 @@
                 document.getElementById('searchInput')?.focus();
             }, 100);
         }
+
+        // Lazy-render analytics when its tab is opened
+        if (tabId === 'stats' && window.Analytics?.render) {
+            Promise.resolve(window.Analytics.render()).catch((error) => {
+                console.error('Analytics render error:', error);
+            });
+        }
     }
 
     /**
@@ -261,9 +268,11 @@
                     ActivityModule.refresh(),
                     CalendarModule.refresh(),
                     SearchModule.refresh(),
+                    SessionsModule.refresh(),
                     KanbanModule.refresh(),
                     MemoryBrowser.refresh(),
-                    CFOModule?.refresh?.()
+                    CFOModule?.refresh?.(),
+                    Analytics?.refresh?.()
                 ]);
                 
                 updateStatus('online');

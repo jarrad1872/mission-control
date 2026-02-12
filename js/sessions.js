@@ -42,6 +42,15 @@ const SessionsModule = (function() {
         'group': { label: 'Group', color: '#ff6b8a', icon: '👥' },
         'dm': { label: 'DM', color: '#ffc107', icon: '💬' }
     };
+
+    function toFiniteNumber(value, fallback = 0) {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+    }
+
+    function toContextPercent(value) {
+        return Math.max(0, Math.min(100, Math.round(toFiniteNumber(value, 0))));
+    }
     
     /**
      * Initialize the module
@@ -136,13 +145,13 @@ const SessionsModule = (function() {
                 sorted.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
                 break;
             case 'tokens':
-                sorted.sort((a, b) => b.totalTokens - a.totalTokens);
+                sorted.sort((a, b) => toFiniteNumber(b?.totalTokens, 0) - toFiniteNumber(a?.totalTokens, 0));
                 break;
             case 'name':
-                sorted.sort((a, b) => a.key.localeCompare(b.key));
+                sorted.sort((a, b) => String(a?.key || '').localeCompare(String(b?.key || '')));
                 break;
             case 'context':
-                sorted.sort((a, b) => b.contextPercent - a.contextPercent);
+                sorted.sort((a, b) => toFiniteNumber(b?.contextPercent, 0) - toFiniteNumber(a?.contextPercent, 0));
                 break;
         }
         
@@ -156,7 +165,8 @@ const SessionsModule = (function() {
         const container = document.getElementById('sessionsListContainer');
         if (!container || !data) return;
         
-        let sessions = filterSessions(data.sessions || []);
+        const sourceSessions = Array.isArray(data.sessions) ? data.sessions : [];
+        let sessions = filterSessions(sourceSessions);
         sessions = sortSessions(sessions);
         
         // Update counts
@@ -203,21 +213,24 @@ const SessionsModule = (function() {
      * Render a single session row
      */
     function renderSessionRow(session) {
-        const kindInfo = KIND_INFO[session.kind] || KIND_INFO.main;
-        const channelIcon = CHANNEL_ICONS[session.channel] || CHANNEL_ICONS.default;
-        const isExpanded = expandedSessions.has(session.key);
-        
-        // Parse session key for display
-        const keyParts = session.key.split(':');
+        const kindInfo = KIND_INFO[session?.kind] || KIND_INFO.main;
+        const channelIcon = CHANNEL_ICONS[session?.channel] || CHANNEL_ICONS.default;
+        const sessionKey = String(session?.key || '');
+        const isExpanded = expandedSessions.has(sessionKey);
+        const contextPercent = toContextPercent(session?.contextPercent);
+        const totalTokens = toFiniteNumber(session?.totalTokens, 0);
+        const messageCount = Math.max(0, Math.floor(toFiniteNumber(session?.messageCount, 0)));
+        const statusTime = session?.lastMessageTime || null;
+
         const displayName = getDisplayName(session);
         const safeDisplayName = Utils.escapeHtml(displayName);
-        const safeModel = Utils.escapeHtml(session.model);
-        const safeLabel = session.label ? Utils.escapeHtml(session.label) : '';
-        const safeSessionKey = Utils.escapeHtml(session.key);
+        const safeModel = Utils.escapeHtml(session?.model || 'Unknown');
+        const safeLabel = session?.label ? Utils.escapeHtml(session.label) : '';
+        const safeSessionKey = Utils.escapeHtml(sessionKey);
         
         // Token bar color based on context
-        const contextClass = session.contextPercent > 80 ? 'critical' : 
-                            session.contextPercent > 50 ? 'warning' : 'healthy';
+        const contextClass = contextPercent > 80 ? 'critical' : 
+                            contextPercent > 50 ? 'warning' : 'healthy';
         
         return `
             <div class="session-row ${isExpanded ? 'expanded' : ''}" data-session-key="${safeSessionKey}">
@@ -234,21 +247,21 @@ const SessionsModule = (function() {
                         </div>
                         <div class="session-meta">
                             <span class="session-model">${safeModel}</span>
-                            <span class="session-msgs">${session.messageCount || 0} msgs</span>
-                            ${session.label ? `<span class="session-label">${safeLabel}</span>` : ''}
+                            <span class="session-msgs">${messageCount} msgs</span>
+                            ${session?.label ? `<span class="session-label">${safeLabel}</span>` : ''}
                         </div>
                     </div>
                     
                     <div class="session-tokens">
-                        <div class="tokens-value">${Utils.formatTokens(session.totalTokens)}</div>
+                        <div class="tokens-value">${Utils.formatTokens(totalTokens)}</div>
                         <div class="context-bar-small ${contextClass}">
-                            <div class="context-fill-small" style="width: ${session.contextPercent}%"></div>
+                            <div class="context-fill-small" style="width: ${contextPercent}%"></div>
                         </div>
-                        <div class="context-label">${session.contextPercent}% ctx</div>
+                        <div class="context-label">${contextPercent}% ctx</div>
                     </div>
                     
                     <div class="session-time">
-                        ${Utils.formatRelativeTime(session.lastMessageTime)}
+                        ${Utils.formatRelativeTime(statusTime)}
                     </div>
                     
                     <div class="session-expand-icon">
@@ -265,13 +278,15 @@ const SessionsModule = (function() {
      * Render expanded session details
      */
     function renderSessionDetails(session) {
-        const kindInfo = KIND_INFO[session.kind] || KIND_INFO.main;
-        const encodedSessionKey = encodeURIComponent(session.key || '');
-        const safeSessionKey = Utils.escapeHtml(session.key);
-        const safeChannel = Utils.escapeHtml(session.channel);
-        const safeModel = Utils.escapeHtml(session.model);
-        const safeParentSession = session.parentSession ? Utils.escapeHtml(truncateKey(session.parentSession)) : '';
-        const safeSchedule = session.schedule ? Utils.escapeHtml(session.schedule) : '';
+        const sessionKey = String(session?.key || '');
+        const encodedSessionKey = encodeURIComponent(sessionKey);
+        const safeSessionKey = Utils.escapeHtml(sessionKey);
+        const safeChannel = Utils.escapeHtml(session?.channel || 'Unknown');
+        const safeModel = Utils.escapeHtml(session?.model || 'Unknown');
+        const safeParentSession = session?.parentSession ? Utils.escapeHtml(truncateKey(session.parentSession)) : '';
+        const safeSchedule = session?.schedule ? Utils.escapeHtml(session.schedule) : '';
+        const safeTotalTokens = toFiniteNumber(session?.totalTokens, 0).toLocaleString('en-US');
+        const safeLastMessage = Utils.escapeHtml(session?.lastMessage || 'No message content');
         
         return `
             <div class="session-details">
@@ -290,15 +305,15 @@ const SessionsModule = (function() {
                     </div>
                     <div class="info-item">
                         <span class="info-label">Total Tokens</span>
-                        <span class="info-value">${session.totalTokens.toLocaleString()}</span>
+                        <span class="info-value">${safeTotalTokens}</span>
                     </div>
-                    ${session.parentSession ? `
+                    ${session?.parentSession ? `
                     <div class="info-item">
                         <span class="info-label">Parent Session</span>
                         <code class="info-value">${safeParentSession}</code>
                     </div>
                     ` : ''}
-                    ${session.schedule ? `
+                    ${session?.schedule ? `
                     <div class="info-item">
                         <span class="info-label">Schedule</span>
                         <code class="info-value">${safeSchedule}</code>
@@ -309,9 +324,9 @@ const SessionsModule = (function() {
                 <div class="last-message-box">
                     <div class="last-message-header">
                         <span>Last Message</span>
-                        <span class="last-message-time">${formatDateTime(session.lastMessageTime)}</span>
+                        <span class="last-message-time">${formatDateTime(session?.lastMessageTime)}</span>
                     </div>
-                    <div class="last-message-content">${Utils.escapeHtml(session.lastMessage)}</div>
+                    <div class="last-message-content">${safeLastMessage}</div>
                 </div>
                 
                 <div class="session-actions">
@@ -346,7 +361,8 @@ const SessionsModule = (function() {
         const modal = document.getElementById('sessionHistoryModal');
         if (!modal) return;
         
-        const session = data.sessions.find(s => s.key === sessionKey);
+        const sessions = Array.isArray(data?.sessions) ? data.sessions : [];
+        const session = sessions.find(s => s.key === sessionKey);
         if (!session) return;
         
         const title = document.getElementById('historyModalTitle');
@@ -354,12 +370,14 @@ const SessionsModule = (function() {
         
         if (title) title.textContent = `History: ${getDisplayName(session)}`;
         if (content) {
+            const safeKey = Utils.escapeHtml(truncateKey(sessionKey));
+            const safeMsgCount = Math.max(0, Math.floor(toFiniteNumber(session?.messageCount, 0)));
             content.innerHTML = `
                 <div class="history-placeholder">
                     <span class="placeholder-icon">📜</span>
                     <p>Conversation history would load here</p>
-                    <p class="placeholder-hint">Session: <code>${truncateKey(sessionKey)}</code></p>
-                    <p class="placeholder-hint">${session.messageCount || 0} messages in session</p>
+                    <p class="placeholder-hint">Session: <code>${safeKey}</code></p>
+                    <p class="placeholder-hint">${safeMsgCount} messages in session</p>
                 </div>
             `;
         }
@@ -404,15 +422,17 @@ const SessionsModule = (function() {
      * Get display name from session
      */
     function getDisplayName(session) {
-        if (session.label) return session.label;
+        if (session?.label) return session.label;
         
-        const parts = session.key.split(':');
+        const key = String(session?.key || '');
+        const parts = key ? key.split(':') : [];
+        const tail = parts.length > 0 ? parts[parts.length - 1] : '';
         
-        if (session.kind === 'subagent') {
-            return `Sub-Bob ${parts[parts.length - 1].slice(0, 8)}`;
+        if (session?.kind === 'subagent') {
+            return `Sub-Bob ${tail.slice(0, 8)}`;
         }
         
-        if (session.kind === 'cron') {
+        if (session?.kind === 'cron') {
             return parts.slice(2).join(':') || 'Cron Job';
         }
         
@@ -422,20 +442,21 @@ const SessionsModule = (function() {
             if (topicIdx > 0) {
                 return `Group (Topic ${parts[topicIdx + 1]})`;
             }
-            return `Group ${parts[parts.length - 1].slice(-6)}`;
+            return `Group ${tail.slice(-6)}`;
         }
         
         if (parts.includes('dm')) {
-            return `DM ${parts[parts.length - 1].slice(-6)}`;
+            return `DM ${tail.slice(-6)}`;
         }
         
-        return parts.slice(-2).join(':') || session.key;
+        return parts.slice(-2).join(':') || key || 'Unknown session';
     }
     
     /**
      * Truncate session key for display
      */
     function truncateKey(key) {
+        if (!key) return '';
         if (key.length <= 40) return key;
         return key.slice(0, 20) + '...' + key.slice(-15);
     }
@@ -462,6 +483,10 @@ const SessionsModule = (function() {
         if (!el || !data) return;
         
         const d = new Date(data.lastUpdate);
+        if (Number.isNaN(d.getTime())) {
+            el.textContent = 'Updated: Unknown';
+            return;
+        }
         el.textContent = 'Updated: ' + d.toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',

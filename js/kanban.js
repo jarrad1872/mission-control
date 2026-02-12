@@ -131,11 +131,12 @@ const KanbanModule = (function() {
     function renderBoard() {
         const container = document.getElementById('kanban-board');
         if (!container) return;
+        const cols = tasksData?.columns || {};
 
         const columns = [
-            { id: 'todo', title: 'To Do', icon: '📋', tasks: tasksData.columns.todo || [] },
-            { id: 'inProgress', title: 'In Progress', icon: '🔄', tasks: tasksData.columns.inProgress || [] },
-            { id: 'complete', title: 'Complete', icon: '✅', tasks: tasksData.columns.complete || [] }
+            { id: 'todo', title: 'To Do', icon: '📋', tasks: cols.todo || [] },
+            { id: 'inProgress', title: 'In Progress', icon: '🔄', tasks: cols.inProgress || [] },
+            { id: 'complete', title: 'Complete', icon: '✅', tasks: cols.complete || [] }
         ];
 
         container.innerHTML = columns.map(col => `
@@ -169,10 +170,12 @@ const KanbanModule = (function() {
         const priorityLabel = getPriorityLabel(task.priority);
         const statusClass = getStatusClass(task.status);
         const safeAssignee = task.assignee ? Utils.escapeHtml(task.assignee) : '';
+        const safeTaskId = Utils.escapeHtml(String(task?.id || ''));
+        const safeStatus = Utils.escapeHtml(String(task?.status || 'pending'));
         
         return `
             <div class="kanban-card ${priorityClass}" 
-                 data-task-id="${task.id}" 
+                 data-task-id="${safeTaskId}" 
                  draggable="true">
                 <div class="card-header">
                     <span class="drag-handle">⋮⋮</span>
@@ -181,7 +184,7 @@ const KanbanModule = (function() {
                 <div class="card-title">${Utils.escapeHtml(task.title)}</div>
                 <div class="card-meta">
                     ${task.assignee ? `<span class="card-assignee" title="Assigned to ${safeAssignee}">👤 ${safeAssignee}</span>` : ''}
-                    <span class="card-status ${statusClass}">${task.status}</span>
+                    <span class="card-status ${statusClass}">${safeStatus}</span>
                 </div>
                 ${task.due ? `<div class="card-due">${formatDue(task.due)}</div>` : ''}
             </div>
@@ -343,7 +346,8 @@ const KanbanModule = (function() {
     function showTaskDetail(taskId) {
         // Find task in all columns
         let task = null;
-        for (const tasks of Object.values(tasksData.columns)) {
+        const columns = tasksData?.columns || {};
+        for (const tasks of Object.values(columns)) {
             task = tasks.find(t => t.id === taskId);
             if (task) break;
         }
@@ -362,7 +366,7 @@ const KanbanModule = (function() {
             <div class="task-detail-grid">
                 <div class="detail-row">
                     <span class="detail-label">Status</span>
-                    <span class="detail-value status-badge ${getStatusClass(task.status)}">${task.status}</span>
+                    <span class="detail-value status-badge ${getStatusClass(task.status)}">${Utils.escapeHtml(String(task.status || 'pending'))}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Priority</span>
@@ -494,7 +498,7 @@ const KanbanModule = (function() {
                 return `📅 ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
             }
         } catch (e) {
-            return dateStr;
+            return Utils.escapeHtml(String(dateStr || ''));
         }
     }
 
@@ -509,7 +513,7 @@ const KanbanModule = (function() {
                 year: 'numeric'
             });
         } catch (e) {
-            return dateStr;
+            return Utils.escapeHtml(String(dateStr || ''));
         }
     }
 
