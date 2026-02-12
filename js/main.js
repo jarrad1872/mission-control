@@ -12,7 +12,7 @@
      */
     function initDefaults() {
         const defaults = {
-            'mc_gateway_url': 'https://assembled-courses-budget-roles.trycloudflare.com'
+            'mc_gateway_url': 'https://tribes-lan-shopper-despite.trycloudflare.com'
         };
 
         // Force-update gateway URL if it still points to an old tunnel
